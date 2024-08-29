@@ -28,3 +28,15 @@ The idea is to implement the following features:
 ## Installation
 
 At the time of starting this project, the latest version of Vulkano is almost a year old, and quite a few API-breaking changes have been introduced in the main Git branch. So until the Github version is released (I guess version 0.35) we will use the unstable Vulkano version from the Git repository. The Vulkano repository is added as a sub module. We will use the Git version instead of the official crate, until version 0.35 is released.
+
+To download the submodule, if the `--recursive` option was not used when cloning the project, run:
+
+```sh
+$ git submodule update --init
+```
+
+You will also need to install the following for your platform (Windows, macOS or Linux):
+
+- Rust: [https://www.rust-lang.org](https://www.rust-lang.org)
+- Vulkan SDK: [https://www.lunarg.com/vulkan-sdk/](https://www.lunarg.com/vulkan-sdk/)
+
