@@ -1,0 +1,11 @@
+[package]
+name = "mini-engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vulkano = { path = "../deps/vulkano/vulkano", features = ["macros"] }
+vulkano-shaders = { path = "../deps/vulkano/vulkano-shaders" }
+vulkano-util = { path = "../deps/vulkano/vulkano-util" }
+winit = { version = "0.29.0", default-features = true }
+glam = "0.28.0"
