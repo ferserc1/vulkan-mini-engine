@@ -1,16 +1,20 @@
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
-use vulkano::{device::Device, format::Format, image::{ view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage }, memory::allocator::{AllocationCreateInfo, StandardMemoryAllocator}, pipeline::graphics::viewport::Viewport, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass}, swapchain::{Surface, Swapchain, SwapchainCreateInfo}};
+use vulkano::{device::Device, format::Format, image::{ view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage }, memory::allocator::{AllocationCreateInfo, StandardMemoryAllocator}, pipeline::graphics::viewport::Viewport, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass}, swapchain::{self, Surface, Swapchain, SwapchainAcquireFuture, SwapchainCreateInfo}, Validated, VulkanError};
 use winit::window::Window;
 
 
 pub struct FramebufferData {
     pub swapchain: Arc<Swapchain>,
-    pub images: Vec<Arc<Image>>,
+    pub images: Arc<RwLock<Vec<Arc<Image>>>>,
     pub render_pass: Arc<RenderPass>,
-    // TODO: The rest of the elements of the frame buffer
-
     pub framebuffers: Option<Vec<Arc<Framebuffer>>>
+
+    // TODO: Add the rest of the elements here, as they are needed
+    // depth_image
+    // color_gbuffer
+    // normal_gbuffer
+    // ...
 }
 
 impl FramebufferData {
@@ -75,15 +79,33 @@ impl FramebufferData {
 
         Self {
             swapchain,
-            images,
+            images: Arc::new(RwLock::new(images)),
             render_pass,
             framebuffers: None
         }
     }
 
     pub fn extent(&self) -> [u32; 2] {
-        let extent = self.images[0].extent();
+        let images = self.images.read().unwrap();
+        let extent = images[0].extent();
         [extent[0], extent[1]]
+    }
+
+    pub fn get_framebuffer(&self, index: usize) -> Arc<Framebuffer> {
+        self.framebuffers.as_ref().unwrap()[index].clone()
+    }
+    
+    pub fn recreate_swapchain(
+        &mut self,
+        image_extent: [u32; 2]
+    ) {
+        let (swapchain, images) = self.swapchain.recreate(SwapchainCreateInfo {
+            image_extent,
+            ..self.swapchain.create_info()
+        }).unwrap();
+
+        self.swapchain = swapchain;
+        self.images = Arc::new(RwLock::new(images));
     }
 
     pub fn update_sizes(
@@ -91,7 +113,8 @@ impl FramebufferData {
         allocator: Arc<StandardMemoryAllocator>,
         viewport: &mut Viewport
     ) {
-        let extent = self.images[0].extent();
+        let images = self.images.read().unwrap();
+        let extent = images[0].extent();
         viewport.extent = [extent[0] as f32, extent[1] as f32];
 
         let depth_buffer_image = Image::new(
@@ -110,7 +133,7 @@ impl FramebufferData {
         let depth_buffer = ImageView::new_default(depth_buffer_image)
             .expect("Could not create depth buffer image view");
 
-        let framebuffers = self.images
+        let framebuffers = self.images.read().unwrap()
             .iter()
             .map(|image| {
                 let view = ImageView::new_default(image.clone()).unwrap();
@@ -128,5 +151,22 @@ impl FramebufferData {
             .collect::<Vec<_>>();
 
         self.framebuffers = Some(framebuffers);
+        // TODO: Update the rest of the image resources ase they are added
+    }
+
+    pub fn acquire_next_image(&self) -> (u32, Option<SwapchainAcquireFuture>) {
+        match swapchain::acquire_next_image(self.swapchain.clone(), None).map_err(Validated::unwrap) {
+            Ok(r) => {
+                let (image_index, suboptimal, acquire_future) = r;
+                if suboptimal {
+                    return (0, None);
+                }
+                return (image_index, Some(acquire_future));
+            },
+            Err(VulkanError::OutOfDate) => {
+                return (0, None);
+            }
+            Err(e) => panic!("Failed to acquire next image: {:?}", e)
+        }
     }
 }

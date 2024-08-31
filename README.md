@@ -40,3 +40,7 @@ You will also need to install the following for your platform (Windows, macOS or
 - Rust: [https://www.rust-lang.org](https://www.rust-lang.org)
 - Vulkan SDK: [https://www.lunarg.com/vulkan-sdk/](https://www.lunarg.com/vulkan-sdk/)
 
+## Debug using Visual Studio Code in macOS
+
+The environment variable system does not work in GUI applications on macOS. You can run the application with `cargo run` just like on Windows or Linux, but to use the Visual Studio Code debugger, the `libvulkan.dylib` library will not be found when launching the application. To make it work, open the `mini-engine` directory as a workspace in VS Code, open a terminal and create a symbolic link to the Vulkan library in that same directory.
+

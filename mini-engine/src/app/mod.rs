@@ -1,7 +1,9 @@
-use std::{error::Error, sync::Arc};
+use std::{error::Error, sync::{Arc, RwLock}};
 
-use vulkano::{instance::InstanceExtensions, swapchain::Surface};
+use vulkano::{command_buffer::{CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, instance::InstanceExtensions, swapchain::{self, Surface, SwapchainPresentInfo}, sync::GpuFuture, Validated, VulkanError};
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
+
+use crate::vulkan::{model::Model, render_system::RenderSystem, Context};
 
 pub struct App {
     window_title: String,
@@ -9,7 +11,11 @@ pub struct App {
 
     event_loop: Option<EventLoop<()>>,
     window: Option<Arc<Window>>,
-    vulkan_context: Option<Arc<crate::vulkan::Context>>
+
+    vulkan_context: Option<Arc<RwLock<crate::vulkan::Context>>>,
+    render_system: Option<Arc<RwLock<RenderSystem>>>,
+
+    pub scene: Vec<Arc<RwLock<Model>>>
 }
 
 impl App {
@@ -19,7 +25,9 @@ impl App {
             window_size: (width, height),
             event_loop: None,
             window: None,
-            vulkan_context: None
+            vulkan_context: None,
+            render_system: None,
+            scene: Vec::new()
         }
     }
 
@@ -39,11 +47,13 @@ impl App {
         self.window = Some(window.clone());
         self.event_loop = Some(event_loop);
 
-        let vulkan_context = Arc::new(
-            crate::vulkan::Context::new(self)
-        );
+        let vulkan_context = Context::new(self);
         
-        self.vulkan_context = Some(vulkan_context);
+        self.render_system = Some(Arc::new(RwLock::new(
+            RenderSystem::new(&vulkan_context)
+        )));
+
+        self.vulkan_context = Some(Arc::new(RwLock::new(vulkan_context)));
 
         self
     }
@@ -62,20 +72,32 @@ impl App {
         }
     }
 
-    pub fn get_vulkan_context(&self) -> Result<Arc<crate::vulkan::Context>, Box<dyn Error>> {
-        match &self.vulkan_context {
-            Some(context) => Ok(context.clone()),
-            None => Err("The application is not initialized".into())
-        }
+    pub fn add_model(&mut self, model: Model) {
+        self.scene.push(Arc::new(RwLock::new(model)));
     }
 
     pub fn run(&mut self) {
         let event_loop = self.event_loop.take().unwrap();
+        let vulkan_context = self.vulkan_context.take().unwrap();
         let window = self.get_window().unwrap().clone();
+        let command_buffer_allocator = vulkan_context.read().unwrap().command_buffer_allocator.clone();
+
+        // Initialize scene elements
+        self.scene
+            .iter()
+            .for_each(|model| {
+                let mut model = model.write().unwrap();
+                model.build(vulkan_context.clone())
+                    .expect("Failed to build model");
+            });
+
+        let mut previous_frame_end = Some(
+            Box::new(vulkano::sync::now(vulkan_context.read().unwrap().device_data.device.clone())) as Box<dyn GpuFuture>
+        );
+        let mut recreate_swapchain = false;
 
         event_loop.run(|event, target_window| {
             target_window.set_control_flow(ControlFlow::Poll);
-
 
             match event {
                 Event::WindowEvent {
@@ -89,14 +111,99 @@ impl App {
                     event: WindowEvent::Resized(_),
                     ..
                 } => {
-
+                    recreate_swapchain = true;
                 }
 
                 Event::WindowEvent {
                     event: WindowEvent::RedrawRequested,
                     ..
                 } => {
+                    if recreate_swapchain {
+                        let image_extent: [u32; 2] = window.inner_size().into();
+                        vulkan_context.write().unwrap().recreate_swapchain(image_extent);
+                    }
 
+                    let framebuffer = &vulkan_context.read().unwrap().framebuffer;
+                    let swapchain = vulkan_context.read().unwrap().framebuffer.read().unwrap().swapchain.clone();
+                    
+
+                    let (image_index, suboptimal, acquire_future) = {
+                        match swapchain::acquire_next_image(swapchain.clone(), None).map_err(Validated::unwrap) {
+                            Ok(r) => r,
+                            Err(VulkanError::OutOfDate) => {
+                                recreate_swapchain = true;
+                                return;
+                            }
+                            Err(e) => panic!("Failed to acquire next image: {:?}", e)
+                        }
+                    };
+
+                    if suboptimal {
+                        recreate_swapchain = true;
+                    }
+
+                    let clear_values = vec![
+                        Some([0.0, 0.0, 0.0, 1.0].into()),
+                        Some(1.0.into())
+                    ];
+
+                    let device = vulkan_context.read().unwrap().device_data.device.clone();
+                    let queue = vulkan_context.read().unwrap().device_data.queue.clone();
+                    let mut cmd_buffer_builder = RecordingCommandBuffer::new(
+                        command_buffer_allocator.clone(),
+                        queue.queue_family_index(),
+                        CommandBufferLevel::Primary,
+                        CommandBufferBeginInfo {
+                            usage: CommandBufferUsage::OneTimeSubmit,
+                            ..Default::default()
+                        }
+                    ).expect("Failed to create command buffer builder");
+
+                    let fb = framebuffer.read().unwrap().get_framebuffer(image_index as usize);
+                    let viewport = vulkan_context.read().unwrap().viewport.read().unwrap().clone();
+                    cmd_buffer_builder.begin_render_pass(
+                        RenderPassBeginInfo {
+                            clear_values,
+                            ..RenderPassBeginInfo::framebuffer(
+                                fb
+                            )
+                        },
+                        Default::default()
+                    )
+                    .unwrap()
+                    .set_viewport(0, [viewport.clone()].into_iter().collect()).unwrap();
+
+                    // TODO: Render scene elements
+
+                    cmd_buffer_builder.end_render_pass(Default::default())
+                        .unwrap();
+
+                    let command_buffer = cmd_buffer_builder.end().expect("Failed to build command buffer");
+
+                    let future = previous_frame_end
+                        .take()
+                        .unwrap()
+                        .join(acquire_future)
+                        .then_execute(queue.clone(), command_buffer)
+                        .unwrap()
+                        .then_swapchain_present(
+                            queue.clone(), 
+                            SwapchainPresentInfo::swapchain_image_index(swapchain.clone(), image_index)
+                        )
+                        .then_signal_fence_and_flush();
+                    match future.map_err(Validated::unwrap) {
+                        Ok(future) => {
+                            previous_frame_end = Some(Box::new(future) as Box<_>);
+                        }
+                        Err(VulkanError::OutOfDate) => {
+                            recreate_swapchain = true;
+                            previous_frame_end = Some(Box::new(vulkano::sync::now(device.clone())) as Box<_>);
+                        }
+                        Err(e) => {
+                            println!("Failed to flush future: {:?}", e);
+                            previous_frame_end = Some(Box::new(vulkano::sync::now(device.clone())) as Box<_>);
+                        }
+                    }
                 }
 
                 Event::WindowEvent {

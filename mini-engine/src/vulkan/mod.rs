@@ -1,19 +1,22 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 use vulkano::{command_buffer::allocator::StandardCommandBufferAllocator, descriptor_set::allocator::StandardDescriptorSetAllocator, instance::{Instance, InstanceCreateFlags, InstanceCreateInfo}, memory::allocator::{FreeListAllocator, GenericMemoryAllocator, StandardMemoryAllocator}, pipeline::graphics::viewport::Viewport, swapchain::Surface, Version, VulkanLibrary};
 use crate::app::App;
 
 pub mod device;
 pub mod framebuffer;
+pub mod model;
+pub mod render_system;
 
 pub struct Context {
     pub instance: Arc<Instance>,
     pub surface: Arc<Surface>,
-    pub device_data: Arc<device::DeviceData>,
-    pub framebuffer: Arc<Mutex<framebuffer::FramebufferData>>,
+    pub device_data: device::DeviceData,
+    pub framebuffer: Arc<RwLock<framebuffer::FramebufferData>>,
     pub command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     pub memory_allocator: Arc<GenericMemoryAllocator<FreeListAllocator>>,
-    pub descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>
+    pub descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>,
+    pub viewport: Arc<RwLock<Viewport>>
 }
 
 impl Context {
@@ -32,17 +35,15 @@ impl Context {
                 ..Default::default()
             }).expect("Could not create Vulkan instance");
 
-            let surface = Surface::from_window(instance.clone(), window.clone())
-                .expect("Failed to create window surface");
+        let surface = Surface::from_window(instance.clone(), window.clone())
+            .expect("Failed to create window surface");
 
-            let device_data = Arc::new(device::DeviceData::new(instance.clone(), surface.clone()));
+        let device_data = device::DeviceData::new(instance.clone(), surface.clone());
 
-        let framebuffer = Arc::new(Mutex::new(
-            framebuffer::FramebufferData::new(
-                device_data.device.clone(),
-                surface.clone()
-            )
-        ));
+        let mut framebuffer = framebuffer::FramebufferData::new(
+            device_data.device.clone(),
+            surface.clone()
+        );
 
         let command_buffer_allocator = Arc::new(
             StandardCommandBufferAllocator::new(device_data.device.clone(), Default::default())
@@ -65,17 +66,28 @@ impl Context {
             depth_range: 0.0..=1.0
         };
 
-        framebuffer.lock().unwrap().
-            update_sizes(memory_allocator.clone(), &mut viewport);
+        framebuffer.update_sizes(memory_allocator.clone(), &mut viewport);
 
         Self {
             instance,
             surface,
             device_data,
-            framebuffer,
+            framebuffer: Arc::new(RwLock::new(framebuffer)),
             command_buffer_allocator,
             memory_allocator,
-            descriptor_set_allocator
+            descriptor_set_allocator,
+            viewport: Arc::new(RwLock::new(viewport))
         }
+    }
+
+    pub fn recreate_swapchain(&self, image_extent: [u32; 2]) {
+        let mut framebuffer = self.framebuffer.write().unwrap();
+        let mut viewport = self.viewport.write().unwrap();
+
+        // Recreate the swapchain
+        framebuffer.recreate_swapchain(image_extent);
+
+        // Update the framebuffer resources
+        framebuffer.update_sizes(self.memory_allocator.clone(), &mut viewport);
     }
 }
