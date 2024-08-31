@@ -15,7 +15,7 @@ The idea is to implement the following features:
 
 ## Roadmap
 
-- Vulkan window and basic Vulkan elements: Vulkan instance, device, queues, command buffers and memory allocators.
+- ✅ Vulkan window and basic Vulkan elements: Vulkan instance, device, queues, command buffers and memory allocators.
 - Rendering system: swap chain, depth buffer and a pipeline for direct rendering with the basic properties of a material.
 - 3D objects: vertex and index buffers and rendering of a sample object.
 - Basic lighting: basic blinn-phong lighting system.
