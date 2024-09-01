@@ -99,7 +99,11 @@ impl Model {
 
     pub fn update(&mut self) {
         //println!("Updating model");
-        self.transform = self.transform * Mat4::from_rotation_y(0.01);
+        self.transform = self.transform *
+            Mat4::from_rotation_y(0.01) *
+            Mat4::from_rotation_x(0.02) *
+            Mat4::from_rotation_z(0.03);
+
     }
 
     pub fn draw(&self, cmd_buffer: &mut RecordingCommandBuffer, pipeline: Arc<GraphicsPipeline>) {

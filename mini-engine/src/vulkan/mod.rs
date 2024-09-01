@@ -84,10 +84,8 @@ impl Context {
         let mut framebuffer = self.framebuffer.write().unwrap();
         let mut viewport = self.viewport.write().unwrap();
 
-        // Recreate the swapchain
         framebuffer.recreate_swapchain(image_extent);
 
-        // Update the framebuffer resources
         framebuffer.update_sizes(self.memory_allocator.clone(), &mut viewport);
     }
 }

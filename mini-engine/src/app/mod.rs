@@ -1,3 +1,4 @@
+use core::f32;
 use std::{error::Error, sync::{Arc, RwLock}, vec};
 
 use glam::{vec3, Mat4};
@@ -130,9 +131,13 @@ impl App {
                     if let Some(render_system) = self.render_system.as_ref() {
                         let mut render_system = render_system.write().unwrap();
                         let aspect_ratio = window.inner_size().width as f32 / window.inner_size().height as f32;
-                        render_system.projection_matrix = Mat4::perspective_rh(0.3, aspect_ratio, 0.1, 100.0);
+                        render_system.projection_matrix = Mat4::perspective_rh(
+                            65.0 * f32::consts::PI / 180.0,
+                            aspect_ratio,
+                            0.1,
+                            100.0);
                         render_system.view_matrix = Mat4::look_at_rh(
-                            vec3(0.0, 0.0, 5.0), 
+                            vec3(0.0, 0.0, 3.0), 
                             vec3(0.0, 0.0, 0.0), 
                             vec3(0.0, 1.0, 0.0)
                         );
