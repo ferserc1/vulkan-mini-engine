@@ -1,6 +1,6 @@
-use std::{error::Error, ops::Sub, sync::{Arc, RwLock}};
+use std::{error::Error, sync::{Arc, RwLock}};
 
-use glam::{vec3, Mat4};
+use glam::Mat4;
 use vulkano::{buffer::{allocator::{SubbufferAllocator, SubbufferAllocatorCreateInfo}, Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer}, command_buffer::RecordingCommandBuffer, descriptor_set::DescriptorSet, memory::allocator::{AllocationCreateInfo, MemoryTypeFilter}, pipeline::{graphics::vertex_input, GraphicsPipeline, Pipeline, PipelineBindPoint}};
 
 use super::Context;
