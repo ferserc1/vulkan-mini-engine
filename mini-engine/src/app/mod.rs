@@ -1,5 +1,6 @@
-use std::{error::Error, sync::{Arc, RwLock}};
+use std::{error::Error, sync::{Arc, RwLock}, vec};
 
+use glam::{vec3, Mat4};
 use vulkano::{command_buffer::{CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, instance::InstanceExtensions, swapchain::{self, Surface, SwapchainPresentInfo}, sync::GpuFuture, Validated, VulkanError};
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
 
@@ -81,6 +82,7 @@ impl App {
         let vulkan_context = self.vulkan_context.take().unwrap();
         let window = self.get_window().unwrap().clone();
         let command_buffer_allocator = vulkan_context.read().unwrap().command_buffer_allocator.clone();
+        let descriptor_set_allocator = vulkan_context.read().unwrap().descriptor_set_allocator.clone();
         let render_system = self.render_system.as_ref().unwrap();
 
         // Initialize scene elements
@@ -123,6 +125,21 @@ impl App {
                         let image_extent: [u32; 2] = window.inner_size().into();
                         vulkan_context.write().unwrap().recreate_swapchain(image_extent);
                     }
+
+                    // TODO: Update camera
+                    if let Some(render_system) = self.render_system.as_ref() {
+                        let mut render_system = render_system.write().unwrap();
+                        let aspect_ratio = window.inner_size().width as f32 / window.inner_size().height as f32;
+                        render_system.projection_matrix = Mat4::perspective_rh(0.3, aspect_ratio, 0.1, 100.0);
+                        render_system.view_matrix = Mat4::look_at_rh(
+                            vec3(0.0, 0.0, 5.0), 
+                            vec3(0.0, 0.0, 0.0), 
+                            vec3(0.0, 1.0, 0.0)
+                        );
+                    }
+                        
+
+                    render_system.read().unwrap().update(&mut self.scene, descriptor_set_allocator.clone());
 
                     let framebuffer = &vulkan_context.read().unwrap().framebuffer;
                     let swapchain = vulkan_context.read().unwrap().framebuffer.read().unwrap().swapchain.clone();

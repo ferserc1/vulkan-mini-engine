@@ -1,6 +1,7 @@
 use std::{error::Error, sync::{Arc, RwLock}};
 
-use vulkano::{buffer::{Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer}, memory::allocator::{AllocationCreateInfo, MemoryTypeFilter}, pipeline::graphics::vertex_input};
+use glam::Mat4;
+use vulkano::{buffer::{allocator::{SubbufferAllocator, SubbufferAllocatorCreateInfo}, Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer}, descriptor_set::DescriptorSet, memory::allocator::{AllocationCreateInfo, MemoryTypeFilter}, pipeline::graphics::vertex_input};
 
 use super::Context;
 
@@ -18,14 +19,23 @@ pub struct VertexData {
 pub struct Model {
     pub vertices: Vec<VertexData>,
 
-    pub vertex_buffer: Option<Subbuffer<[VertexData]>>
+    pub vertex_buffer: Option<Subbuffer<[VertexData]>>,
+
+    pub matrix_buffer: Option<SubbufferAllocator>,
+
+    pub transform: Mat4,
+
+    pub descriptor_set: Option<Arc<DescriptorSet>>
 }
 
 impl Model {
     pub fn new(vertices: Vec<VertexData>) -> Self {
         Self {
             vertices,
-            vertex_buffer: None
+            vertex_buffer: None,
+            matrix_buffer: None,
+            transform: Mat4::IDENTITY,
+            descriptor_set: None
         }
     }
 
@@ -46,10 +56,27 @@ impl Model {
         )?;
 
         self.vertex_buffer = Some(vertex_buffer);
+
+        let matrix_buffer = SubbufferAllocator::new(
+            allocator.clone(),
+            SubbufferAllocatorCreateInfo {
+                buffer_usage: BufferUsage::UNIFORM_BUFFER,
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE |
+                    MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            }
+        );
+
+        self.matrix_buffer = Some(matrix_buffer);
+
         Ok(self)
     }
 
     pub fn is_built(&self) -> bool {
         self.vertex_buffer.is_some()
+    }
+
+    pub fn update(&mut self) {
+        //println!("Updating model");
     }
 }

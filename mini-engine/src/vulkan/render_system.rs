@@ -1,7 +1,8 @@
 
-use std::sync::{Arc, RwLock};
+use std::{borrow::Borrow, sync::{Arc, RwLock}};
 
-use vulkano::{ command_buffer::RecordingCommandBuffer, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::Subpass };
+use glam::Mat4;
+use vulkano::{ command_buffer::RecordingCommandBuffer, descriptor_set::{allocator::StandardDescriptorSetAllocator, DescriptorSet, WriteDescriptorSet}, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, Pipeline, PipelineBindPoint, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::Subpass };
 
 use super::{model::{Model, VertexData}, Context};
 
@@ -20,8 +21,12 @@ mod color_frag {
 }
 
 pub struct RenderSystem {
+    pub layout: Arc<PipelineLayout>,
     pub pipeline: Arc<GraphicsPipeline>,
-    recreate_swapchain: bool
+    recreate_swapchain: bool,
+
+    pub view_matrix: Mat4,
+    pub projection_matrix: Mat4
 }
 
 impl RenderSystem {
@@ -79,18 +84,59 @@ impl RenderSystem {
                     depth: Some(DepthState::simple()),
                     ..Default::default()
                 }),
-                ..GraphicsPipelineCreateInfo::layout(layout)
+                ..GraphicsPipelineCreateInfo::layout(layout.clone())
             }
         ).expect("Failed to create color graphics pipeline");
         
         Self {
+            layout,
             pipeline,
-            recreate_swapchain: false
+            recreate_swapchain: false,
+            view_matrix: Mat4::IDENTITY,
+            projection_matrix: Mat4::IDENTITY
         }
     }
 
     pub fn resize(&mut self) {
         self.recreate_swapchain = true;
+    }
+
+    pub fn update(&self, scene: &mut Vec<Arc<RwLock<Model>>>, descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>) {
+        scene.iter().for_each(|model| {
+            {
+                model.write().unwrap().update();
+            }
+            
+            let subbuffer = {
+                let transform = &model.read().unwrap().transform;
+                let uniform_data = color_vert::MatrixBuffer {
+                    model: transform.to_cols_array_2d(),
+                    view: self.view_matrix.to_cols_array_2d(),
+                    projection: self.projection_matrix.to_cols_array_2d()
+                };
+
+                let subbuffer = model.read().unwrap().matrix_buffer.as_ref().unwrap().allocate_sized().unwrap();
+                {
+                    *subbuffer.write().unwrap() = uniform_data;
+                }
+                subbuffer
+            };
+
+            let descriptor_set = {
+                DescriptorSet::new(
+                    descriptor_set_allocator.clone(),
+                    self.pipeline.layout().set_layouts()[0].clone(),
+                    [
+                        WriteDescriptorSet::buffer(0, subbuffer)
+                    ],
+                    []
+                ).unwrap()
+            };
+
+            {
+                model.write().unwrap().descriptor_set = Some(descriptor_set);
+            }
+        });
     }
 
     pub fn render(&self, scene: &Vec<Arc<RwLock<Model>>>, cmd_buffer: &mut RecordingCommandBuffer) {
@@ -99,6 +145,15 @@ impl RenderSystem {
         scene.iter().for_each(|model| {
             let model = model.read().unwrap();
             let vertex_buffer = model.vertex_buffer.as_ref().unwrap();
+
+            if let Some(descriptor_set) = model.descriptor_set.borrow().clone() {
+                cmd_buffer.bind_descriptor_sets(
+                    PipelineBindPoint::Graphics,
+                    self.pipeline.clone().layout().clone(),
+                    0,
+                    descriptor_set.clone()
+                ).unwrap();
+            }
 
             cmd_buffer.bind_vertex_buffers(0, vertex_buffer.clone()).unwrap();
 
