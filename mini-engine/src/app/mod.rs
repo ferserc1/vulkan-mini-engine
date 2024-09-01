@@ -5,7 +5,7 @@ use glam::{vec3, Mat4};
 use vulkano::{command_buffer::{CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, instance::InstanceExtensions, swapchain::{self, Surface, SwapchainPresentInfo}, sync::GpuFuture, Validated, VulkanError};
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
 
-use crate::vulkan::{model::Model, render_system::RenderSystem, Context};
+use crate::vulkan::{model::Model, render_system::RenderSystem, scene::Camera, Context};
 
 pub struct App {
     window_title: String,
@@ -17,6 +17,7 @@ pub struct App {
     vulkan_context: Option<Arc<RwLock<crate::vulkan::Context>>>,
     render_system: Option<Arc<RwLock<RenderSystem>>>,
 
+    pub camera: Arc<RwLock<Camera>>,
     pub scene: Vec<Arc<RwLock<Model>>>
 }
 
@@ -29,6 +30,7 @@ impl App {
             window: None,
             vulkan_context: None,
             render_system: None,
+            camera: Arc::new(RwLock::new(Camera::new(65.0, 0.1, 100.0))),
             scene: Vec::new()
         }
     }
@@ -127,22 +129,17 @@ impl App {
                         vulkan_context.write().unwrap().recreate_swapchain(image_extent);
                     }
 
-                    // TODO: Update camera
                     if let Some(render_system) = self.render_system.as_ref() {
                         let mut render_system = render_system.write().unwrap();
                         let aspect_ratio = window.inner_size().width as f32 / window.inner_size().height as f32;
+                        let camera = self.camera.read().unwrap();
                         render_system.projection_matrix = Mat4::perspective_rh(
-                            65.0 * f32::consts::PI / 180.0,
+                            camera.fov * f32::consts::PI / 180.0,
                             aspect_ratio,
-                            0.1,
-                            100.0);
-                        render_system.view_matrix = Mat4::look_at_rh(
-                            vec3(0.0, 0.0, 3.0), 
-                            vec3(0.0, 0.0, 0.0), 
-                            vec3(0.0, 1.0, 0.0)
-                        );
+                            camera.near,
+                            camera.far);
+                        render_system.view_matrix = camera.transform.inverse();
                     }
-                        
 
                     render_system.read().unwrap().update(&mut self.scene, descriptor_set_allocator.clone());
 

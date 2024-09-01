@@ -1,3 +1,4 @@
+use glam::vec3;
 use vulkan::model::Model;
 
 pub mod app;
@@ -34,6 +35,10 @@ fn main() {
         ]
     );
     app.add_model(model);
+
+    {
+        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 3.0));
+    }
 
     app.build();
 

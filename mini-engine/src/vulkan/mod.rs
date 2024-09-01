@@ -7,6 +7,7 @@ pub mod device;
 pub mod framebuffer;
 pub mod model;
 pub mod render_system;
+pub mod scene;
 
 pub struct Context {
     pub instance: Arc<Instance>,
