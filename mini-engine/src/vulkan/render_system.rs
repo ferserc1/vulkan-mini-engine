@@ -143,28 +143,8 @@ impl RenderSystem {
         cmd_buffer.bind_pipeline_graphics(self.pipeline.clone()).unwrap();
 
         scene.iter().for_each(|model| {
-            let model = model.read().unwrap();
-            let vertex_buffer = model.vertex_buffer.as_ref().unwrap();
-
-            if let Some(descriptor_set) = model.descriptor_set.borrow().clone() {
-                cmd_buffer.bind_descriptor_sets(
-                    PipelineBindPoint::Graphics,
-                    self.pipeline.clone().layout().clone(),
-                    0,
-                    descriptor_set.clone()
-                ).unwrap();
-            }
-
-            cmd_buffer.bind_vertex_buffers(0, vertex_buffer.clone()).unwrap();
-
-            unsafe {
-                cmd_buffer.draw(
-                    model.vertices.len() as u32,
-                    1,
-                    0,
-                    0
-                ).unwrap();
-            }
+            model.read().unwrap()
+                .draw(cmd_buffer, self.pipeline.clone());
         });
     }
 }
