@@ -1,9 +1,9 @@
 
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
-use vulkano::{ pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::Subpass };
+use vulkano::{ command_buffer::RecordingCommandBuffer, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::Subpass };
 
-use super::{model::VertexData, Context};
+use super::{model::{Model, VertexData}, Context};
 
 mod color_vert {
     vulkano_shaders::shader! {
@@ -91,5 +91,25 @@ impl RenderSystem {
 
     pub fn resize(&mut self) {
         self.recreate_swapchain = true;
+    }
+
+    pub fn render(&self, scene: &Vec<Arc<RwLock<Model>>>, cmd_buffer: &mut RecordingCommandBuffer) {
+        cmd_buffer.bind_pipeline_graphics(self.pipeline.clone()).unwrap();
+
+        scene.iter().for_each(|model| {
+            let model = model.read().unwrap();
+            let vertex_buffer = model.vertex_buffer.as_ref().unwrap();
+
+            cmd_buffer.bind_vertex_buffers(0, vertex_buffer.clone()).unwrap();
+
+            unsafe {
+                cmd_buffer.draw(
+                    model.vertices.len() as u32,
+                    1,
+                    0,
+                    0
+                ).unwrap();
+            }
+        });
     }
 }

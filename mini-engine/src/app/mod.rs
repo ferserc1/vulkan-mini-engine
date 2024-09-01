@@ -81,6 +81,7 @@ impl App {
         let vulkan_context = self.vulkan_context.take().unwrap();
         let window = self.get_window().unwrap().clone();
         let command_buffer_allocator = vulkan_context.read().unwrap().command_buffer_allocator.clone();
+        let render_system = self.render_system.as_ref().unwrap();
 
         // Initialize scene elements
         self.scene
@@ -140,6 +141,7 @@ impl App {
 
                     if suboptimal {
                         recreate_swapchain = true;
+                        return;
                     }
 
                     let clear_values = vec![
@@ -173,7 +175,8 @@ impl App {
                     .unwrap()
                     .set_viewport(0, [viewport.clone()].into_iter().collect()).unwrap();
 
-                    // TODO: Render scene elements
+                    render_system.read().unwrap()
+                        .render(&self.scene, &mut cmd_buffer_builder);
 
                     cmd_buffer_builder.end_render_pass(Default::default())
                         .unwrap();
@@ -191,6 +194,7 @@ impl App {
                             SwapchainPresentInfo::swapchain_image_index(swapchain.clone(), image_index)
                         )
                         .then_signal_fence_and_flush();
+
                     match future.map_err(Validated::unwrap) {
                         Ok(future) => {
                             previous_frame_end = Some(Box::new(future) as Box<_>);

@@ -18,7 +18,7 @@ pub struct VertexData {
 pub struct Model {
     pub vertices: Vec<VertexData>,
 
-    vertex_buffer: Option<Subbuffer<[VertexData]>>
+    pub vertex_buffer: Option<Subbuffer<[VertexData]>>
 }
 
 impl Model {
