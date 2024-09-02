@@ -2,8 +2,8 @@
 use core::f32;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
 
-use glam::Mat4;
-use vulkano::{ command_buffer::{CommandBuffer, CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, descriptor_set::{allocator::StandardDescriptorSetAllocator, DescriptorSet, WriteDescriptorSet}, device::Device, format::Format, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition, VertexInputState}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, Pipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::{RenderPass, Subpass}, swapchain::Swapchain };
+use glam::{Mat3, Mat4};
+use vulkano::{ command_buffer::{CommandBuffer, CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo, SubpassBeginInfo, SubpassContents}, descriptor_set::{allocator::StandardDescriptorSetAllocator, DescriptorSet, WriteDescriptorSet}, device::Device, format::Format, padded::Padded, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition, VertexInputState}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, Pipeline, PipelineBindPoint, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::{RenderPass, Subpass}, swapchain::Swapchain };
 
 use super::{model::{Model, VertexData}, scene::Camera, Context};
 
@@ -18,6 +18,20 @@ mod color_frag {
     vulkano_shaders::shader! {
         ty: "fragment",
         path: "src/shaders/color.frag.glsl"
+    }
+}
+
+mod gbuffer_vert {
+    vulkano_shaders::shader! {
+        ty: "vertex",
+        path: "src/shaders/gbuffer.vert.glsl"
+    }
+}
+
+mod gbuffer_frag {
+    vulkano_shaders::shader! {
+        ty: "fragment",
+        path: "src/shaders/gbuffer.frag.glsl"
     }
 }
 
@@ -38,7 +52,7 @@ mod deferred_mix_frag {
 pub struct RenderSystem {
     pub layout: Arc<PipelineLayout>,
     pub pipeline: Arc<GraphicsPipeline>,
-    //pub deferred_mix_pipeline: Arc<GraphicsPipeline>,
+    pub deferred_mix_pipeline: Arc<GraphicsPipeline>,
     recreate_swapchain: bool,
 
     // Camera matrixes
@@ -48,14 +62,31 @@ pub struct RenderSystem {
 
 impl RenderSystem {
     pub fn get_render_pass(device: Arc<Device>, swapchain: Arc<Swapchain>) -> Arc<RenderPass> {
-        let render_pass = vulkano::single_pass_renderpass!(
-            device.clone(),
+        let render_pass = vulkano::ordered_passes_renderpass!(device.clone(),
             attachments: {
-                color: {
+                final_color: {
                     format: swapchain.image_format(),
                     samples: 1,
                     load_op: Clear,
                     store_op: Store
+                },
+                normals: {
+                    format: Format::R16G16B16A16_SFLOAT,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare
+                },
+                positions: {
+                    format: Format::R32G32B32A32_SFLOAT,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare
+                },
+                color: {
+                    format: Format::A2B10G10R10_UNORM_PACK32,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare
                 },
                 depth: {
                     format: Format::D16_UNORM,
@@ -64,10 +95,18 @@ impl RenderSystem {
                     store_op: DontCare
                 }
             },
-            pass: {
-                color: [color],
-                depth_stencil: {depth}
-            }
+            passes: [
+                {
+                    color: [normals, positions, color],
+                    depth_stencil: {depth},
+                    input: []
+                },
+                {
+                    color: [final_color],
+                    depth_stencil: {},
+                    input: [normals, positions, color]
+                }
+            ]
         ).expect("Failed to create render pass");
 
         render_pass
@@ -80,14 +119,14 @@ impl RenderSystem {
 
         let render_pass = context.framebuffer.read().unwrap().render_pass.clone();
         
-        // Color pipeline
+        // g-buffers pipeline
         let color_pass = Subpass::from(render_pass.clone(), 0).unwrap();
 
-        let color_vertex_entry_point = color_vert::load(device.clone())
+        let color_vertex_entry_point = gbuffer_vert::load(device.clone())
             .expect("Failed to create vertex shader module")
             .entry_point("main")
             .expect("Failed to get color vertex shader entry point");
-        let color_fragment_entry_point = color_frag::load(device.clone())
+        let color_fragment_entry_point = gbuffer_frag::load(device.clone())
             .expect("Failed to create fragment shader module")
             .entry_point("main")
             .expect("Failed to get color fragment shader entry point");
@@ -134,52 +173,51 @@ impl RenderSystem {
         ).expect("Failed to create color graphics pipeline");
 
         // Deferred mix pipeline
-        // let deferred_mix_pass = Subpass::from(render_pass.clone(), 1).unwrap();
-        // let deferred_mix_pass = Subpass::from(render_pass.clone(), 0).unwrap();
+        let deferred_mix_pass = Subpass::from(render_pass.clone(), 1).unwrap();
 
-        // let deferred_mix_vertex_entry_point = deferred_mix_vert::load(device.clone())
-        //     .expect("Failed to create vertex shader module")
-        //     .entry_point("main")
-        //     .expect("Failed to get deferred mix vertex shader entry point");
-        // let deferred_mix_fragment_entry_point = deferred_mix_frag::load(device.clone())
-        //     .expect("Failed to create fragment shader module")
-        //     .entry_point("main")
-        //     .expect("Failed to get deferred mix vertex shader entry point");
+        let deferred_mix_vertex_entry_point = deferred_mix_vert::load(device.clone())
+            .expect("Failed to create vertex shader module")
+            .entry_point("main")
+            .expect("Failed to get deferred mix vertex shader entry point");
+        let deferred_mix_fragment_entry_point = deferred_mix_frag::load(device.clone())
+            .expect("Failed to create fragment shader module")
+            .entry_point("main")
+            .expect("Failed to get deferred mix vertex shader entry point");
 
-        // let deferred_mix_shader_stages: Vec<PipelineShaderStageCreateInfo> = vec![
-        //     PipelineShaderStageCreateInfo::new(deferred_mix_vertex_entry_point),
-        //     PipelineShaderStageCreateInfo::new(deferred_mix_fragment_entry_point)
-        // ].into_iter().collect();
+        let deferred_mix_shader_stages: Vec<PipelineShaderStageCreateInfo> = vec![
+            PipelineShaderStageCreateInfo::new(deferred_mix_vertex_entry_point),
+            PipelineShaderStageCreateInfo::new(deferred_mix_fragment_entry_point)
+        ].into_iter().collect();
 
-        // let deferred_mix_layout = PipelineLayout::new(
-        //     device.clone(),
-        //     PipelineDescriptorSetLayoutCreateInfo::from_stages(&deferred_mix_shader_stages)
-        //         .into_pipeline_layout_create_info(device.clone())
-        //         .unwrap()
-        // ).expect("Co8uld not create the pipeline layout");
+        let deferred_mix_layout = PipelineLayout::new(
+            device.clone(),
+            PipelineDescriptorSetLayoutCreateInfo::from_stages(&deferred_mix_shader_stages)
+                .into_pipeline_layout_create_info(device.clone())
+                .unwrap()
+        ).expect("Co8uld not create the pipeline layout");
 
-        // let deferred_mix_pipeline = GraphicsPipeline::new(
-        //     device.clone(),
-        //     None,
-        //     GraphicsPipelineCreateInfo {
-        //         stages: deferred_mix_shader_stages.into_iter().collect(),
-        //         vertex_input_state: Some(VertexInputState::default()),
-        //         input_assembly_state: Some(InputAssemblyState::default()),
-        //         viewport_state: Some(ViewportState::default()),
-        //         rasterization_state: Some(RasterizationState {
-        //             cull_mode: CullMode::Back,
-        //             ..Default::default()
-        //         }),
-        //         multisample_state: Some(MultisampleState::default()),
-        //         color_blend_state: Some(ColorBlendState::with_attachment_states(
-        //             deferred_mix_pass.num_color_attachments(), 
-        //             ColorBlendAttachmentState::default())
-        //         ),
-        //         dynamic_state: [DynamicState::Viewport].into_iter().collect(),
-        //         subpass: Some(deferred_mix_pass.into()),
-        //         ..GraphicsPipelineCreateInfo::layout(deferred_mix_layout)
-        //     }
-        // ).expect("Failed to create deferred mix graphics pipeline");
+        let deferred_mix_pipeline = GraphicsPipeline::new(
+            device.clone(),
+            None,
+            GraphicsPipelineCreateInfo {
+                stages: deferred_mix_shader_stages.into_iter().collect(),
+                vertex_input_state: Some(VertexInputState::default()),
+                input_assembly_state: Some(InputAssemblyState::default()),
+                viewport_state: Some(ViewportState::default()),
+                rasterization_state: Some(RasterizationState {
+                    cull_mode: CullMode::Back,
+                    ..Default::default()
+                }),
+                multisample_state: Some(MultisampleState::default()),
+                color_blend_state: Some(ColorBlendState::with_attachment_states(
+                    deferred_mix_pass.num_color_attachments(), 
+                    ColorBlendAttachmentState::default())
+                ),
+                dynamic_state: [DynamicState::Viewport].into_iter().collect(),
+                subpass: Some(deferred_mix_pass.into()),
+                ..GraphicsPipelineCreateInfo::layout(deferred_mix_layout)
+            }
+        ).expect("Failed to create deferred mix graphics pipeline");
         
         Self {
             layout,
@@ -187,7 +225,7 @@ impl RenderSystem {
             recreate_swapchain: false,
             view_matrix: Mat4::IDENTITY,
             projection_matrix: Mat4::IDENTITY,
-            //deferred_mix_pipeline
+            deferred_mix_pipeline
         }
     }
 
@@ -221,10 +259,12 @@ impl RenderSystem {
             
             let subbuffer = {
                 let transform = &model.read().unwrap().transform;
-                let uniform_data = color_vert::MatrixBuffer {
+                let normal_matrix = transform.inverse().transpose();
+                let uniform_data = gbuffer_vert::MatrixBuffer {
                     model: transform.to_cols_array_2d(),
                     view: self.view_matrix.to_cols_array_2d(),
-                    projection: self.projection_matrix.to_cols_array_2d()
+                    projection: self.projection_matrix.to_cols_array_2d(),
+                    normal: normal_matrix.to_cols_array_2d()
                 };
 
                 let subbuffer = model.read().unwrap().matrix_buffer.as_ref().unwrap().allocate_sized().unwrap();
@@ -267,8 +307,32 @@ impl RenderSystem {
         image_index: usize
     ) -> Arc<CommandBuffer> {
 
+        // TODO: Add g-buffer images
+        let normal_gbuffer = vulkan_context.framebuffer.read().unwrap()
+            .normal_gbuffer.clone().unwrap();
+        let position_gbuffer = vulkan_context.framebuffer.read().unwrap()
+            .position_gbuffer.clone().unwrap();
+        let color_gbuffer = vulkan_context.framebuffer.read().unwrap()
+            .color_gbuffer.clone().unwrap();
+
+        let deferred_mix_layout = &self.deferred_mix_pipeline.layout().set_layouts()[0];
+        let deferred_mix_set = DescriptorSet::new(
+            vulkan_context.descriptor_set_allocator.clone(),
+            deferred_mix_layout.clone(),
+            [
+                WriteDescriptorSet::image_view(0, normal_gbuffer.clone()),
+                WriteDescriptorSet::image_view(1, position_gbuffer.clone()),
+                WriteDescriptorSet::image_view(2, color_gbuffer.clone())
+                // TODO: Add the rest of input g-buffers
+            ],
+            []
+        ).unwrap();
+
         let clear_values = vec![
-            Some([0.0, 0.0, 0.0, 1.0].into()),
+            Some([0.0, 0.0, 0.0, 0.0].into()),
+            Some([0.0, 0.0, 0.0, 0.0].into()),
+            Some([0.0, 0.0, 0.0, 0.0].into()),
+            Some([0.0, 0.0, 0.0, 0.0].into()),
             Some(1.0.into())
         ];
 
@@ -300,6 +364,31 @@ impl RenderSystem {
         // First render pass: render scene g-buffers
         self.render_scene_elements(&scene, &mut cmd_buffer_builder);
 
+        // Second render pass: mix g-buffers
+        let deferred_pipeline = self.deferred_mix_pipeline.clone();
+        cmd_buffer_builder
+            .next_subpass(
+                Default::default(), 
+                SubpassBeginInfo {
+                    contents: SubpassContents::Inline,
+                    ..Default::default()
+                }
+            ).unwrap()
+            .bind_pipeline_graphics(self.deferred_mix_pipeline.clone()).unwrap()
+            .bind_descriptor_sets(
+                PipelineBindPoint::Graphics,
+                deferred_pipeline.layout().clone(),
+                0,
+                deferred_mix_set
+            ).unwrap();
+
+        // Render quad to mix g-buffers
+        unsafe {
+            // The quad vertices are statically defined in the vertex shader
+            cmd_buffer_builder
+                .draw(6, 1, 0, 0)
+                .unwrap();
+        }
 
         cmd_buffer_builder.end_render_pass(Default::default())
             .unwrap();

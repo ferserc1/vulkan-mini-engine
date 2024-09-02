@@ -10,12 +10,13 @@ pub struct FramebufferData {
     pub swapchain: Arc<Swapchain>,
     pub images: Arc<RwLock<Vec<Arc<Image>>>>,
     pub render_pass: Arc<RenderPass>,
-    pub framebuffers: Option<Vec<Arc<Framebuffer>>>
+    pub framebuffers: Option<Vec<Arc<Framebuffer>>>,
 
     // TODO: Add the rest of the elements here, as they are needed
+    pub normal_gbuffer: Option<Arc<ImageView>>,
+    pub position_gbuffer: Option<Arc<ImageView>>,
+    pub color_gbuffer: Option<Arc<ImageView>>
     // depth_image
-    // color_gbuffer
-    // normal_gbuffer
     // ...
 }
 
@@ -66,7 +67,10 @@ impl FramebufferData {
             swapchain,
             images: Arc::new(RwLock::new(images)),
             render_pass,
-            framebuffers: None
+            framebuffers: None,
+            normal_gbuffer: None,
+            position_gbuffer: None,
+            color_gbuffer: None
         }
     }
 
@@ -102,6 +106,64 @@ impl FramebufferData {
         let extent = images[0].extent();
         viewport.extent = [extent[0] as f32, extent[1] as f32];
 
+        // Normal buffer image
+        let normal_buffer_image = Image::new(
+            allocator.clone(),
+            ImageCreateInfo {
+                image_type: ImageType::Dim2d,
+                format: Format::R16G16B16A16_SFLOAT,
+                extent,
+                usage: ImageUsage::COLOR_ATTACHMENT |
+                       ImageUsage::INPUT_ATTACHMENT |
+                       ImageUsage::TRANSIENT_ATTACHMENT,
+                ..Default::default()
+            },
+            AllocationCreateInfo::default()
+        ).expect("Failed to create normal g-buffer image");
+
+        // Normal buffer image view
+        let normal_buffer = ImageView::new_default(normal_buffer_image)
+            .expect("Failed to create normal g-buffer image view");
+
+        // Position buffer image
+        let position_buffer_image = Image::new(
+            allocator.clone(),
+            ImageCreateInfo {
+                image_type: ImageType::Dim2d,
+                format: Format::R32G32B32A32_SFLOAT,
+                extent,
+                usage: ImageUsage::COLOR_ATTACHMENT |
+                       ImageUsage::INPUT_ATTACHMENT |
+                       ImageUsage::TRANSIENT_ATTACHMENT,
+                ..Default::default()
+            },
+            AllocationCreateInfo::default()
+        ).expect("Failed to create normal g-buffer image");
+
+        // Position buffer image view
+        let position_buffer = ImageView::new_default(position_buffer_image)
+            .expect("Failed to create normal g-buffer image view");
+
+        // Color buffer image
+        let color_buffer_image = Image::new(
+            allocator.clone(),
+            ImageCreateInfo {
+                image_type: ImageType::Dim2d,
+                format: Format::A2B10G10R10_UNORM_PACK32,
+                extent,
+                usage: ImageUsage::COLOR_ATTACHMENT |
+                       ImageUsage::INPUT_ATTACHMENT |
+                       ImageUsage::TRANSIENT_ATTACHMENT,
+                ..Default::default()
+            },
+            AllocationCreateInfo::default()
+        ).expect("Failed to create normal g-buffer image");
+
+        // Color buffer image view
+        let color_buffer = ImageView::new_default(color_buffer_image)
+            .expect("Failed to create normal g-buffer image view");
+
+        // Depth buffer image
         let depth_buffer_image = Image::new(
             allocator.clone(),
             ImageCreateInfo { 
@@ -115,6 +177,7 @@ impl FramebufferData {
             AllocationCreateInfo::default()
         ).expect("Could not create depth buffer image");
 
+        // Depth buffer image view
         let depth_buffer = ImageView::new_default(depth_buffer_image)
             .expect("Could not create depth buffer image view");
 
@@ -127,6 +190,9 @@ impl FramebufferData {
                     FramebufferCreateInfo {
                         attachments: vec![
                             view,
+                            normal_buffer.clone(),
+                            position_buffer.clone(),
+                            color_buffer.clone(),
                             depth_buffer.clone()
                         ],
                         ..Default::default()
@@ -136,6 +202,9 @@ impl FramebufferData {
             .collect::<Vec<_>>();
 
         self.framebuffers = Some(framebuffers);
+        self.normal_gbuffer = Some(normal_buffer);
+        self.position_gbuffer = Some(position_buffer);
+        self.color_gbuffer = Some(color_buffer);
         // TODO: Update the rest of the image resources ase they are added
     }
 
