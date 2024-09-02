@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use glam::vec3;
 use vulkan::model::{ Model, VertexData };
 
@@ -11,59 +13,89 @@ fn main() {
         768
     );
 
-    let model = Model::new(
-        vec![
-            // front face
-            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 0
-            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 1
-            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 2
-            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 3
+    let vertices = Arc::new(vec![
+        // front face
+        VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 0
+        VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 1
+        VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 2
+        VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 3
 
-            // back face
-            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 4
-            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 5
-            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 6
-            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 7
+        // back face
+        VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 4
+        VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 5
+        VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 6
+        VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 7
 
-            // top face
-            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 8
-            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 9
-            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 10
-            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 11
+        // top face
+        VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 8
+        VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 9
+        VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 10
+        VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 11
 
-            // bottom face
-            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 12
-            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 13
-            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 14
-            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 15
-
-
-            // left face
-            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 16
-            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 17
-            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 18
-            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 19
+        // bottom face
+        VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 12
+        VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 13
+        VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 14
+        VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 15
 
 
-            // right face
-            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 20
-            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 21
-            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 22
-            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }  // 23
-        ],
-        vec![
-            0, 1, 2, 2, 3, 0,       // Front face
-            4, 5, 6, 6, 7, 4,       // Back face
-            8, 9, 10, 10, 11, 8,    // Top face
-            12, 13, 14, 14, 15, 12, // Bottom face
-            16, 17, 18, 18, 19, 16, // Left face
-            20, 21, 22, 22, 23, 20  // Right face
-        ]
+        // left face
+        VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 16
+        VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 17
+        VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 18
+        VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 19
+
+
+        // right face
+        VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 20
+        VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 21
+        VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 22
+        VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }  // 23
+    ]);
+
+    let indices = Arc::new(vec![
+        0, 1, 2, 2, 3, 0,       // Front face
+        4, 5, 6, 6, 7, 4,       // Back face
+        8, 9, 10, 10, 11, 8,    // Top face
+        12, 13, 14, 14, 15, 12, // Bottom face
+        16, 17, 18, 18, 19, 16, // Left face
+        20, 21, 22, 22, 23, 20  // Right face
+    ]);
+
+    let mut model = Model::new(
+        vertices.clone(),
+        indices.clone()
     );
+    model.on_update(Box::new(|delta, _transform| {
+        static mut ROT: f32 = 0.0;
+        unsafe {
+            ROT += delta * 1.0;
+            glam::Mat4::from_translation(vec3(-3.0, 0.0, 0.0)) 
+                * glam::Mat4::from_rotation_x(ROT)
+                * glam::Mat4::from_rotation_y(ROT)
+                * glam::Mat4::from_rotation_z(ROT)
+        }
+    }));
+    app.add_model(model);
+
+    let mut model = Model::new(
+        vertices.clone(),
+        indices.clone()
+    );
+    model.on_update(Box::new(|delta, _transform| {
+        static mut ROT: f32 = 0.0;
+        unsafe {
+            ROT += delta * -1.0;
+            glam::Mat4::from_translation(vec3(3.0, 0.0, 0.0))
+                * glam::Mat4::from_rotation_x(ROT)
+                * glam::Mat4::from_rotation_y(ROT)
+                * glam::Mat4::from_rotation_z(ROT)
+        }
+    }));
     app.add_model(model);
 
     {
-        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 5.0));
+        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 7.0));
     }
 
     app.build();

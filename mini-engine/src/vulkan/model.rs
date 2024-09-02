@@ -29,20 +29,27 @@ pub struct Model {
 
     pub transform: Mat4,
 
-    pub descriptor_set: Option<Arc<DescriptorSet>>
+    pub descriptor_set: Option<Arc<DescriptorSet>>,
+
+    on_update_callback: Option<Box<dyn Fn(f32, Mat4) -> Mat4>>
 }
 
 impl Model {
-    pub fn new(vertices: Vec<VertexData>, indices: Vec<u32>) -> Self {
+    pub fn new(vertices: Arc<Vec<VertexData>>, indices: Arc<Vec<u32>>) -> Self {
         Self {
-            vertices,
-            indices,
+            vertices: vertices.iter().cloned().collect(),
+            indices: indices.iter().cloned().collect(),
             vertex_buffer: None,
             index_buffer: None,
             matrix_buffer: None,
             transform: Mat4::IDENTITY,
-            descriptor_set: None
+            descriptor_set: None,
+            on_update_callback: None
         }
+    }
+
+    pub fn on_update(&mut self, callback: Box<dyn Fn(f32, Mat4) -> Mat4>) {
+        self.on_update_callback = Some(callback);
     }
 
     pub fn build(&mut self, vulkan_context: Arc<RwLock<Context>>) -> Result<&Self, Box<dyn Error>>{
@@ -97,13 +104,10 @@ impl Model {
         self.vertex_buffer.is_some()
     }
 
-    pub fn update(&mut self) {
-        //println!("Updating model");
-        self.transform = self.transform *
-            Mat4::from_rotation_y(0.004) *
-            Mat4::from_rotation_x(0.004) *
-            Mat4::from_rotation_z(0.004);
-
+    pub fn update(&mut self, delta: f32) {
+        if let Some(callback) = self.on_update_callback.as_ref() {
+            self.transform = callback(delta, self.transform);
+        }
     }
 
     pub fn draw(&self, cmd_buffer: &mut RecordingCommandBuffer, pipeline: Arc<GraphicsPipeline>) {

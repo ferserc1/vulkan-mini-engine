@@ -1,8 +1,8 @@
 use core::f32;
-use std::{error::Error, sync::{Arc, RwLock}, vec};
+use std::{borrow::Borrow, error::Error, sync::{Arc, RwLock}, vec};
 
 use glam::Mat4;
-use vulkano::{command_buffer::{CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, instance::InstanceExtensions, swapchain::{self, Surface, SwapchainPresentInfo}, sync::GpuFuture, Validated, VulkanError};
+use vulkano::{command_buffer::{CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo, SubpassBeginInfo, SubpassContents}, instance::InstanceExtensions, swapchain::{self, Surface, SwapchainPresentInfo}, sync::GpuFuture, Validated, VulkanError};
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
 
 use crate::vulkan::{model::Model, render_system::RenderSystem, scene::Camera, Context};
@@ -124,29 +124,24 @@ impl App {
                     event: WindowEvent::RedrawRequested,
                     ..
                 } => {
+                    // Recreate swapchain if necessary
                     if recreate_swapchain {
                         let image_extent: [u32; 2] = window.inner_size().into();
                         vulkan_context.write().unwrap().recreate_swapchain(image_extent);
                     }
 
-                    if let Some(render_system) = self.render_system.as_ref() {
-                        let mut render_system = render_system.write().unwrap();
-                        let aspect_ratio = window.inner_size().width as f32 / window.inner_size().height as f32;
-                        let camera = self.camera.read().unwrap();
-                        render_system.projection_matrix = Mat4::perspective_rh(
-                            camera.fov * f32::consts::PI / 180.0,
-                            aspect_ratio,
-                            camera.near,
-                            camera.far);
-                        render_system.view_matrix = camera.transform.inverse();
+                    // Update scene elements
+                    {
+                        render_system.write().unwrap().update(
+                            window.inner_size().into(),
+                            &self.camera.read().unwrap(),
+                            &mut self.scene,
+                             descriptor_set_allocator.clone()
+                        );
                     }
 
-                    render_system.read().unwrap().update(&mut self.scene, descriptor_set_allocator.clone());
-
-                    let framebuffer = &vulkan_context.read().unwrap().framebuffer;
+                    // Get next image from swapchain
                     let swapchain = vulkan_context.read().unwrap().framebuffer.read().unwrap().swapchain.clone();
-                    
-
                     let (image_index, suboptimal, acquire_future) = {
                         match swapchain::acquire_next_image(swapchain.clone(), None).map_err(Validated::unwrap) {
                             Ok(r) => r,
@@ -158,50 +153,23 @@ impl App {
                         }
                     };
 
+                    // If the swapchain is suboptimal, abort rendering and recreate it in the next frame
                     if suboptimal {
                         recreate_swapchain = true;
                         return;
                     }
-
-                    let clear_values = vec![
-                        Some([0.0, 0.0, 0.0, 1.0].into()),
-                        Some(1.0.into())
-                    ];
-
+        
+                    // Create command buffer
                     let device = vulkan_context.read().unwrap().device_data.device.clone();
                     let queue = vulkan_context.read().unwrap().device_data.queue.clone();
-                    let mut cmd_buffer_builder = RecordingCommandBuffer::new(
-                        command_buffer_allocator.clone(),
-                        queue.queue_family_index(),
-                        CommandBufferLevel::Primary,
-                        CommandBufferBeginInfo {
-                            usage: CommandBufferUsage::OneTimeSubmit,
-                            ..Default::default()
-                        }
-                    ).expect("Failed to create command buffer builder");
+                    let command_buffer = render_system.read().unwrap()
+                        .render(
+                            &self.scene,
+                            vulkan_context.read().unwrap(),
+                            image_index as usize
+                        );
 
-                    let fb = framebuffer.read().unwrap().get_framebuffer(image_index as usize);
-                    let viewport = vulkan_context.read().unwrap().viewport.read().unwrap().clone();
-                    cmd_buffer_builder.begin_render_pass(
-                        RenderPassBeginInfo {
-                            clear_values,
-                            ..RenderPassBeginInfo::framebuffer(
-                                fb
-                            )
-                        },
-                        Default::default()
-                    )
-                    .unwrap()
-                    .set_viewport(0, [viewport.clone()].into_iter().collect()).unwrap();
-
-                    render_system.read().unwrap()
-                        .render(&self.scene, &mut cmd_buffer_builder);
-
-                    cmd_buffer_builder.end_render_pass(Default::default())
-                        .unwrap();
-
-                    let command_buffer = cmd_buffer_builder.end().expect("Failed to build command buffer");
-
+                    // Submit queue and present image
                     let future = previous_frame_end
                         .take()
                         .unwrap()
@@ -214,6 +182,7 @@ impl App {
                         )
                         .then_signal_fence_and_flush();
 
+                    // Check errors. If it's necessary to recreate the swapchain, do it
                     match future.map_err(Validated::unwrap) {
                         Ok(future) => {
                             previous_frame_end = Some(Box::new(future) as Box<_>);

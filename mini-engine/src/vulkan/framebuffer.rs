@@ -3,6 +3,8 @@ use std::sync::{Arc, RwLock};
 use vulkano::{device::Device, format::Format, image::{ view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage }, memory::allocator::{AllocationCreateInfo, StandardMemoryAllocator}, pipeline::graphics::viewport::Viewport, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass}, swapchain::{self, Surface, Swapchain, SwapchainAcquireFuture, SwapchainCreateInfo}, Validated, VulkanError};
 use winit::window::Window;
 
+use super::render_system::RenderSystem;
+
 
 pub struct FramebufferData {
     pub swapchain: Arc<Swapchain>,
@@ -55,27 +57,10 @@ impl FramebufferData {
             }
         ).unwrap();
 
-        let render_pass = vulkano::single_pass_renderpass!(
+        let render_pass = RenderSystem::get_render_pass(
             device.clone(),
-            attachments: {
-                color: {
-                    format: swapchain.image_format(),
-                    samples: 1,
-                    load_op: Clear,
-                    store_op: Store
-                },
-                depth: {
-                    format: Format::D16_UNORM,
-                    samples: 1,
-                    load_op: Clear,
-                    store_op: DontCare
-                }
-            },
-            pass: {
-                color: [color],
-                depth_stencil: {depth}
-            }
-        ).expect("Failed to create render pass");
+            swapchain.clone()
+        );
 
         Self {
             swapchain,
