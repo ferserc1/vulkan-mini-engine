@@ -13,7 +13,7 @@ pub struct VertexData {
     pub position: [f32; 3],
 
     #[format(R32G32B32_SFLOAT)]
-    pub color: [f32; 3]
+    pub normal: [f32; 3]
 }
 
 pub struct Model {
@@ -100,9 +100,9 @@ impl Model {
     pub fn update(&mut self) {
         //println!("Updating model");
         self.transform = self.transform *
-            Mat4::from_rotation_y(0.01) *
-            Mat4::from_rotation_x(0.02) *
-            Mat4::from_rotation_z(0.03);
+            Mat4::from_rotation_y(0.004) *
+            Mat4::from_rotation_x(0.004) *
+            Mat4::from_rotation_z(0.004);
 
     }
 

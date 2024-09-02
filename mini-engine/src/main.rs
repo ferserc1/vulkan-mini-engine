@@ -1,5 +1,5 @@
 use glam::vec3;
-use vulkan::model::Model;
+use vulkan::model::{ Model, VertexData };
 
 pub mod app;
 pub mod vulkan;
@@ -13,31 +13,57 @@ fn main() {
 
     let model = Model::new(
         vec![
-            // Front face vertices
-            vulkan::model::VertexData { position: [ 0.5, -0.5,  0.5], color: [1.0, 0.0, 0.0] },
-            vulkan::model::VertexData { position: [-0.5, -0.5,  0.5], color: [0.0, 1.0, 0.0] },
-            vulkan::model::VertexData { position: [-0.5,  0.5,  0.5], color: [0.0, 0.0, 1.0] },
-            vulkan::model::VertexData { position: [ 0.5,  0.5,  0.5], color: [0.0, 0.0, 1.0] },
+            // front face
+            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 0
+            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 1
+            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 2
+            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, 0.0000,  1.0000] }, // 3
 
-            // Back face vertices
-            vulkan::model::VertexData { position: [ 0.5, -0.5, -0.5], color: [1.0, 0.0, 0.0] },
-            vulkan::model::VertexData { position: [-0.5, -0.5, -0.5], color: [0.0, 1.0, 0.0] },
-            vulkan::model::VertexData { position: [-0.5,  0.5, -0.5], color: [0.0, 0.0, 1.0] },
-            vulkan::model::VertexData { position: [ 0.5,  0.5, -0.5], color: [0.0, 0.0, 1.0] },
+            // back face
+            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 4
+            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 5
+            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 6
+            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, 0.0000, -1.0000] }, // 7
+
+            // top face
+            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 8
+            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 9
+            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 10
+            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [0.0000, -1.0000, 0.0000] }, // 11
+
+            // bottom face
+            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 12
+            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 13
+            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 14
+            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [0.0000, 1.0000, 0.0000] }, // 15
+
+
+            // left face
+            VertexData { position: [-1.000000, -1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 16
+            VertexData { position: [-1.000000,  1.000000, -1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 17
+            VertexData { position: [-1.000000,  1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 18
+            VertexData { position: [-1.000000, -1.000000,  1.000000], normal: [-1.0000, 0.0000, 0.0000] }, // 19
+
+
+            // right face
+            VertexData { position: [ 1.000000, -1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 20
+            VertexData { position: [ 1.000000,  1.000000,  1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 21
+            VertexData { position: [ 1.000000,  1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }, // 22
+            VertexData { position: [ 1.000000, -1.000000, -1.000000], normal: [1.0000, 0.0000, 0.0000] }  // 23
         ],
         vec![
-            0, 1, 2, 2, 3, 0, // Front face
-            5, 4, 7, 7, 6, 5, // Back face
-            4, 0, 3, 3, 7, 4, // Right face
-            1, 5, 6, 6, 2, 1, // Left face
-            4, 5, 1, 1, 0, 4, // Top face
-            6, 7, 3, 3, 2, 6  // Bottom face
+            0, 1, 2, 2, 3, 0,       // Front face
+            4, 5, 6, 6, 7, 4,       // Back face
+            8, 9, 10, 10, 11, 8,    // Top face
+            12, 13, 14, 14, 15, 12, // Bottom face
+            16, 17, 18, 18, 19, 16, // Left face
+            20, 21, 22, 22, 23, 20  // Right face
         ]
     );
     app.add_model(model);
 
     {
-        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 3.0));
+        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 5.0));
     }
 
     app.build();
