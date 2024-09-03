@@ -9,9 +9,10 @@ layout(set = 0, binding = 0) uniform MatrixBuffer {
     mat4 model;
     mat4 view;
     mat4 projection;
+    mat4 normal;
 } matrices;
 
 void main() {
     gl_Position = matrices.projection * matrices.view * matrices.model * vec4(position, 1.0);
-    fragColor = vec3(matrices.model * vec4(normal, 1.0));
+    fragColor = mat3(matrices.normal) * normal;
 }

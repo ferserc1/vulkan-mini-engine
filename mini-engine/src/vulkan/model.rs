@@ -1,9 +1,8 @@
 use std::{error::Error, sync::{Arc, RwLock}};
 
 use glam::Mat4;
-use vulkano::{buffer::{allocator::{SubbufferAllocator, SubbufferAllocatorCreateInfo}, Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer}, command_buffer::RecordingCommandBuffer, descriptor_set::DescriptorSet, memory::allocator::{AllocationCreateInfo, MemoryTypeFilter}, pipeline::{graphics::vertex_input, GraphicsPipeline, Pipeline, PipelineBindPoint}};
+use vulkano::{buffer::{allocator::{SubbufferAllocator, SubbufferAllocatorCreateInfo}, Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer}, command_buffer::RecordingCommandBuffer, descriptor_set::DescriptorSet, memory::allocator::{AllocationCreateInfo, MemoryTypeFilter, StandardMemoryAllocator}, pipeline::{graphics::vertex_input, GraphicsPipeline, Pipeline, PipelineBindPoint}};
 
-use super::Context;
 
 
 #[derive(BufferContents, vertex_input::Vertex, Copy, Clone)]
@@ -52,9 +51,7 @@ impl Model {
         self.on_update_callback = Some(callback);
     }
 
-    pub fn build(&mut self, vulkan_context: Arc<RwLock<Context>>) -> Result<&Self, Box<dyn Error>>{
-        let context = vulkan_context.read().unwrap();
-        let allocator = context.memory_allocator.clone();
+    pub fn build(&mut self, allocator: Arc<StandardMemoryAllocator>) -> Result<&Self, Box<dyn Error>>{
         let vertex_buffer = Buffer::from_iter(
             allocator.clone(),
             BufferCreateInfo {
