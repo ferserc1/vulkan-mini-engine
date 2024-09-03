@@ -44,7 +44,11 @@ You will also need to install the following for your platform (Windows, macOS or
 
 The environment variable system does not work in GUI applications on macOS. You can run the application with `cargo run` just like on Windows or Linux, but to use the Visual Studio Code debugger, the `libvulkan.dylib` library will not be found when launching the application. To make it work, open the `mini-engine` directory as a workspace in VS Code, open a terminal and create a symbolic link to the Vulkan library in that same directory.
 
-In addition to this, for the `vulkano_shaders::shader!` macro to work from the debugger, and to be recognised by the linter, a symbolic link of the `libshaderc_sared.1.dylib` library must be created in the correct location, which will be the directory where the compiled Rust utilities are placed. You can find out the location from the error message in the VS Code interface. The error indicates that the library could not be opened, and if you expand the whole message, it will show the path where you tried to find the library. It will probably be the following (or a very similar one):
+In addition to this, for the `vulkano_shaders::shader!` macro to work from the debugger, and to be recognised by the linter, a symbolic link of the `libshaderc_sared.1.dylib` library must be created in the correct location, which will be the directory where the compiled Rust utilities are placed. You can find out the location from the error message in the VS Code interface.
+
+![vulkano_shaders_error_macos](images/vulkano_shader_macos_error.jpg)
+
+The error indicates that the library could not be opened, and if you expand the whole message, it will show the path where you tried to find the library. It will probably be the following (or a very similar one):
 
 ```sh
 ~/.rustup/toolchains/stable-aarch64-apple-darwin/lib/libshaderc_shared.1.dylib
