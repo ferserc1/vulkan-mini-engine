@@ -4,14 +4,14 @@ use std::{error::Error, sync::{Arc, RwLock}, vec};
 use glam::Mat4;
 use vulkano::{
     command_buffer::{
-        CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo
+        CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo, SubpassBeginInfo, SubpassContents
     }, descriptor_set::{
         DescriptorSet, WriteDescriptorSet
     }, format::Format, image::{
         view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage
     }, memory::allocator::{
         AllocationCreateInfo, StandardMemoryAllocator
-    }, pipeline::{graphics::viewport::Viewport, Pipeline}, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass }, swapchain::{self, SwapchainCreateInfo, SwapchainPresentInfo}, sync::{self, GpuFuture}, Validated, VulkanError };
+    }, pipeline::{graphics::viewport::Viewport, Pipeline, PipelineBindPoint}, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass }, swapchain::{self, SwapchainCreateInfo, SwapchainPresentInfo}, sync::{self, GpuFuture}, Validated, VulkanError };
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
 
 use crate::vulkan::{model::Model, scene::Camera};
@@ -96,10 +96,11 @@ impl App {
         let memory_allocator = vulkan_resources.memory_allocator.clone();
         let device = vulkan_resources.device.clone();
         let render_pass = vulkan_resources.render_pass.clone();
-        let color_pipeline = vulkan_resources.color_pipeline.clone();
         let descriptor_set_allocator = vulkan_resources.descriptor_set_allocator.clone();
         let command_buffer_allocator = vulkan_resources.command_buffer_allocator.clone();
         let queue = vulkan_resources.queue.clone();
+        let gbuffer_pipeline = vulkan_resources.gbuffer_pipeline.clone();
+        let simple_mix_pipeline = vulkan_resources.simple_mix_pipeline.clone();
 
         // Initialize scene elements
         self.scene
@@ -121,12 +122,12 @@ impl App {
         };
     
         let swapchain_images = vulkan_resources.swapchain_images.clone();
-        let mut framebuffer = resize_framebuffer(
+        let (mut framebuffer, mut color_image, mut normal_image, mut position_image) = resize_framebuffer(
             memory_allocator.clone(),
             &swapchain_images, 
             render_pass.clone(), 
             &mut viewport
-        ).0;
+        );
     
 
         event_loop.run(|event, target_window| {
@@ -177,12 +178,12 @@ impl App {
                         vulkan_resources.swapchain = new_swapchain;
                         vulkan_resources.swapchain_images = new_images.clone();
 
-                        framebuffer = resize_framebuffer(
+                        (framebuffer, color_image, normal_image, position_image) = resize_framebuffer(
                             memory_allocator.clone(), 
                             &new_images.clone(), 
                             render_pass.clone(), 
                             &mut viewport
-                        ).0;
+                        );
                         recreate_swapchain = false;
                     }
 
@@ -202,14 +203,20 @@ impl App {
                         recreate_swapchain = true;
                     }
     
-                    let layout = &color_pipeline.layout().set_layouts()[0];
+                    let layout = &gbuffer_pipeline.layout().set_layouts()[0];
                     let view_matrix = self.camera.read().unwrap().transform.inverse();
-                    let projection = Mat4::perspective_rh(
+                    let mut projection = Mat4::perspective_rh(
                         self.camera.read().unwrap().fov, 
                         viewport.extent[0] as f32 / viewport.extent[1] as f32,
                         self.camera.read().unwrap().near,
                         self.camera.read().unwrap().far
                     );
+                    // Invert the Y axis to match the Vulkan coordinate system.
+                    // Note that for this reason, it is necessary to invert the wound order of the 
+                    // vertices in the shaders, or to set the cull mode to front face. See the
+                    // gbuffer pipeline creation.
+                    projection.col_mut(1).y *= -1.0;
+
                     self.scene.iter().for_each(|model| {
                         {
                             let mut model = model.write().unwrap();
@@ -241,8 +248,23 @@ impl App {
                         }
                     });
 
+                    let simple_mix_layout = &simple_mix_pipeline.layout().set_layouts()[0];
+                    let simple_mix_set = DescriptorSet::new(
+                        descriptor_set_allocator.clone(),
+                        simple_mix_layout.clone(),
+                        [
+                            WriteDescriptorSet::image_view(0, color_image.clone()),
+                            WriteDescriptorSet::image_view(1, normal_image.clone()),
+                            WriteDescriptorSet::image_view(2, position_image.clone())
+                        ],
+                        []
+                    ).unwrap();
+
                     // Create command buffer
                     let clear_values = vec![
+                        Some([0.0, 0.0, 0.0, 1.0].into()),
+                        Some([0.0, 0.0, 0.0, 1.0].into()),
+                        Some([0.0, 0.0, 0.0, 1.0].into()),
                         Some([0.0, 0.0, 0.0, 1.0].into()),
                         Some(1.0.into())
                     ];
@@ -269,17 +291,40 @@ impl App {
                         )
                         .unwrap()
 
-                        .set_viewport(0, [viewport.clone()].into_iter().collect()).unwrap()
+                        .set_viewport(0, [viewport.clone()].into_iter().collect()).unwrap();
 
-                        // Start render pass
-                        .bind_pipeline_graphics(color_pipeline.clone()).unwrap();
+                    // First render pass
+                    cmd_buffer_builder
+                        .bind_pipeline_graphics(gbuffer_pipeline.clone()).unwrap();
 
                     self.scene.iter().for_each(|model| {
                         let model = model.read().unwrap();
-                        model.draw(&mut cmd_buffer_builder, color_pipeline.clone());
+                        model.draw(&mut cmd_buffer_builder, gbuffer_pipeline.clone());
                     });
 
-                    // TODO: Other render passes
+                    // Second render pass
+                    cmd_buffer_builder
+                        .next_subpass(
+                            Default::default(), 
+                            SubpassBeginInfo {
+                                contents: SubpassContents::Inline,
+                                ..Default::default()
+                            }
+                        ).unwrap()
+                        .bind_pipeline_graphics(simple_mix_pipeline.clone()).unwrap()
+                        .bind_descriptor_sets(
+                            PipelineBindPoint::Graphics,
+                            simple_mix_pipeline.layout().clone(),
+                            0,
+                            simple_mix_set.clone()
+                        ).unwrap();
+                    
+                    unsafe {
+                        // Render a quad. The vertices are defined statically inside the vertex shader source code
+                        cmd_buffer_builder
+                            .draw(6, 1, 0, 0)
+                            .unwrap();
+                    }
 
                     cmd_buffer_builder
                         .end_render_pass(Default::default())
@@ -371,63 +416,63 @@ fn resize_framebuffer(
     viewport: &mut Viewport
 ) -> (
     Vec<Arc<Framebuffer>>,
-    // Arc<ImageView>,
-    // Arc<ImageView>,
-    // Arc<ImageView>
+    Arc<ImageView>,
+    Arc<ImageView>,
+    Arc<ImageView>
  ) {
     let dimensions = images[0].extent();
     viewport.extent = [dimensions[0] as f32, dimensions[1] as f32];
 
-    // let color_buffer_image = Image::new(
-    //     allocator.clone(),
-    //     ImageCreateInfo {
-    //         image_type: ImageType::Dim2d,
-    //         format: Format::A2B10G10R10_UNORM_PACK32,
-    //         extent: images[0].extent(),
-    //         usage: ImageUsage::COLOR_ATTACHMENT |
-    //                ImageUsage::INPUT_ATTACHMENT |
-    //                ImageUsage::TRANSIENT_ATTACHMENT,
-    //         ..Default::default()
-    //     },
-    //     AllocationCreateInfo::default()
-    // ).expect("Could not create color g-buffer");
+    let color_buffer_image = Image::new(
+        allocator.clone(),
+        ImageCreateInfo {
+            image_type: ImageType::Dim2d,
+            format: Format::A2B10G10R10_UNORM_PACK32,
+            extent: images[0].extent(),
+            usage: ImageUsage::COLOR_ATTACHMENT |
+                   ImageUsage::INPUT_ATTACHMENT |
+                   ImageUsage::TRANSIENT_ATTACHMENT,
+            ..Default::default()
+        },
+        AllocationCreateInfo::default()
+    ).expect("Could not create color g-buffer");
 
-    // let color_buffer = ImageView::new_default(color_buffer_image)
-    //     .expect("Could not create color buffer image view");
+    let color_buffer = ImageView::new_default(color_buffer_image)
+        .expect("Could not create color buffer image view");
 
-    // let normal_buffer_image = Image::new(
-    //     allocator.clone(),
-    //     ImageCreateInfo {
-    //         image_type: ImageType::Dim2d,
-    //         format: Format::R16G16B16A16_SFLOAT,
-    //         extent: images[0].extent(),
-    //         usage: ImageUsage::COLOR_ATTACHMENT |
-    //                ImageUsage::INPUT_ATTACHMENT |
-    //                ImageUsage::TRANSIENT_ATTACHMENT,
-    //         ..Default::default()
-    //     },
-    //     AllocationCreateInfo::default()
-    // ).expect("Could not create normal g-buffer");
+    let normal_buffer_image = Image::new(
+        allocator.clone(),
+        ImageCreateInfo {
+            image_type: ImageType::Dim2d,
+            format: Format::R32G32B32A32_SFLOAT,
+            extent: images[0].extent(),
+            usage: ImageUsage::COLOR_ATTACHMENT |
+                   ImageUsage::INPUT_ATTACHMENT |
+                   ImageUsage::TRANSIENT_ATTACHMENT,
+            ..Default::default()
+        },
+        AllocationCreateInfo::default()
+    ).expect("Could not create normal g-buffer");
 
-    // let normal_buffer = ImageView::new_default(normal_buffer_image)
-    //     .expect("Could not create normal buffer image view");
+    let normal_buffer = ImageView::new_default(normal_buffer_image)
+        .expect("Could not create normal buffer image view");
 
-    // let position_buffer_image = Image::new(
-    //     allocator.clone(),
-    //     ImageCreateInfo {
-    //         image_type: ImageType::Dim2d,
-    //         format: Format::R32G32B32A32_SFLOAT,
-    //         extent: images[0].extent(),
-    //         usage: ImageUsage::COLOR_ATTACHMENT |
-    //                ImageUsage::INPUT_ATTACHMENT |
-    //                ImageUsage::TRANSIENT_ATTACHMENT,
-    //         ..Default::default()
-    //     },
-    //     AllocationCreateInfo::default()
-    // ).expect("Failed to create position g-buffer");
+    let position_buffer_image = Image::new(
+        allocator.clone(),
+        ImageCreateInfo {
+            image_type: ImageType::Dim2d,
+            format: Format::R32G32B32A32_SFLOAT,
+            extent: images[0].extent(),
+            usage: ImageUsage::COLOR_ATTACHMENT |
+                   ImageUsage::INPUT_ATTACHMENT |
+                   ImageUsage::TRANSIENT_ATTACHMENT,
+            ..Default::default()
+        },
+        AllocationCreateInfo::default()
+    ).expect("Failed to create position g-buffer");
 
-    // let position_buffer = ImageView::new_default(position_buffer_image)
-    //     .expect("Could not create position buffer image view");
+    let position_buffer = ImageView::new_default(position_buffer_image)
+        .expect("Could not create position buffer image view");
 
     let depth_buffer_image = Image::new(
         allocator.clone(),
@@ -454,9 +499,9 @@ fn resize_framebuffer(
                 FramebufferCreateInfo {
                     attachments: vec![
                         view,
-                        //color_buffer.clone(),
-                        //normal_buffer.clone(),
-                        //position_buffer.clone(),
+                        color_buffer.clone(),
+                        normal_buffer.clone(),
+                        position_buffer.clone(),
                         depth_buffer.clone()
                     ],
                     ..Default::default()
@@ -466,10 +511,5 @@ fn resize_framebuffer(
         })
         .collect::<Vec<_>>();
 
-    (
-        framebuffers,
-        // color_buffer,
-        // normal_buffer,
-        // position_buffer
-    )
+    (framebuffers, color_buffer, normal_buffer, position_buffer)
 }

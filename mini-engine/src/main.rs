@@ -69,8 +69,8 @@ fn main() {
     model.on_update(Box::new(|delta, _transform| {
         static mut ROT: f32 = 0.0;
         unsafe {
-            ROT += delta * 1.0;
-            glam::Mat4::from_translation(vec3(-3.0, 0.0, 0.0)) 
+            ROT += delta * 0.2;
+            glam::Mat4::from_translation(vec3(-2.0, -0.5, 0.0)) 
                 * glam::Mat4::from_rotation_x(ROT)
                 * glam::Mat4::from_rotation_y(ROT)
                 * glam::Mat4::from_rotation_z(ROT)
@@ -85,8 +85,8 @@ fn main() {
     model.on_update(Box::new(|delta, _transform| {
         static mut ROT: f32 = 0.0;
         unsafe {
-            ROT += delta * -1.0;
-            glam::Mat4::from_translation(vec3(3.0, 0.0, 0.0))
+            ROT += delta * -0.2;
+            glam::Mat4::from_translation(vec3(3.0, 2.0, 0.0))
                 * glam::Mat4::from_rotation_x(ROT)
                 * glam::Mat4::from_rotation_y(ROT)
                 * glam::Mat4::from_rotation_z(ROT)
@@ -95,7 +95,9 @@ fn main() {
     app.add_model(model);
 
     {
-        app.camera.write().unwrap().transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 7.0));
+        let mut camera = app.camera.write().unwrap();
+        camera.transform = glam::Mat4::from_translation(vec3(0.0, 0.0, 7.0));
+        camera.fov = 45.0;
     }
 
     app.build();

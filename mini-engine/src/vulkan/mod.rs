@@ -18,9 +18,11 @@ pub struct VulkanResources {
     pub swapchain_images: Vec<Arc<Image>>,
     pub command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     pub render_pass: Arc<RenderPass>,
-    pub color_pipeline: Arc<GraphicsPipeline>,
     pub memory_allocator: Arc<StandardMemoryAllocator>,
-    pub descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>
+    pub descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>,
+
+    pub gbuffer_pipeline: Arc<GraphicsPipeline>,
+    pub simple_mix_pipeline: Arc<GraphicsPipeline>
 }
 
 impl VulkanResources {
@@ -123,80 +125,59 @@ impl VulkanResources {
 
         shaders::color::vs::load(device.clone()).unwrap();
         shaders::color::vs::load(device.clone()).unwrap();
-        
-        let render_pass = vulkano::single_pass_renderpass! {
+
+        let render_pass = vulkano::ordered_passes_renderpass!(
             device.clone(),
             attachments: {
-                color: {
+                final_color: {
                     format: swapchain.image_format(),
                     samples: 1,
                     load_op: Clear,
-                    store_op: Store
+                    store_op: Store,
+                },
+                color: {
+                    format: Format::A2B10G10R10_UNORM_PACK32,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare,
+                },
+                normal: {
+                    format: Format::R32G32B32A32_SFLOAT,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare,
+                },
+                position: {
+                    format: Format::R32G32B32A32_SFLOAT,
+                    samples: 1,
+                    load_op: Clear,
+                    store_op: DontCare,
                 },
                 depth: {
                     format: Format::D16_UNORM,
                     samples: 1,
                     load_op: Clear,
-                    store_op: DontCare
+                    store_op: DontCare,
                 }
             },
-            pass: {
-                color: [color],
-                depth_stencil: {depth}
-            }
-        }.expect("Couldn't create render pass");
-        // let render_pass = vulkano::ordered_passes_renderpass!(
-        //     device.clone(),
-        //     attachments: {
-        //         final_color: {
-        //             format: swapchain.image_format(),
-        //             samples: 1,
-        //             load_op: Clear,
-        //             store_op: Store,
-        //         },
-        //         color: {
-        //             format: Format::A2B10G10R10_UNORM_PACK32,
-        //             samples: 1,
-        //             load_op: Clear,
-        //             store_op: DontCare,
-        //         },
-        //         normal: {
-        //             format: Format::R16G16B16A16_SFLOAT,
-        //             samples: 1,
-        //             load_op: Clear,
-        //             store_op: DontCare,
-        //         },
-        //         position: {
-        //             format: Format::R32G32B32A32_SFLOAT,
-        //             samples: 1,
-        //             load_op: Clear,
-        //             store_op: DontCare,
-        //         },
-        //         depth: {
-        //             format: Format::D16_UNORM,
-        //             samples: 1,
-        //             load_op: Clear,
-        //             store_op: DontCare,
-        //         }
-        //     },
-        //     passes: [
-        //         {
-        //             color: [color, normal, position],
-        //             depth_stencil: {depth},
-        //             input: []
-        //         },
-        //         {
-        //             color: [final_color],
-        //             depth_stencil: {},
-        //             input: [color, normal, position]
-        //         }
-        //     ]
-        // ).expect("Couldn't create render pass");
+            passes: [
+                {
+                    color: [color, normal, position],
+                    depth_stencil: {depth},
+                    input: []
+                },
+                {
+                    color: [final_color],
+                    depth_stencil: {},
+                    input: [color, normal, position]
+                }
+            ]
+        ).expect("Couldn't create render pass");
 
-        let color_pipeline = {
-            let color_pass = Subpass::from(render_pass.clone(), 0).unwrap();
+        let gbuffer_pipeline = {
+            let subpass = Subpass::from(render_pass.clone(), 0).unwrap();
 
-            let (shader_stages, color_input_state) = shaders::color::get_shader(device.clone());
+            let (shader_stages, input_state) = shaders::gbuffers::get_shader(device.clone());
 
             let layout = PipelineLayout::new(
                 device.clone(),
@@ -210,20 +191,24 @@ impl VulkanResources {
                 None,
                 GraphicsPipelineCreateInfo {
                     stages: shader_stages.into_iter().collect(),
-                    vertex_input_state: Some(color_input_state),
+                    vertex_input_state: Some(input_state),
                     input_assembly_state: Some(InputAssemblyState::default()),
                     viewport_state: Some(ViewportState::default()),
                     rasterization_state: Some(RasterizationState {
-                        cull_mode: CullMode::Back,
+                        // We are inverting the Y axis in the projection matrix to flip the image (see the
+                        // command buffer creation for more information). Doing this means that
+                        // the winding order is also inverted. For this reason, we are culling the
+                        // front face instead of the back face.
+                        cull_mode: CullMode::Front,
                         ..Default::default()
                     }),
                     multisample_state: Some(MultisampleState::default()),
                     color_blend_state: Some(ColorBlendState::with_attachment_states(
-                        color_pass.num_color_attachments(), 
+                        subpass.num_color_attachments(), 
                         ColorBlendAttachmentState::default()
                     )),
                     dynamic_state: [DynamicState::Viewport].into_iter().collect(),
-                    subpass: Some(color_pass.into()),
+                    subpass: Some(subpass.into()),
                     depth_stencil_state: Some(DepthStencilState {
                         depth: Some(DepthState::simple()),
                         ..Default::default()
@@ -232,6 +217,43 @@ impl VulkanResources {
                 }
             ).expect("Failed to create color pipeline")
         };
+
+        let simple_mix_pipeline = {
+            let subpass = Subpass::from(render_pass.clone(), 1).unwrap();
+
+            let (shader_stages, input_state) = shaders::simple_mix::get_shader(device.clone());
+
+            let layout = PipelineLayout::new(
+                device.clone(),
+                PipelineDescriptorSetLayoutCreateInfo::from_stages(&shader_stages)
+                    .into_pipeline_layout_create_info(device.clone())
+                    .unwrap()
+            ).expect("Failed to create pipeline layout");
+
+            GraphicsPipeline::new(
+                device.clone(),
+                None,
+                GraphicsPipelineCreateInfo {
+                    stages: shader_stages.into_iter().collect(),
+                    vertex_input_state: Some(input_state),
+                    input_assembly_state: Some(InputAssemblyState::default()),
+                    viewport_state: Some(ViewportState::default()),
+                    rasterization_state: Some(RasterizationState {
+                        cull_mode: CullMode::Back,
+                        ..Default::default()
+                    }),
+                    multisample_state: Some(MultisampleState::default()),
+                    color_blend_state: Some(ColorBlendState::with_attachment_states(
+                        subpass.num_color_attachments(), 
+                        ColorBlendAttachmentState::default()
+                    )),
+                    dynamic_state: [DynamicState::Viewport].into_iter().collect(),
+                    subpass: Some(subpass.into()),
+                    ..GraphicsPipelineCreateInfo::layout(layout)
+                }
+            ).expect("Failed to create deferred mix pipeline")
+        };
+
         
         let memory_allocator = Arc::new(StandardMemoryAllocator::new_default(device.clone()));
 
@@ -251,9 +273,10 @@ impl VulkanResources {
             swapchain_images,
             command_buffer_allocator,
             render_pass,
-            color_pipeline,
             memory_allocator,
-            descriptor_set_allocator
+            descriptor_set_allocator,
+            gbuffer_pipeline,
+            simple_mix_pipeline
         }
     }
 }

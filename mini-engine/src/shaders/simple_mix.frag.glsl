@@ -20,7 +20,7 @@ void main() {
 
     vec3 ambientColor = vec3(0.2, 0.2, 0.2);
     vec3 directionalColor = vec3(0.4, 0.8, 0.1);
-    vec3 lightPosition = vec3(4, -10, 8);
+    vec3 lightPosition = vec3(5, 8, 5);
 
     vec3 lightDirection = normalize(lightPosition - position);
     float directionalIntensity = max(dot(normal, lightDirection), 0.0);
