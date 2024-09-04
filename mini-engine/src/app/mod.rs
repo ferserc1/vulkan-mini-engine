@@ -2,26 +2,23 @@ use core::f32;
 use std::{error::Error, sync::{Arc, RwLock}, vec};
 
 use glam::Mat4;
-use vulkano::{command_buffer::{allocator::StandardCommandBufferAllocator, CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo}, descriptor_set::{allocator::StandardDescriptorSetAllocator, DescriptorSet, WriteDescriptorSet}, device::{physical::{PhysicalDevice, PhysicalDeviceType}, Device, DeviceCreateInfo, DeviceExtensions, Queue, QueueCreateInfo, QueueFlags}, format::Format, image::{view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage}, instance::{Instance, InstanceCreateFlags, InstanceCreateInfo}, memory::allocator::{AllocationCreateInfo, StandardMemoryAllocator}, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::{Viewport, ViewportState}, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, Pipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass, Subpass}, swapchain::{self, Surface, Swapchain, SwapchainCreateInfo, SwapchainPresentInfo}, sync::{self, GpuFuture}, Validated, Version, VulkanError, VulkanLibrary};
+use vulkano::{
+    command_buffer::{
+        CommandBufferBeginInfo, CommandBufferLevel, CommandBufferUsage, RecordingCommandBuffer, RenderPassBeginInfo
+    }, descriptor_set::{
+        DescriptorSet, WriteDescriptorSet
+    }, format::Format, image::{
+        view::ImageView, Image, ImageCreateInfo, ImageType, ImageUsage
+    }, memory::allocator::{
+        AllocationCreateInfo, StandardMemoryAllocator
+    }, pipeline::{graphics::viewport::Viewport, Pipeline}, render_pass::{Framebuffer, FramebufferCreateInfo, RenderPass }, swapchain::{self, SwapchainCreateInfo, SwapchainPresentInfo}, sync::{self, GpuFuture}, Validated, VulkanError };
 use winit::{event::{ElementState, Event, KeyEvent, WindowEvent}, event_loop::{ControlFlow, EventLoop}, keyboard::{KeyCode, PhysicalKey}, window::Window};
 
-use crate::vulkan::{model::{Model, VertexData}, scene::Camera};
+use crate::vulkan::{model::Model, scene::Camera};
 
-pub struct VulkanResources {
-    pub instance: Arc<Instance>,
-    pub surface: Arc<Surface>,
-    pub physical_device: Arc<PhysicalDevice>,
-    pub queue_family_index: u32,
-    pub device: Arc<Device>,
-    pub queue: Arc<Queue>,
-    pub swapchain: Arc<Swapchain>,
-    pub swapchain_images: Vec<Arc<Image>>,
-    pub command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
-    pub render_pass: Arc<RenderPass>,
-    pub color_pipeline: Arc<GraphicsPipeline>,
-    pub memory_allocator: Arc<StandardMemoryAllocator>,
-    pub descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>
-}
+use crate::vulkan::VulkanResources;
+
+use crate::vulkan::shaders;
 
 pub struct App {
     // Window resources
@@ -36,20 +33,6 @@ pub struct App {
     // Scene resources
     pub camera: Arc<RwLock<Camera>>,
     pub scene: Vec<Arc<RwLock<Model>>>
-}
-
-mod color_vert {
-    vulkano_shaders::shader! {
-        ty: "vertex",
-        path: "src/shaders/color.vert.glsl"
-    }
-}
-
-mod color_frag {
-    vulkano_shaders::shader! {
-        ty: "fragment",
-        path: "src/shaders/color.frag.glsl"
-    }
 }
 
 impl App {
@@ -81,210 +64,11 @@ impl App {
             ))
             .build(&event_loop)
             .expect("Failed to create window"));
-        
 
-        // Vulkan resources
-        let instance = {
-            let library = VulkanLibrary::new().unwrap();
-            let extensions = Surface::required_extensions(&event_loop).unwrap();
-        
-            Instance::new(
-                library,
-                InstanceCreateInfo {
-                    enabled_extensions: extensions,
-                    flags: InstanceCreateFlags::ENUMERATE_PORTABILITY,
-                    max_api_version: Some(Version::V1_3),
-                    ..Default::default()
-                }
-            ).unwrap()
-        };
+        self.vulkan_resources = Some(VulkanResources::new(&event_loop, window.clone()));
 
-        self.window = Some(window.clone());
-        self.event_loop = Some(event_loop);
-    
-        let surface = Surface::from_window(instance.clone(), window.clone())
-            .unwrap();
-    
-        let device_extensions = DeviceExtensions {
-            khr_swapchain: true,
-            ..DeviceExtensions::empty()
-        };
-    
-        let (physical_device, queue_family_index) = instance
-            .enumerate_physical_devices()
-            .unwrap()
-            .filter(|p| p.supported_extensions().contains(&device_extensions))
-            .filter_map(|p| {
-                p.queue_family_properties()
-                    .iter()
-                    .enumerate()
-                    .position(|(i, q)| {
-                        q.queue_flags.contains(QueueFlags::GRAPHICS) && p.surface_support(i as u32, &surface).unwrap_or(false)
-                    })
-                    .map(|i| (p, i as u32))
-            })
-            .min_by_key(|(p, _)| {
-                match p.properties().device_type {
-                    PhysicalDeviceType::DiscreteGpu => 0,
-                    PhysicalDeviceType::IntegratedGpu => 1,
-                    PhysicalDeviceType::VirtualGpu => 2,
-                    PhysicalDeviceType::Cpu => 3,
-                    PhysicalDeviceType::Other => 4,
-                    _ => 5
-                }
-            })
-            .expect("No suitable physical device found.");
-    
-        let (device, mut queues) = Device::new(
-            physical_device.clone(),
-            DeviceCreateInfo {
-                enabled_extensions: device_extensions,
-                queue_create_infos: vec![QueueCreateInfo {
-                    queue_family_index,
-                    ..Default::default()
-                }],
-                ..Default::default()
-            }
-        ).unwrap();
-    
-        let queue = queues.next().unwrap();
-    
-        let (swapchain, swapchain_images) = {
-            let caps = device.physical_device()
-                .surface_capabilities(&surface, Default::default())
-                .unwrap();
-    
-            let usage = caps.supported_usage_flags;
-            let alpha = caps.supported_composite_alpha.into_iter().next().unwrap();
-    
-            let image_format = device.physical_device()
-                    .surface_formats(&surface, Default::default())
-                    .unwrap()[0]
-                    .0;
-    
-            let window = surface.object().unwrap().downcast_ref::<Window>().unwrap();
-            let image_extent: [u32; 2] = window.inner_size().into();
-    
-            Swapchain::new(
-                device.clone(),
-                surface.clone(),
-                SwapchainCreateInfo {
-                    min_image_count: caps.min_image_count,
-                    image_format,
-                    image_extent,
-                    image_usage: usage,
-                    composite_alpha: alpha,
-                    ..Default::default()
-                }
-            ).unwrap()
-        };
-    
-        let command_buffer_allocator = Arc::new(
-            StandardCommandBufferAllocator::new(device.clone(), Default::default())
-        );
-
-        color_vert::load(device.clone()).unwrap();
-        color_frag::load(device.clone()).unwrap();
-        
-        let render_pass = vulkano::single_pass_renderpass! {
-            device.clone(),
-            attachments: {
-                color: {
-                    format: swapchain.image_format(),
-                    samples: 1,
-                    load_op: Clear,
-                    store_op: Store
-                },
-                depth: {
-                    format: Format::D16_UNORM,
-                    samples: 1,
-                    load_op: Clear,
-                    store_op: DontCare
-                }
-            },
-            pass: {
-                color: [color],
-                depth_stencil: {depth}
-            }
-        }.expect("Couldn't create render pass");
-
-        let color_pipeline = {
-            let color_pass = Subpass::from(render_pass.clone(), 0).unwrap();
-    
-            let color_vs = color_vert::load(device.clone())
-                .expect("Failed to load vertex shader module")
-                .entry_point("main")
-                .expect("Failed to set entry point");
-            let color_fs = color_frag::load(device.clone())
-                .expect("Failed to load fragment shader module")
-                .entry_point("main")
-                .expect("Failed to set entry point");
-            
-            let color_input_state = VertexData::per_vertex().definition(&color_vs).unwrap();
-
-            let shader_stages: Vec<PipelineShaderStageCreateInfo> = vec![
-                PipelineShaderStageCreateInfo::new(color_vs),
-                PipelineShaderStageCreateInfo::new(color_fs)
-            ].into_iter().collect();
-
-            let layout = PipelineLayout::new(
-                device.clone(),
-                PipelineDescriptorSetLayoutCreateInfo::from_stages(&shader_stages)
-                    .into_pipeline_layout_create_info(device.clone())
-                    .unwrap()
-            ).expect("Failed to create pipeline layout");
-
-            GraphicsPipeline::new(
-                device.clone(),
-                None,
-                GraphicsPipelineCreateInfo {
-                    stages: shader_stages.into_iter().collect(),
-                    vertex_input_state: Some(color_input_state),
-                    input_assembly_state: Some(InputAssemblyState::default()),
-                    viewport_state: Some(ViewportState::default()),
-                    rasterization_state: Some(RasterizationState {
-                        cull_mode: CullMode::Back,
-                        ..Default::default()
-                    }),
-                    multisample_state: Some(MultisampleState::default()),
-                    color_blend_state: Some(ColorBlendState::with_attachment_states(
-                        color_pass.num_color_attachments(), 
-                        ColorBlendAttachmentState::default()
-                    )),
-                    dynamic_state: [DynamicState::Viewport].into_iter().collect(),
-                    subpass: Some(color_pass.into()),
-                    depth_stencil_state: Some(DepthStencilState {
-                        depth: Some(DepthState::simple()),
-                        ..Default::default()
-                    }),
-                    ..GraphicsPipelineCreateInfo::layout(layout)
-                }
-            ).expect("Failed to create color pipeline")
-        };
-        
-        let memory_allocator = Arc::new(StandardMemoryAllocator::new_default(device.clone()));
-
-        let descriptor_set_allocator = Arc::new(StandardDescriptorSetAllocator::new(
-            device.clone(),
-            Default::default()
-        ));
-
-
-        self.vulkan_resources = Some(VulkanResources {
-            instance,
-            surface,
-            physical_device,
-            queue_family_index,
-            device,
-            queue,
-            swapchain,
-            swapchain_images,
-            command_buffer_allocator,
-            render_pass,
-            color_pipeline,
-            memory_allocator,
-            descriptor_set_allocator
-        });
+        self.window = window.clone().into();
+        self.event_loop = event_loop.into();
 
         self
     }
@@ -433,7 +217,7 @@ impl App {
                         }
 
                         let normal_matrix = model.read().unwrap().transform.inverse().transpose();
-                        let uniform_data = color_vert::MatrixBuffer {
+                        let uniform_data = shaders::color::vs::MatrixBuffer {
                             model: model.read().unwrap().transform.to_cols_array_2d().into(),
                             view: view_matrix.to_cols_array_2d().into(),
                             projection: projection.to_cols_array_2d().into(),
