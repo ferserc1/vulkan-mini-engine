@@ -1,13 +1,11 @@
 use std::sync::Arc;
 
-use vulkano::{command_buffer::allocator::StandardCommandBufferAllocator, descriptor_set::allocator::StandardDescriptorSetAllocator, device::{physical::{PhysicalDevice, PhysicalDeviceType}, Device, DeviceCreateInfo, DeviceExtensions, Queue, QueueCreateInfo, QueueFlags}, format::Format, image::Image, instance::{Instance, InstanceCreateFlags, InstanceCreateInfo}, memory::allocator::StandardMemoryAllocator, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, vertex_input::{Vertex, VertexDefinition}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, PipelineLayout, PipelineShaderStageCreateInfo}, render_pass::{RenderPass, Subpass}, swapchain::{Surface, Swapchain, SwapchainCreateInfo}, Version, VulkanLibrary};
+use vulkano::{command_buffer::allocator::StandardCommandBufferAllocator, descriptor_set::allocator::StandardDescriptorSetAllocator, device::{physical::{PhysicalDevice, PhysicalDeviceType}, Device, DeviceCreateInfo, DeviceExtensions, Queue, QueueCreateInfo, QueueFlags}, format::Format, image::Image, instance::{Instance, InstanceCreateFlags, InstanceCreateInfo}, memory::allocator::StandardMemoryAllocator, pipeline::{graphics::{color_blend::{ColorBlendAttachmentState, ColorBlendState}, depth_stencil::{DepthState, DepthStencilState}, input_assembly::InputAssemblyState, multisample::MultisampleState, rasterization::{CullMode, RasterizationState}, viewport::ViewportState, GraphicsPipelineCreateInfo}, layout::PipelineDescriptorSetLayoutCreateInfo, DynamicState, GraphicsPipeline, PipelineLayout }, render_pass::{RenderPass, Subpass}, swapchain::{Surface, Swapchain, SwapchainCreateInfo}, Version, VulkanLibrary};
 use winit::{event_loop::EventLoop, window::Window};
 
 pub mod model;
 pub mod scene;
 pub mod shaders;
-
-use crate::vulkan::model::VertexData;
 
 pub struct VulkanResources {
     pub instance: Arc<Instance>,
@@ -147,25 +145,58 @@ impl VulkanResources {
                 depth_stencil: {depth}
             }
         }.expect("Couldn't create render pass");
+        // let render_pass = vulkano::ordered_passes_renderpass!(
+        //     device.clone(),
+        //     attachments: {
+        //         final_color: {
+        //             format: swapchain.image_format(),
+        //             samples: 1,
+        //             load_op: Clear,
+        //             store_op: Store,
+        //         },
+        //         color: {
+        //             format: Format::A2B10G10R10_UNORM_PACK32,
+        //             samples: 1,
+        //             load_op: Clear,
+        //             store_op: DontCare,
+        //         },
+        //         normal: {
+        //             format: Format::R16G16B16A16_SFLOAT,
+        //             samples: 1,
+        //             load_op: Clear,
+        //             store_op: DontCare,
+        //         },
+        //         position: {
+        //             format: Format::R32G32B32A32_SFLOAT,
+        //             samples: 1,
+        //             load_op: Clear,
+        //             store_op: DontCare,
+        //         },
+        //         depth: {
+        //             format: Format::D16_UNORM,
+        //             samples: 1,
+        //             load_op: Clear,
+        //             store_op: DontCare,
+        //         }
+        //     },
+        //     passes: [
+        //         {
+        //             color: [color, normal, position],
+        //             depth_stencil: {depth},
+        //             input: []
+        //         },
+        //         {
+        //             color: [final_color],
+        //             depth_stencil: {},
+        //             input: [color, normal, position]
+        //         }
+        //     ]
+        // ).expect("Couldn't create render pass");
 
         let color_pipeline = {
             let color_pass = Subpass::from(render_pass.clone(), 0).unwrap();
-    
-            let color_vs = shaders::color::vs::load(device.clone())
-                .expect("Failed to load vertex shader module")
-                .entry_point("main")
-                .expect("Failed to set entry point");
-            let color_fs = shaders::color::fs::load(device.clone())
-                .expect("Failed to load fragment shader module")
-                .entry_point("main")
-                .expect("Failed to set entry point");
-            
-            let color_input_state = VertexData::per_vertex().definition(&color_vs).unwrap();
 
-            let shader_stages: Vec<PipelineShaderStageCreateInfo> = vec![
-                PipelineShaderStageCreateInfo::new(color_vs),
-                PipelineShaderStageCreateInfo::new(color_fs)
-            ].into_iter().collect();
+            let (shader_stages, color_input_state) = shaders::color::get_shader(device.clone());
 
             let layout = PipelineLayout::new(
                 device.clone(),
