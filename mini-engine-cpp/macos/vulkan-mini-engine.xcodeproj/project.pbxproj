@@ -26,6 +26,8 @@
 		EDC942452C8ED7300025056F /* platform_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC942432C8ED7300025056F /* platform_utils.cpp */; };
 		EDC942472C8EEF210025056F /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDC942462C8EEF210025056F /* CoreFoundation.framework */; };
 		EDE363F22C8F3202009BE7DC /* vk_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE363F02C8F3202009BE7DC /* vk_mesh.cpp */; };
+		EDE363F92C8F5DA7009BE7DC /* monkey_smooth.obj in Resources */ = {isa = PBXBuildFile; fileRef = EDE363F72C8F5D9C009BE7DC /* monkey_smooth.obj */; };
+		EDE363FA2C8F5DA9009BE7DC /* monkey_smooth.mtl in Resources */ = {isa = PBXBuildFile; fileRef = EDE363F62C8F5D9C009BE7DC /* monkey_smooth.mtl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +93,9 @@
 		EDE363F02C8F3202009BE7DC /* vk_mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vk_mesh.cpp; sourceTree = "<group>"; };
 		EDE363F12C8F3202009BE7DC /* vk_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vk_mesh.h; sourceTree = "<group>"; };
 		EDE363F32C8F3F65009BE7DC /* tri_mesh.vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = tri_mesh.vert.glsl; sourceTree = "<group>"; };
+		EDE363F42C8F594A009BE7DC /* tiny_obj_loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
+		EDE363F62C8F5D9C009BE7DC /* monkey_smooth.mtl */ = {isa = PBXFileReference; lastKnownFileType = file; name = monkey_smooth.mtl; path = ../assets/monkey_smooth.mtl; sourceTree = "<group>"; };
+		EDE363F72C8F5D9C009BE7DC /* monkey_smooth.obj */ = {isa = PBXFileReference; lastKnownFileType = file; name = monkey_smooth.obj; path = ../assets/monkey_smooth.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				ED31BF682C8DB64300285F60 /* MoltenVK_icd.json */,
+				EDE363F82C8F5D9C009BE7DC /* assets */,
 				ED31BF752C8DF3D200285F60 /* shaders */,
 				ED31BF362C8D9DB400285F60 /* deps */,
 				ED31BF342C8D994700285F60 /* src */,
@@ -196,6 +202,7 @@
 		ED31BF432C8DA27200285F60 /* third-party */ = {
 			isa = PBXGroup;
 			children = (
+				EDE363F52C8F594A009BE7DC /* tiny-obj-loader */,
 				ED31BF422C8DA27200285F60 /* vk-bootstrap */,
 			);
 			path = "third-party";
@@ -221,6 +228,24 @@
 			);
 			name = shaders;
 			path = ../shaders;
+			sourceTree = "<group>";
+		};
+		EDE363F52C8F594A009BE7DC /* tiny-obj-loader */ = {
+			isa = PBXGroup;
+			children = (
+				EDE363F42C8F594A009BE7DC /* tiny_obj_loader.h */,
+			);
+			path = "tiny-obj-loader";
+			sourceTree = "<group>";
+		};
+		EDE363F82C8F5D9C009BE7DC /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				EDE363F62C8F5D9C009BE7DC /* monkey_smooth.mtl */,
+				EDE363F72C8F5D9C009BE7DC /* monkey_smooth.obj */,
+			);
+			name = assets;
+			path = ../assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -285,6 +310,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED31BF272C8D97AA00285F60 /* Assets.xcassets in Resources */,
+				EDE363F92C8F5DA7009BE7DC /* monkey_smooth.obj in Resources */,
+				EDE363FA2C8F5DA9009BE7DC /* monkey_smooth.mtl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,7 +338,7 @@
 		};
 		ED31BF762C8DF3DF00285F60 /* Build shaders */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -484,6 +511,7 @@
 					"$(PROJECT_DIR)/../src",
 					"$(VULKAN_SDK)/include/VMA",
 					"$(VULKAN_SDK)/include/SDL2",
+					"$(PROJECT_DIR)/deps/third-party/tiny-obj-loader",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
@@ -520,6 +548,7 @@
 					"$(PROJECT_DIR)/../src",
 					"$(VULKAN_SDK)/include/VMA",
 					"$(VULKAN_SDK)/include/SDL2",
+					"$(PROJECT_DIR)/deps/third-party/tiny-obj-loader",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;

@@ -107,6 +107,11 @@ void VulkanEngine::draw()
     float flash = abs(sin(_frameNumber / 120.0f));
     clearValue.color = { { 0.0f, 0.0f, flash, 1.0f } };
     
+    VkClearValue depthClear;
+    depthClear.depthStencil.depth = 1.0f;
+    
+    // VkRenderPassBeginInfo rpInfo = vkinit::renderpass_begin_info(_renderPass, _windowExtent, _framebuffers[swapchainImageIndex]);
+    
     VkRenderPassBeginInfo rpInfo = {};
     rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rpInfo.pNext = nullptr;
@@ -115,16 +120,38 @@ void VulkanEngine::draw()
     rpInfo.renderArea.offset.y = 0;
     rpInfo.renderArea.extent = _windowExtent;
     rpInfo.framebuffer = _framebuffers[swapchainImageIndex];
-    rpInfo.clearValueCount = 1;
-    rpInfo.pClearValues = &clearValue;
+    rpInfo.clearValueCount = 2;
+    VkClearValue clearValues[] = { clearValue, depthClear };
+    //rpInfo.pClearValues = &clearValue;
+    rpInfo.pClearValues = &clearValues[0];
     
     vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
     
     //vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _selectedShader == 0 ? _trianglePipeline : _redTrianglePipeline);
+    
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _meshPipeline);
+    
+    glm::vec3 camPos = { 0.0f, 0.0f, -2.0f };
+    
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), camPos);
+    glm::mat4 projection = glm::perspective(glm::radians(70.0f), 1700.0f / 900.0f, 0.1f, 100.0f);
+    projection[1][1] *= -1;  // Flip vertically due to Vulkan
+    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(_frameNumber * 0.4f), glm::vec3(0, 1, 0));
+    
+    glm::mat4 mesh_matrix = projection * view * model;
+    
+    MeshPushConstants constants;
+    constants.render_matrix = mesh_matrix;
+    
+    vkCmdPushConstants(cmd, _meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+      
+    //VkDeviceSize offset = 0;
+    //vkCmdBindVertexBuffers(cmd, 0, 1, &_triangleMesh._vertexBuffer._buffer, &offset);
+    //vkCmdDraw(cmd, static_cast<uint32_t>(_triangleMesh._vertices.size()), 1, 0, 0);
+    
     VkDeviceSize offset = 0;
-    vkCmdBindVertexBuffers(cmd, 0, 1, &_triangleMesh._vertexBuffer._buffer, &offset);
-    vkCmdDraw(cmd, 3, 1, 0, 0);
+    vkCmdBindVertexBuffers(cmd, 0, 1, &_monkeyMesh._vertexBuffer._buffer, &offset);
+    vkCmdDraw(cmd, static_cast<uint32_t>(_monkeyMesh._vertices.size()), 1, 0, 0);
     
     vkCmdEndRenderPass(cmd);
     VK_CHECK(vkEndCommandBuffer(cmd));
@@ -293,22 +320,60 @@ void VulkanEngine::init_default_renderpass()
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+  
+    VkAttachmentDescription depth_attachment = {};
+    depth_attachment.flags = 0;
+    depth_attachment.format = _depthFormat;
+    depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     
     VkAttachmentReference color_attachment_ref = {};
     color_attachment_ref.attachment = 0;
     color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     
+    VkAttachmentReference depth_attachment_ref = {};
+    depth_attachment_ref.attachment = 1;
+    depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    
     VkSubpassDescription subpass = {};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &color_attachment_ref;
+    subpass.pDepthStencilAttachment = &depth_attachment_ref;
+    
+    VkAttachmentDescription attachments[2] = { color_attachment, depth_attachment };
+    
+    VkSubpassDependency dependency = {};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    
+    VkSubpassDependency depth_dependency = {};
+    depth_dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    depth_dependency.dstSubpass = 0;
+    depth_dependency.srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    depth_dependency.srcAccessMask = 0;
+    depth_dependency.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    depth_dependency.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    
+    VkSubpassDependency dependencies[2] = { dependency, depth_dependency };
     
     VkRenderPassCreateInfo render_pass_info = {};
     render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    render_pass_info.attachmentCount = 1;
-    render_pass_info.pAttachments = &color_attachment;
+    render_pass_info.attachmentCount = 2;
+    render_pass_info.pAttachments = &attachments[0];
     render_pass_info.subpassCount = 1;
     render_pass_info.pSubpasses = &subpass;
+    render_pass_info.dependencyCount = 2;
+    render_pass_info.pDependencies = &dependencies[0];
     
     VK_CHECK(vkCreateRenderPass(_device, &render_pass_info, nullptr, &_renderPass));
     
@@ -323,15 +388,16 @@ void VulkanEngine::init_framebuffers()
     _framebuffers = std::vector<VkFramebuffer>(swapchain_imagecount);
     
     for (int i = 0; i < swapchain_imagecount; ++i) {
-        VkImageView attachments[] = {
-            _swapchainImageViews[i]
-        };
+        VkImageView attachments[2];
+        attachments[0] = _swapchainImageViews[i];
+        attachments[1] = _depthImageView;
+        
         
         VkFramebufferCreateInfo fb_info = {};
         fb_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         fb_info.pNext = nullptr;
         fb_info.renderPass = _renderPass;
-        fb_info.attachmentCount = 1;
+        fb_info.attachmentCount = 2;
         fb_info.pAttachments = attachments;
         fb_info.width = _windowExtent.width;
         fb_info.height = _windowExtent.height;
@@ -402,6 +468,8 @@ void VulkanEngine::init_pipelines()
     
     pipelineBuilder._pipelineLayout = _trianglePipelineLayout;
     
+    pipelineBuilder._depthStencil = vkinit::depth_stencil_create_info(true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
+    
     _redTrianglePipeline = pipelineBuilder.build_pipeline(_device, _renderPass);
     
     VkShaderModule triangleFragShader;
@@ -433,10 +501,10 @@ void VulkanEngine::init_pipelines()
     VertexInputDescription vertexDescription = Vertex::get_vertex_description();
     
     pipelineBuilder._vertexInputInfo.pVertexAttributeDescriptions = vertexDescription.attributes.data();
-    pipelineBuilder._vertexInputInfo.vertexAttributeDescriptionCount = vertexDescription.attributes.size();
+    pipelineBuilder._vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexDescription.attributes.size());
     
     pipelineBuilder._vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
-    pipelineBuilder._vertexInputInfo.vertexBindingDescriptionCount = vertexDescription.bindings.size();
+    pipelineBuilder._vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexDescription.bindings.size());
     
     pipelineBuilder._shaderStages.clear();
     
@@ -453,6 +521,19 @@ void VulkanEngine::init_pipelines()
     pipelineBuilder._shaderStages.push_back(vkinit::pipeline_shader_stage_create_info(VK_SHADER_STAGE_VERTEX_BIT, meshVertShader));
     pipelineBuilder._shaderStages.push_back(vkinit::pipeline_shader_stage_create_info(VK_SHADER_STAGE_FRAGMENT_BIT, triangleFragShader));
     
+    VkPipelineLayoutCreateInfo mesh_pipeline_layout_info = vkinit::pipeline_layout_create_info();
+    
+    VkPushConstantRange push_constant;
+    push_constant.offset = 0;
+    push_constant.size = sizeof(MeshPushConstants);
+    push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    mesh_pipeline_layout_info.pPushConstantRanges = &push_constant;
+    mesh_pipeline_layout_info.pushConstantRangeCount = 1;
+    
+    VK_CHECK(vkCreatePipelineLayout(_device, &mesh_pipeline_layout_info, nullptr, &_meshPipelineLayout));
+    
+    pipelineBuilder._pipelineLayout = _meshPipelineLayout;
+    
     _meshPipeline = pipelineBuilder.build_pipeline(_device, _renderPass);
     
     vkDestroyShaderModule(_device, meshVertShader, nullptr);
@@ -467,6 +548,7 @@ void VulkanEngine::init_pipelines()
         vkDestroyPipeline(_device, _meshPipeline, nullptr);
         
         vkDestroyPipelineLayout(_device, _trianglePipelineLayout, nullptr);
+        vkDestroyPipelineLayout(_device, _meshPipelineLayout, nullptr);
     });
 }
 
@@ -482,7 +564,17 @@ void VulkanEngine::load_meshes()
     _triangleMesh._vertices[1].color = { 0.0f, 1.0f, 0.0f };
     _triangleMesh._vertices[2].color = { 0.0f, 1.0f, 0.0f };
     
+#ifdef MINI_ENGINE_IS_MAC
+    std::string modelPath = PlatformUtils::macos_get_resources_path() + "monkey_smooth.obj";
+#else
+    std::string modelPath = "../../assets/monkey_smooth.obj";
+#endif
+    if (!_monkeyMesh.load_from_obj(modelPath.c_str())) {
+        std::cerr << "Error loading model" << std::endl;
+    }
+    
     upload_mesh(_triangleMesh);
+    upload_mesh(_monkeyMesh);
 }
 
 void VulkanEngine::upload_mesh(Mesh& mesh)
@@ -527,6 +619,31 @@ void VulkanEngine::create_swapchain(uint32_t width, uint32_t height)
     
     _mainDeletionQueue.push_function([=]() {
         vkDestroySwapchainKHR(_device, _swapchain, nullptr);
+    });
+    
+    VkExtent3D depthImageExtent = {
+        _windowExtent.width,
+        _windowExtent.height,
+        1
+    };
+    
+    _depthFormat = VK_FORMAT_D32_SFLOAT;
+    
+    VkImageCreateInfo dimg_info = vkinit::image_create_info(_depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
+    
+    VmaAllocationCreateInfo dimg_allocinfo = {};
+    dimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+    dimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    
+    vmaCreateImage(_allocator, &dimg_info, &dimg_allocinfo, &_depthImage._image, &_depthImage._allocation, nullptr);
+    
+    VkImageViewCreateInfo dview_info = vkinit::imageview_create_info(_depthFormat, _depthImage._image, VK_IMAGE_ASPECT_DEPTH_BIT);
+    
+    VK_CHECK(vkCreateImageView(_device, &dview_info, nullptr, &_depthImageView));
+    
+    _mainDeletionQueue.push_function([=] () {
+        vkDestroyImageView(_device, _depthImageView, nullptr);
+        vmaDestroyImage(_allocator, _depthImage._image, _depthImage._allocation);
     });
 }
 
@@ -599,6 +716,7 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass)
     pipelineInfo.renderPass = pass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.pDepthStencilState = &_depthStencil;
     
     VkPipeline newPipeline;
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)

@@ -7,6 +7,14 @@
 
 #include <vk_mesh.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+struct MeshPushConstants {
+    glm::vec4 data;
+    glm::mat4 render_matrix;
+};
+
 constexpr unsigned int FRAME_OVERLAP = 2;
 
 struct DeletionQueue
@@ -93,6 +101,15 @@ public:
     VkPipeline _meshPipeline;
     Mesh _triangleMesh;
     
+    VkPipelineLayout _meshPipelineLayout;
+    
+    Mesh _monkeyMesh;
+    
+    VkImageView _depthImageView;
+    AllocatedImage _depthImage;
+    
+    VkFormat _depthFormat;
+    
 private:
     void init_vulkan();
     void init_swapchain();
@@ -122,6 +139,7 @@ public:
     VkPipelineColorBlendAttachmentState _colorBlendAttachment;
     VkPipelineMultisampleStateCreateInfo _multisampling;
     VkPipelineLayout _pipelineLayout;
+    VkPipelineDepthStencilStateCreateInfo _depthStencil;
     
     VkPipeline build_pipeline(VkDevice device, VkRenderPass pass);
 };

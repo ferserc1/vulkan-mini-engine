@@ -149,6 +149,7 @@ VkRenderingAttachmentInfo vkinit::depth_attachment_info(
     return depthAttachment;
 }
 
+
 VkRenderingInfo vkinit::rendering_info(VkExtent2D renderExtent, VkRenderingAttachmentInfo* colorAttachment,
     VkRenderingAttachmentInfo* depthAttachment)
 {
@@ -391,4 +392,21 @@ VkPipelineColorBlendAttachmentState vkinit::color_blend_attachment_state() {
         VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
     return colorBlendAttachment;
+}
+
+VkPipelineDepthStencilStateCreateInfo vkinit::depth_stencil_create_info(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp)
+{
+    VkPipelineDepthStencilStateCreateInfo info = {};
+    info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    info.pNext = nullptr;
+
+    info.depthTestEnable = bDepthTest ? VK_TRUE : VK_FALSE;
+    info.depthWriteEnable = bDepthWrite ? VK_TRUE : VK_FALSE;
+    info.depthCompareOp = bDepthTest ? compareOp : VK_COMPARE_OP_ALWAYS;
+    info.depthBoundsTestEnable = VK_FALSE;
+    info.minDepthBounds = 0.0f; // Optional
+    info.maxDepthBounds = 1.0f; // Optional
+    info.stencilTestEnable = VK_FALSE;
+
+    return info;
 }

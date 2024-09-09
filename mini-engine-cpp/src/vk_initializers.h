@@ -53,4 +53,5 @@ VkPipelineInputAssemblyStateCreateInfo input_assembly_create_info(VkPrimitiveTop
 VkPipelineRasterizationStateCreateInfo rasterization_state_create_info(VkPolygonMode polygonMode);
 VkPipelineMultisampleStateCreateInfo multisampling_state_create_info();
 VkPipelineColorBlendAttachmentState color_blend_attachment_state();
+VkPipelineDepthStencilStateCreateInfo depth_stencil_create_info(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp);
 } // namespace vkinit
