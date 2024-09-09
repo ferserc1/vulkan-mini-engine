@@ -5,7 +5,28 @@
 
 #include <vk_types.h>
 
+#include <vk_mesh.h>
+
 constexpr unsigned int FRAME_OVERLAP = 2;
+
+struct DeletionQueue
+{
+    std::deque<std::function<void()>> deleters;
+    
+    void push_function(std::function<void()>&& function)
+    {
+        deleters.push_back(function);
+    }
+    
+    void flush()
+    {
+        for (auto it = deleters.rbegin(); it != deleters.rend(); ++it) {
+            (*it)();
+        }
+        
+        deleters.clear();
+    }
+};
 
 class VulkanEngine {
 public:
@@ -59,6 +80,19 @@ public:
     VkSemaphore _presentSemaphore, _renderSemaphore;
     VkFence _renderFence;
     
+    VkPipelineLayout _trianglePipelineLayout;
+    VkPipeline _trianglePipeline;
+    VkPipeline _redTrianglePipeline;
+    
+    int _selectedShader = 0;
+    
+    DeletionQueue _mainDeletionQueue;
+    
+    VmaAllocator _allocator;
+    
+    VkPipeline _meshPipeline;
+    Mesh _triangleMesh;
+    
 private:
     void init_vulkan();
     void init_swapchain();
@@ -66,6 +100,29 @@ private:
     void init_sync_structures();
     void init_default_renderpass();
     void init_framebuffers();
+    void init_pipelines();
+    
+    void load_meshes();
+    
+    void upload_mesh(Mesh& mesh);
     
     void create_swapchain(uint32_t width, uint32_t height);
+    
+    bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
 };
+
+class PipelineBuilder {
+public:
+    std::vector<VkPipelineShaderStageCreateInfo> _shaderStages;
+    VkPipelineVertexInputStateCreateInfo _vertexInputInfo;
+    VkPipelineInputAssemblyStateCreateInfo _inputAssembly;
+    VkViewport _viewport;
+    VkRect2D _scissor;
+    VkPipelineRasterizationStateCreateInfo _rasterizer;
+    VkPipelineColorBlendAttachmentState _colorBlendAttachment;
+    VkPipelineMultisampleStateCreateInfo _multisampling;
+    VkPipelineLayout _pipelineLayout;
+    
+    VkPipeline build_pipeline(VkDevice device, VkRenderPass pass);
+};
+

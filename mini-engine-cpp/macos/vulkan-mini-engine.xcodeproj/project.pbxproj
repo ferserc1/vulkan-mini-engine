@@ -23,6 +23,9 @@
 		ED31BF6F2C8DB89D00285F60 /* libMoltenVK.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = ED31BF612C8DB1A700285F60 /* libMoltenVK.dylib */; };
 		ED31BF702C8DB8A800285F60 /* libMoltenVK.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = ED31BF612C8DB1A700285F60 /* libMoltenVK.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED31BF712C8DB8AB00285F60 /* libvulkan.1.3.290.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = ED31BF632C8DB1DB00285F60 /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		EDC942452C8ED7300025056F /* platform_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC942432C8ED7300025056F /* platform_utils.cpp */; };
+		EDC942472C8EEF210025056F /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDC942462C8EEF210025056F /* CoreFoundation.framework */; };
+		EDE363F22C8F3202009BE7DC /* vk_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE363F02C8F3202009BE7DC /* vk_mesh.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -79,6 +82,15 @@
 		ED31BF682C8DB64300285F60 /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		ED31BF732C8DF3D200285F60 /* triangle.frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = triangle.frag.glsl; sourceTree = "<group>"; };
 		ED31BF742C8DF3D200285F60 /* triangle.vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = triangle.vert.glsl; sourceTree = "<group>"; };
+		EDC942432C8ED7300025056F /* platform_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform_utils.cpp; sourceTree = "<group>"; };
+		EDC942442C8ED7300025056F /* platform_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform_utils.h; sourceTree = "<group>"; };
+		EDC942462C8EEF210025056F /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		EDD4EAAB2C8F18FD00055259 /* color_triangle.frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = color_triangle.frag.glsl; sourceTree = "<group>"; };
+		EDD4EAAC2C8F18FD00055259 /* color_triangle.vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = color_triangle.vert.glsl; sourceTree = "<group>"; };
+		EDD4EAAD2C8F19AE00055259 /* build_shaders_mac.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_shaders_mac.sh; sourceTree = "<group>"; };
+		EDE363F02C8F3202009BE7DC /* vk_mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vk_mesh.cpp; sourceTree = "<group>"; };
+		EDE363F12C8F3202009BE7DC /* vk_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vk_mesh.h; sourceTree = "<group>"; };
+		EDE363F32C8F3F65009BE7DC /* tri_mesh.vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = tri_mesh.vert.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDC942472C8EEF210025056F /* CoreFoundation.framework in Frameworks */,
 				ED31BF3A2C8D9E2000285F60 /* libSDL2-2.0.0.dylib in Frameworks */,
 				ED31BF6E2C8DB89400285F60 /* libvulkan.1.3.290.dylib in Frameworks */,
 				ED31BF6F2C8DB89D00285F60 /* libMoltenVK.dylib in Frameworks */,
@@ -129,6 +142,8 @@
 			isa = PBXGroup;
 			children = (
 				ED31BF542C8DADFF00285F60 /* main.cpp */,
+				EDC942432C8ED7300025056F /* platform_utils.cpp */,
+				EDC942442C8ED7300025056F /* platform_utils.h */,
 				ED31BF4E2C8DADFF00285F60 /* vk_descriptors.cpp */,
 				ED31BF502C8DADFF00285F60 /* vk_descriptors.h */,
 				ED31BF4B2C8DADFF00285F60 /* vk_engine.cpp */,
@@ -139,6 +154,8 @@
 				ED31BF512C8DADFF00285F60 /* vk_initializers.h */,
 				ED31BF4C2C8DADFF00285F60 /* vk_loader.cpp */,
 				ED31BF4F2C8DADFF00285F60 /* vk_loader.h */,
+				EDE363F02C8F3202009BE7DC /* vk_mesh.cpp */,
+				EDE363F12C8F3202009BE7DC /* vk_mesh.h */,
 				ED31BF552C8DADFF00285F60 /* vk_pipelines.cpp */,
 				ED31BF522C8DADFF00285F60 /* vk_pipelines.h */,
 				ED31BF492C8DADFF00285F60 /* vk_types.h */,
@@ -187,6 +204,7 @@
 		ED31BF6B2C8DB83600285F60 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EDC942462C8EEF210025056F /* CoreFoundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -194,6 +212,10 @@
 		ED31BF752C8DF3D200285F60 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				EDD4EAAD2C8F19AE00055259 /* build_shaders_mac.sh */,
+				EDD4EAAB2C8F18FD00055259 /* color_triangle.frag.glsl */,
+				EDD4EAAC2C8F18FD00055259 /* color_triangle.vert.glsl */,
+				EDE363F32C8F3F65009BE7DC /* tri_mesh.vert.glsl */,
 				ED31BF732C8DF3D200285F60 /* triangle.frag.glsl */,
 				ED31BF742C8DF3D200285F60 /* triangle.vert.glsl */,
 			);
@@ -303,7 +325,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nmkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders\n${VULKAN_SDK}/bin/glslang -V ${PROJECT_DIR}/../shaders/triangle.vert.glsl -o ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders/triangle.vert.spv\n\n${VULKAN_SDK}/bin/glslang -V ${PROJECT_DIR}/../shaders/triangle.frag.glsl -o ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders/triangle.frag.spv\n";
+			shellScript = "\n/Users/fernando/desarrollo/vulkan-mini-engine/mini-engine-cpp/shaders/build_shaders_mac.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -315,11 +337,13 @@
 				ED31BF572C8DADFF00285F60 /* vk_engine.cpp in Sources */,
 				ED31BF5C2C8DADFF00285F60 /* vk_pipelines.cpp in Sources */,
 				ED31BF5A2C8DADFF00285F60 /* vk_images.cpp in Sources */,
+				EDC942452C8ED7300025056F /* platform_utils.cpp in Sources */,
 				ED31BF5D2C8DADFF00285F60 /* vk_initializers.cpp in Sources */,
 				ED31BF5B2C8DADFF00285F60 /* main.cpp in Sources */,
 				ED31BF592C8DADFF00285F60 /* vk_descriptors.cpp in Sources */,
 				ED31BF582C8DADFF00285F60 /* vk_loader.cpp in Sources */,
 				ED31BF442C8DA27200285F60 /* VkBootstrap.cpp in Sources */,
+				EDE363F22C8F3202009BE7DC /* vk_mesh.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
