@@ -10,6 +10,20 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <unordered_map>
+
+struct Material {
+    VkPipeline pipeline;
+    VkPipelineLayout pipelineLayout;
+};
+
+struct RenderObject {
+    Mesh* mesh;
+    
+    Material* material;
+    glm::mat4 transformMatrix;
+};
+
 struct MeshPushConstants {
     glm::vec4 data;
     glm::mat4 render_matrix;
@@ -110,6 +124,19 @@ public:
     
     VkFormat _depthFormat;
     
+    std::vector<RenderObject> _renderables;
+    
+    std::unordered_map<std::string, Material> _materials;
+    std::unordered_map<std::string, Mesh> _meshes;
+    
+    Material* create_material(VkPipeline pipeline, VkPipelineLayout layout, const std::string& name);
+    
+    Material* get_material(const std::string& name);
+    
+    Mesh* get_mesh(const std::string& name);
+    
+    void draw_objects(VkCommandBuffer cmd, RenderObject* first, int count);
+    
 private:
     void init_vulkan();
     void init_swapchain();
@@ -126,6 +153,8 @@ private:
     void create_swapchain(uint32_t width, uint32_t height);
     
     bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
+    
+    void init_scene();
 };
 
 class PipelineBuilder {
