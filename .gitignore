@@ -353,3 +353,6 @@ FodyWeavers.xsd
 *.msp
 
 *.sln.iml
+
+# Shaders test script output data
+shaders/compiled
