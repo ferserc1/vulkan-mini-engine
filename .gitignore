@@ -356,3 +356,6 @@ FodyWeavers.xsd
 
 # Shaders test script output data
 shaders/compiled
+
+# build folder
+build

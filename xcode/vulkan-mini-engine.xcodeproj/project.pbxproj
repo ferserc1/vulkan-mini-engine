@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED060AE52C973E8F0063ABDD /* VulkanData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE12C973E8F0063ABDD /* VulkanData.cpp */; };
+		ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */; };
+		ED060AE72C973E8F0063ABDD /* Swapchain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE32C973E8F0063ABDD /* Swapchain.cpp */; };
+		ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE42C973E8F0063ABDD /* MainLoop.cpp */; };
 		ED4F37562C970C2A009B120B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED4F37552C970C2A009B120B /* Assets.xcassets */; };
 		ED4F37642C970C87009B120B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED4F37622C970C87009B120B /* main.cpp */; };
 		ED4F376B2C970E13009B120B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4F376A2C970E13009B120B /* CoreFoundation.framework */; };
@@ -30,8 +34,6 @@
 		ED4F37AD2C970F02009B120B /* libSDL2-2.0.0.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37AE2C970F04009B120B /* libvulkan.1.3.290.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
-		ED4F37C42C971769009B120B /* MainLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED4F37C12C971769009B120B /* MainLoop.cpp */; };
-		ED4F37C52C971769009B120B /* PlatformTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED4F37C22C971769009B120B /* PlatformTools.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,6 +64,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		ED060AE12C973E8F0063ABDD /* VulkanData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VulkanData.cpp; sourceTree = "<group>"; };
+		ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformTools.cpp; sourceTree = "<group>"; };
+		ED060AE32C973E8F0063ABDD /* Swapchain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Swapchain.cpp; sourceTree = "<group>"; };
+		ED060AE42C973E8F0063ABDD /* MainLoop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainLoop.cpp; sourceTree = "<group>"; };
+		ED060AE92C973EA60063ABDD /* MainLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MainLoop.hpp; sourceTree = "<group>"; };
+		ED060AEA2C973EA60063ABDD /* Swapchain.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Swapchain.hpp; sourceTree = "<group>"; };
+		ED060AEB2C973EA60063ABDD /* VulkanData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VulkanData.hpp; sourceTree = "<group>"; };
+		ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlatformTools.hpp; sourceTree = "<group>"; };
 		ED4F374F2C970C29009B120B /* vulkan-mini-engine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "vulkan-mini-engine.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED4F37552C970C2A009B120B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED4F375C2C970C2A009B120B /* vulkan_mini_engine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = vulkan_mini_engine.entitlements; sourceTree = "<group>"; };
@@ -102,10 +112,6 @@
 		ED4F37A62C970EDB009B120B /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libMoltenVK.dylib; sourceTree = "<group>"; };
 		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<group>"; };
 		ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
-		ED4F37BF2C9713B9009B120B /* PlatformTools.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PlatformTools.hpp; sourceTree = "<group>"; };
-		ED4F37C12C971769009B120B /* MainLoop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainLoop.cpp; sourceTree = "<group>"; };
-		ED4F37C22C971769009B120B /* PlatformTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformTools.cpp; sourceTree = "<group>"; };
-		ED4F37C62C971785009B120B /* MainLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MainLoop.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -330,8 +336,10 @@
 		ED4F37C02C9713B9009B120B /* mini-engine */ = {
 			isa = PBXGroup;
 			children = (
-				ED4F37C62C971785009B120B /* MainLoop.hpp */,
-				ED4F37BF2C9713B9009B120B /* PlatformTools.hpp */,
+				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
+				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
+				ED060AEA2C973EA60063ABDD /* Swapchain.hpp */,
+				ED060AEB2C973EA60063ABDD /* VulkanData.hpp */,
 			);
 			name = "mini-engine";
 			path = mini_engine;
@@ -340,8 +348,10 @@
 		ED4F37C32C971769009B120B /* mini-engine */ = {
 			isa = PBXGroup;
 			children = (
-				ED4F37C12C971769009B120B /* MainLoop.cpp */,
-				ED4F37C22C971769009B120B /* PlatformTools.cpp */,
+				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
+				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
+				ED060AE32C973E8F0063ABDD /* Swapchain.cpp */,
+				ED060AE12C973E8F0063ABDD /* VulkanData.cpp */,
 			);
 			name = "mini-engine";
 			path = mini_engine;
@@ -463,13 +473,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED060AE52C973E8F0063ABDD /* VulkanData.cpp in Sources */,
 				ED4F37972C970E37009B120B /* fastgltf.cpp in Sources */,
-				ED4F37C42C971769009B120B /* MainLoop.cpp in Sources */,
 				ED4F379B2C970E37009B120B /* imgui_impl_vulkan.cpp in Sources */,
 				ED4F37A22C970E37009B120B /* VkBootstrap.cpp in Sources */,
 				ED4F379D2C970E37009B120B /* imgui_widgets.cpp in Sources */,
+				ED060AE72C973E8F0063ABDD /* Swapchain.cpp in Sources */,
 				ED4F37A02C970E37009B120B /* simdjson.cpp in Sources */,
-				ED4F37C52C971769009B120B /* PlatformTools.cpp in Sources */,
+				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
+				ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */,
 				ED4F379A2C970E37009B120B /* imgui_impl_sdl2.cpp in Sources */,
 				ED4F379E2C970E37009B120B /* imgui.cpp in Sources */,
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,
@@ -620,6 +632,7 @@
 					"$(PROJECT_DIR)/../third-party/fastgltf/include",
 					"$(PROJECT_DIR)/../third-party/stb_image",
 					"$(PROJECT_DIR)/../include",
+					"$(PROJECT_DIR)/../third-party/vk-bootstrap/src",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
@@ -659,6 +672,7 @@
 					"$(PROJECT_DIR)/../third-party/fastgltf/include",
 					"$(PROJECT_DIR)/../third-party/stb_image",
 					"$(PROJECT_DIR)/../include",
+					"$(PROJECT_DIR)/../third-party/vk-bootstrap/src",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
