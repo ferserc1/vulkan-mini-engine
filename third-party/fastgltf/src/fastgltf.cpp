@@ -27,6 +27,7 @@
 // MODIFIED: El fichero genera bastantes warnings, aquí los desactivo para que no
 // molesten en el resto del proyecto.
 
+#ifdef __APPLE__
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #pragma clang diagnostic ignored "-Wrange-loop-bind-reference"
@@ -34,6 +35,7 @@
 #pragma clang diagnostic ignored "-Wimplicit"
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
 
 #if !defined(__cplusplus) || (!defined(_MSVC_LANG) && __cplusplus < 201703L) || (defined(_MSVC_LANG) && _MSVC_LANG < 201703L)
 #error "fastgltf requires C++17"
@@ -745,7 +747,7 @@ fg::Error fg::Parser::generateMeshIndices(fastgltf::Asset& asset) const {
 			fastgltf::span<std::uint32_t> indices { reinterpret_cast<std::uint32_t*>(generatedIndices.bytes.data()),
 													generatedIndices.bytes.size() / sizeof(std::uint32_t) };
 			for (std::size_t i = 0; i < positionAccessor.count; ++i) {
-				indices[i] = i;
+				indices[i] = uint32_t(i);
 			}
 
 			auto bufferIdx = asset.buffers.size();

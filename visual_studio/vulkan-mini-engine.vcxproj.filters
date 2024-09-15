@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\mini_engine">
+      <UniqueIdentifier>{339ec492-1603-49ee-8468-0e640a3cdd5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party">
+      <UniqueIdentifier>{59cd319e-2133-442b-a9b6-12787b5b4c56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\fastgltf">
+      <UniqueIdentifier>{4a5c0d53-28db-4884-bab6-e85ec1d82a9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\fastgltf\include">
+      <UniqueIdentifier>{ce01753f-91e5-47d3-a398-4f21001cd09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\fastgltf\src">
+      <UniqueIdentifier>{3e3fb48f-8408-4176-92a7-f27fed28b4f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\imgui">
+      <UniqueIdentifier>{b7ccac22-7f4c-4493-b081-8bf57bac3644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\simdjson">
+      <UniqueIdentifier>{53461a00-7777-498a-9fb0-dd00280f8e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\stb_image">
+      <UniqueIdentifier>{056c9480-a1f6-4413-a3f6-bf6cc5d24670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\vk-bootstrap">
+      <UniqueIdentifier>{faa6391c-f66e-4eca-a45d-0df33b84c0aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\MainLoop.cpp">
+      <Filter>Source Files\mini_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\PlatformTools.cpp">
+      <Filter>Source Files\mini_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\fastgltf\src\base64.cpp">
+      <Filter>third-party\fastgltf\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\fastgltf\src\fastgltf.cpp">
+      <Filter>third-party\fastgltf\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_demo.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_draw.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_impl_sdl2.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_impl_vulkan.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_tables.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\imgui\imgui_widgets.cpp">
+      <Filter>third-party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\simdjson\simdjson.cpp">
+      <Filter>third-party\simdjson</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\vk-bootstrap\src\VkBootstrap.cpp">
+      <Filter>third-party\vk-bootstrap</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\mini_engine\MainLoop.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\PlatformTools.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\glm_element_traits.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\parser.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\tools.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\types.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\fastgltf\include\fastgltf\util.hpp">
+      <Filter>third-party\fastgltf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imconfig.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imgui.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imgui_impl_sdl2.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imgui_impl_vulkan.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imgui_internal.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imstb_rectpack.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imstb_textedit.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\imgui\imstb_truetype.h">
+      <Filter>third-party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\simdjson\simdjson.h">
+      <Filter>third-party\simdjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\stb_image\stb_image.h">
+      <Filter>third-party\stb_image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\vk-bootstrap\src\VkBootstrap.h">
+      <Filter>third-party\vk-bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\vk-bootstrap\src\VkBootstrapDispatch.h">
+      <Filter>third-party\vk-bootstrap</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\third-party\simdjson\twitter.json">
+      <Filter>third-party\simdjson</Filter>
+    </None>
+  </ItemGroup>
+</Project>
