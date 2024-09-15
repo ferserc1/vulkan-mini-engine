@@ -71,15 +71,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\build</OutDir>
+    <OutDir>$(SolutionDir)..\build\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\build</OutDir>
+    <OutDir>$(SolutionDir)..\build\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -117,11 +117,13 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2d.lib;SDL2maind.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(SolutionDir)..\build\shaders</Command>
@@ -137,19 +139,22 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\mini_engine\MainLoop.cpp" />
     <ClCompile Include="..\src\mini_engine\PlatformTools.cpp" />
+    <ClCompile Include="..\src\mini_engine\Swapchain.cpp" />
+    <ClCompile Include="..\src\mini_engine\VulkanData.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\fastgltf.cpp" />
     <ClCompile Include="..\third-party\imgui\imgui.cpp" />
@@ -165,6 +170,8 @@
   <ItemGroup>
     <ClInclude Include="..\include\mini_engine\MainLoop.hpp" />
     <ClInclude Include="..\include\mini_engine\PlatformTools.hpp" />
+    <ClInclude Include="..\include\mini_engine\Swapchain.hpp" />
+    <ClInclude Include="..\include\mini_engine\VulkanData.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\glm_element_traits.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\parser.hpp" />

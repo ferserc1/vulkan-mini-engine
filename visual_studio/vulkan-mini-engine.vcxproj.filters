@@ -84,6 +84,12 @@
     <ClCompile Include="..\third-party\vk-bootstrap\src\VkBootstrap.cpp">
       <Filter>third-party\vk-bootstrap</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mini_engine\VulkanData.cpp">
+      <Filter>Source Files\mini_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\Swapchain.cpp">
+      <Filter>Source Files\mini_engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mini_engine\MainLoop.hpp">
@@ -145,6 +151,12 @@
     </ClInclude>
     <ClInclude Include="..\third-party\vk-bootstrap\src\VkBootstrapDispatch.h">
       <Filter>third-party\vk-bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\VulkanData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\Swapchain.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

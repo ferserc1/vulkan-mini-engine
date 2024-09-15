@@ -1,6 +1,11 @@
 #pragma once
 
+#include <SDL.h>
+#include <SDL_vulkan.h>
+
 #include <string>
+
+#include <mini_engine/VulkanData.hpp>
 
 namespace miniengine {
     
@@ -16,6 +21,8 @@ protected:
     uint32_t _windowWidth = 1440;
     uint32_t _windowHeight = 700;
     std::string _windowTitle = "Vulkan Mini Engine";
+
+    VulkanData _vulkanData;
 };
 
 }

@@ -1,9 +1,6 @@
 
 #include <mini_engine/MainLoop.hpp>
 
-#include <SDL.h>
-#include <SDL_vulkan.h>
-
 #include <thread>
 
 int32_t miniengine::MainLoop::run()
@@ -20,6 +17,8 @@ int32_t miniengine::MainLoop::run()
         _windowHeight,
         winFlags
     );
+
+    _vulkanData.init(window);
     
     SDL_Event event;
     bool quit = false;
@@ -54,6 +53,7 @@ int32_t miniengine::MainLoop::run()
         }
     }
     
+    _vulkanData.cleanup();
     SDL_DestroyWindow(window);
     
     return 0;
