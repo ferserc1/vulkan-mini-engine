@@ -6,6 +6,7 @@
 #include <string>
 
 #include <mini_engine/VulkanData.hpp>
+#include <mini_engine/DrawLoop.hpp>
 
 namespace miniengine {
     
@@ -23,6 +24,7 @@ protected:
     std::string _windowTitle = "Vulkan Mini Engine";
 
     VulkanData _vulkanData;
+    DrawLoop _drawLoop;
 };
 
 }

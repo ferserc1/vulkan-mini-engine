@@ -28,6 +28,11 @@ public:
     inline core::Command& command() { return _command; }
     inline const core::Command& command() const { return _command; }
 
+    inline core::FrameResources& currentFrameResources() { return _frameResources[_currentFrame % core::FRAME_OVERLAP]; }
+    inline const core::FrameResources& currentFrameResources() const { return _frameResources[_currentFrame % core::FRAME_OVERLAP]; }
+    inline uint32_t currentFrame() const { return _currentFrame; }
+    inline void nextFrame() { ++_currentFrame; }
+    
 protected:
     SDL_Window * _window;
 
@@ -48,9 +53,6 @@ private:
     
     core::FrameResources _frameResources[core::FRAME_OVERLAP];
     uint32_t _currentFrame = 0;
-    inline core::FrameResources& currentFrame() { return _frameResources[_currentFrame % core::FRAME_OVERLAP]; }
-    inline const core::FrameResources& currentFrame() const { return _frameResources[_currentFrame % core::FRAME_OVERLAP]; }
-    
 
     void createInstance();
     void createSurface();

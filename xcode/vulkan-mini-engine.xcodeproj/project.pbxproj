@@ -14,6 +14,8 @@
 		ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911CD2C9855EC00B07513 /* FrameResources.cpp */; };
 		ED3911D12C98575900B07513 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D02C98575900B07513 /* Command.cpp */; };
 		ED3911D52C98609400B07513 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D42C98609400B07513 /* Init.cpp */; };
+		ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D72C98846F00B07513 /* DrawLoop.cpp */; };
+		ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911DA2C989D7E00B07513 /* Image.cpp */; };
 		ED4F37562C970C2A009B120B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED4F37552C970C2A009B120B /* Assets.xcassets */; };
 		ED4F37642C970C87009B120B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED4F37622C970C87009B120B /* main.cpp */; };
 		ED4F376B2C970E13009B120B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4F376A2C970E13009B120B /* CoreFoundation.framework */; };
@@ -82,6 +84,10 @@
 		ED3911D22C985DCC00B07513 /* common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
 		ED3911D32C98608F00B07513 /* Init.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Init.hpp; sourceTree = "<group>"; };
 		ED3911D42C98609400B07513 /* Init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Init.cpp; sourceTree = "<group>"; };
+		ED3911D62C98846700B07513 /* DrawLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawLoop.hpp; sourceTree = "<group>"; };
+		ED3911D72C98846F00B07513 /* DrawLoop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DrawLoop.cpp; sourceTree = "<group>"; };
+		ED3911D92C989D7800B07513 /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
+		ED3911DA2C989D7E00B07513 /* Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Image.cpp; sourceTree = "<group>"; };
 		ED4F374F2C970C29009B120B /* vulkan-mini-engine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "vulkan-mini-engine.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED4F37552C970C2A009B120B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED4F375C2C970C2A009B120B /* vulkan_mini_engine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = vulkan_mini_engine.entitlements; sourceTree = "<group>"; };
@@ -145,6 +151,7 @@
 				ED3911CF2C98575400B07513 /* Command.hpp */,
 				ED3911D22C985DCC00B07513 /* common.hpp */,
 				ED3911CC2C9855E600B07513 /* FrameResources.hpp */,
+				ED3911D92C989D7800B07513 /* Image.hpp */,
 				ED3911D32C98608F00B07513 /* Init.hpp */,
 				ED3911C72C98550E00B07513 /* Swapchain.hpp */,
 			);
@@ -156,6 +163,7 @@
 			children = (
 				ED3911D02C98575900B07513 /* Command.cpp */,
 				ED3911CD2C9855EC00B07513 /* FrameResources.cpp */,
+				ED3911DA2C989D7E00B07513 /* Image.cpp */,
 				ED3911D42C98609400B07513 /* Init.cpp */,
 				ED3911C92C98551400B07513 /* Swapchain.cpp */,
 			);
@@ -370,6 +378,7 @@
 			isa = PBXGroup;
 			children = (
 				ED3911C82C98550E00B07513 /* core */,
+				ED3911D62C98846700B07513 /* DrawLoop.hpp */,
 				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
 				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
 				ED060AEB2C973EA60063ABDD /* VulkanData.hpp */,
@@ -382,6 +391,7 @@
 			isa = PBXGroup;
 			children = (
 				ED3911CA2C98551400B07513 /* core */,
+				ED3911D72C98846F00B07513 /* DrawLoop.cpp */,
 				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
 				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
 				ED060AE12C973E8F0063ABDD /* VulkanData.cpp */,
@@ -523,6 +533,8 @@
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */,
 				ED4F37992C970E37009B120B /* imgui_draw.cpp in Sources */,
+				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
+				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED4F37982C970E37009B120B /* imgui_demo.cpp in Sources */,
 				ED4F37962C970E37009B120B /* base64.cpp in Sources */,
 			);
