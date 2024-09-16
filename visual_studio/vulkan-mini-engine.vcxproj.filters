@@ -87,8 +87,8 @@
     <ClCompile Include="..\src\mini_engine\VulkanData.cpp">
       <Filter>Source Files\mini_engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\Swapchain.cpp">
-      <Filter>Source Files\mini_engine</Filter>
+    <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp">
+      <Filter>Source Files\mini_engine\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +155,8 @@
     <ClInclude Include="..\include\mini_engine\VulkanData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\Swapchain.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp">
+      <Filter>Header Files\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

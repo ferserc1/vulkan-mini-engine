@@ -7,6 +7,8 @@ namespace miniengine {
 
 class VulkanData;
 
+namespace core {
+
 class Swapchain {
 public:
 
@@ -21,7 +23,8 @@ protected:
     std::vector<VkImageView> _imageViews;
     VkExtent2D _extent;
 
-    VulkanData* _vulkanData;
+    VulkanData* _vulkanData = nullptr;
 };
 
+}
 }

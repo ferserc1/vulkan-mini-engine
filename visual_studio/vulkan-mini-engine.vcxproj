@@ -153,7 +153,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\mini_engine\MainLoop.cpp" />
     <ClCompile Include="..\src\mini_engine\PlatformTools.cpp" />
-    <ClCompile Include="..\src\mini_engine\Swapchain.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp" />
     <ClCompile Include="..\src\mini_engine\VulkanData.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\fastgltf.cpp" />
@@ -170,7 +170,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\mini_engine\MainLoop.hpp" />
     <ClInclude Include="..\include\mini_engine\PlatformTools.hpp" />
-    <ClInclude Include="..\include\mini_engine\Swapchain.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp" />
     <ClInclude Include="..\include\mini_engine\VulkanData.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\glm_element_traits.hpp" />

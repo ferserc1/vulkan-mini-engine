@@ -1,11 +1,11 @@
-#include <mini_engine/Swapchain.hpp>
+#include <mini_engine/core/Swapchain.hpp>
 
 #include <mini_engine/VulkanData.hpp>
 
 namespace miniengine {
+namespace core {
 
-
-void miniengine::Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32_t height)
+void Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32_t height)
 {
 	_vulkanData = vulkanData;
 
@@ -37,7 +37,7 @@ void miniengine::Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32
 	_imageViews = vkbSwapchain.get_image_views().value();
 }
 
-void miniengine::Swapchain::cleanup()
+void Swapchain::cleanup()
 {
 	vkDestroySwapchainKHR(_vulkanData->device(), _swapchain, nullptr);
 
@@ -48,3 +48,5 @@ void miniengine::Swapchain::cleanup()
 }
 
 }
+}
+

@@ -2,7 +2,9 @@
 
 #include <VkBootstrap.h>
 
-void miniengine::VulkanData::init(SDL_Window * window)
+namespace miniengine {
+
+void VulkanData::init(SDL_Window * window)
 {
     _window = window;
 
@@ -13,11 +15,26 @@ void miniengine::VulkanData::init(SDL_Window * window)
     createInstance();
     createSurface();
     createDevicesAndQueues();
-
     _swapchain.init(this, uint32_t(width), uint32_t(height));
+    createFrameResources();
 }
 
-void  miniengine::VulkanData::createInstance()
+void VulkanData::cleanup()
+{
+    vkDeviceWaitIdle(_device);
+    
+    cleanupFrameResources();
+    
+    _swapchain.cleanup();
+
+    vkDestroySurfaceKHR(_instance, _surface, nullptr);
+    vkDestroyDevice(_device, nullptr);
+
+    vkb::destroy_debug_utils_messenger(_instance, _debugMessenger, nullptr);
+    vkDestroyInstance(_instance, nullptr);
+}
+
+void  VulkanData::createInstance()
 {
     vkb::InstanceBuilder builder;
 
@@ -32,13 +49,13 @@ void  miniengine::VulkanData::createInstance()
     _debugMessenger = _vkbInstance.debug_messenger;
 }
 
-void  miniengine::VulkanData::createSurface()
+void  VulkanData::createSurface()
 {
     SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
 
 }
 
-void  miniengine::VulkanData::createDevicesAndQueues()
+void  VulkanData::createDevicesAndQueues()
 {
     VkPhysicalDeviceVulkan13Features features13 = {};
     features13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
@@ -65,16 +82,24 @@ void  miniengine::VulkanData::createDevicesAndQueues()
 
     _physicalDevice = physicalDevice.physical_device;
     _device = vkbDevice.device;
+    
+    _command.init(this, &vkbDevice);
 }
 
-
-void miniengine::VulkanData::cleanup()
+void VulkanData::createFrameResources()
 {
-    _swapchain.cleanup();
+    for (int i = 0; i < core::FRAME_OVERLAP; ++i)
+    {
+        _frameResources[i].init(&_command);
+    }
+}
 
-    vkDestroySurfaceKHR(_instance, _surface, nullptr);
-    vkDestroyDevice(_device, nullptr);
+void VulkanData::cleanupFrameResources()
+{
+    for (int i = 0; i < core::FRAME_OVERLAP; ++i)
+    {
+        _frameResources[i].cleanup();
+    }
+}
 
-    vkb::destroy_debug_utils_messenger(_instance, _debugMessenger, nullptr);
-    vkDestroyInstance(_instance, nullptr);
 }
