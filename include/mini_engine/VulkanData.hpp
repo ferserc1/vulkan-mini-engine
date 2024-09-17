@@ -4,12 +4,13 @@
 #include <SDL_vulkan.h>
 
 #include <vulkan/vulkan.h>
-
+#include "vk_mem_alloc.h"
 #include <VkBootstrap.h>
 
 #include <mini_engine/core/Swapchain.hpp>
 #include <mini_engine/core/Command.hpp>
 #include <mini_engine/core/FrameResources.hpp>
+#include <mini_engine/core/CleanupManager.hpp>
 
 namespace miniengine {
 
@@ -33,6 +34,10 @@ public:
     inline uint32_t currentFrame() const { return _currentFrame; }
     inline void nextFrame() { ++_currentFrame; }
     
+    inline core::CleanupManager& cleanupManager() { return _cleanupManager; }
+    
+    inline VmaAllocator allocator() const { return _allocator; }
+
 protected:
     SDL_Window * _window;
 
@@ -53,10 +58,15 @@ private:
     
     core::FrameResources _frameResources[core::FRAME_OVERLAP];
     uint32_t _currentFrame = 0;
+    
+    core::CleanupManager _cleanupManager;
+    
+    VmaAllocator _allocator;
 
     void createInstance();
     void createSurface();
     void createDevicesAndQueues();
+    void createMemoryAllocator();
     void createFrameResources();
     
     void cleanupFrameResources();

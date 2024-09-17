@@ -15,7 +15,7 @@ public:
     
     inline void initWindowSize(uint32_t width, uint32_t height) { _windowWidth = width; _windowHeight = height; }
     inline void initWindowTitle(const std::string& title) { _windowTitle = title; }
-
+    inline void setDrawLoopDelegate(DrawLoopDelegate * d) { _drawLoop.setDrawDelegate(d); }
     int32_t run();
 
 protected:

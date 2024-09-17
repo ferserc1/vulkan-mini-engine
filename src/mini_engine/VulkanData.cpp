@@ -15,6 +15,7 @@ void VulkanData::init(SDL_Window * window)
     createInstance();
     createSurface();
     createDevicesAndQueues();
+    createMemoryAllocator();
     _swapchain.init(this, uint32_t(width), uint32_t(height));
     createFrameResources();
 }
@@ -23,18 +24,23 @@ void VulkanData::cleanup()
 {
     vkDeviceWaitIdle(_device);
     
+    _cleanupManager.flush();
+    
     cleanupFrameResources();
     
     _swapchain.cleanup();
 
-    vkDestroySurfaceKHR(_instance, _surface, nullptr);
+    vmaDestroyAllocator(_allocator);
+
     vkDestroyDevice(_device, nullptr);
+    
+    vkDestroySurfaceKHR(_instance, _surface, nullptr);
 
     vkb::destroy_debug_utils_messenger(_instance, _debugMessenger, nullptr);
     vkDestroyInstance(_instance, nullptr);
 }
 
-void  VulkanData::createInstance()
+void VulkanData::createInstance()
 {
     vkb::InstanceBuilder builder;
 
@@ -49,13 +55,13 @@ void  VulkanData::createInstance()
     _debugMessenger = _vkbInstance.debug_messenger;
 }
 
-void  VulkanData::createSurface()
+void VulkanData::createSurface()
 {
     SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
 
 }
 
-void  VulkanData::createDevicesAndQueues()
+void VulkanData::createDevicesAndQueues()
 {
     VkPhysicalDeviceVulkan13Features features13 = {};
     features13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
@@ -84,6 +90,16 @@ void  VulkanData::createDevicesAndQueues()
     _device = vkbDevice.device;
     
     _command.init(this, &vkbDevice);
+}
+
+void VulkanData::createMemoryAllocator()
+{
+    VmaAllocatorCreateInfo allocInfo = {};
+    allocInfo.physicalDevice = _physicalDevice;
+    allocInfo.device = _device;
+    allocInfo.instance = _instance;
+    allocInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+    vmaCreateAllocator(&allocInfo, &_allocator);
 }
 
 void VulkanData::createFrameResources()

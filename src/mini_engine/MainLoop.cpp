@@ -19,7 +19,7 @@ int32_t miniengine::MainLoop::run()
     );
 
     _vulkanData.init(window);
-    _drawLoop.setVulkanData(&_vulkanData);
+    _drawLoop.init(&_vulkanData);
     
     SDL_Event event;
     bool quit = false;
@@ -53,7 +53,7 @@ int32_t miniengine::MainLoop::run()
             continue;
         }
         
-        _drawLoop.draw();
+        _drawLoop.acquireAndPresent();
     }
     
     _vulkanData.cleanup();

@@ -22,6 +22,8 @@ public:
         VkPipelineStageFlags2 signalSemaphoreStageFlags, VkSemaphore signalSemaphore
     );
     static VkPresentInfoKHR presentInfo(VkSwapchainKHR& swapchain, VkSemaphore& waitSemaphore, uint32_t& imageIndex);
+    static VkImageCreateInfo imageCreateInfo(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent);
+    static VkImageViewCreateInfo imageViewCreateInfo(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags);
 };
 
 }

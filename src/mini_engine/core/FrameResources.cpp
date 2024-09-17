@@ -22,6 +22,11 @@ void FrameResources::init(Command * command)
     VK_ASSERT(vkCreateSemaphore(_command->device(), &semaphoreInfo, nullptr, &renderSemaphore));
 }
 
+void FrameResources::flushFrameData()
+{
+    cleanupManager.flush();
+}
+
 void FrameResources::cleanup()
 {
     // Destroy command pool
@@ -31,6 +36,9 @@ void FrameResources::cleanup()
     vkDestroyFence(_command->device(), frameFence, nullptr);
     vkDestroySemaphore(_command->device(), swapchainSemaphore, nullptr);
     vkDestroySemaphore(_command->device(), renderSemaphore, nullptr);
+    
+    // Destroy frame cleanup manager
+    cleanupManager.flush();
 }
 
 

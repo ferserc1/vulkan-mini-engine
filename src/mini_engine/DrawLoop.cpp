@@ -7,8 +7,17 @@
 
 namespace miniengine {
 
+void DrawLoop::init(VulkanData * vulkanData)
+{
+    _vulkanData = vulkanData;
 
-void DrawLoop::draw()
+    if (_drawDelegate)
+    {
+        _drawDelegate->init(vulkanData);
+    }
+}
+
+void DrawLoop::acquireAndPresent()
 {
     if (!_vulkanData) {
         throw new std::runtime_error("DrawLoop::draw(): the frame cannot be rendered because the VulkanData object has not been set.");
@@ -30,6 +39,8 @@ void DrawLoop::draw()
     VK_ASSERT(vkWaitForFences(dev, 1, &frameFence, true, 10000000000));
     VK_ASSERT(vkResetFences(dev, 1, &frameFence));
     
+    frameRes.flushFrameData();
+    
     uint32_t swapchainImageIndex;
     VK_ASSERT(vkAcquireNextImageKHR(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex));
     
@@ -39,33 +50,7 @@ void DrawLoop::draw()
     
     VK_ASSERT(vkBeginCommandBuffer(cmd, &cmdBeginInfo));
     
-    // Set the swapchain image to a write-ready state
-    core::Image::transitionImage(
-        cmd,
-        swapchainImage,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_GENERAL
-    );
-    
-    // Clear image
-    VkClearColorValue clearValue;
-    float flash = std::abs(std::sin(_vulkanData->currentFrame() / 120.0f));
-    clearValue = { { 0.0f, 0.0f, flash, 1.0f } };
-    auto clearRange = core::Image::subresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
-    vkCmdClearColorImage(
-        cmd,
-        swapchainImage,
-        VK_IMAGE_LAYOUT_GENERAL,
-        &clearValue, 1, &clearRange
-    );
-    
-    // Transition swapchain image to be presented in the surface
-    core::Image::transitionImage(
-        cmd,
-        swapchainImage,
-        VK_IMAGE_LAYOUT_GENERAL,
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-    );
+    draw(cmd, swapchainImage, swapchainData.extent());
     
     // End command buffer
     VK_ASSERT(vkEndCommandBuffer(cmd));
