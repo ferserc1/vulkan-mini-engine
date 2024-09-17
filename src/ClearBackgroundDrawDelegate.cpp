@@ -55,16 +55,8 @@ void ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainIma
     core::Image::cmdTransitionImage(
         cmd,
         swapchainImage,
-        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-    );
-    
-    // Transition the swapchain image to present it on the surface
-    core::Image::cmdTransitionImage(
-        cmd,
-        swapchainImage,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_GENERAL
     );
 }
 

@@ -4,6 +4,7 @@
 #include <mini_engine/core/FrameResources.hpp>
 #include <mini_engine/core/Init.hpp>
 #include <mini_engine/core/Image.hpp>
+#include <mini_engine/PlatformTools.hpp>
 
 namespace miniengine {
 
@@ -66,8 +67,12 @@ void DrawLoop::acquireAndPresent()
         renderSemaphore
     );
     auto submitInfo = core::Init::submitInfo(&cmdInfo, &signalSemaphoreInfo, &waitSemaphoreInfo);
+#ifdef MINI_ENGINE_IS_WINDOWS
+    VK_ASSERT(vkQueueSubmit2(graphicsQueue, 1, &submitInfo, frameFence));
+#else
     VK_ASSERT(vkQueueSubmit2KHR(graphicsQueue, 1, &submitInfo, frameFence));
-    
+#endif
+
     // Present frame
     auto presentInfo = core::Init::presentInfo(swapchain, renderSemaphore, swapchainImageIndex);
     VK_ASSERT(vkQueuePresentKHR(graphicsQueue, &presentInfo));

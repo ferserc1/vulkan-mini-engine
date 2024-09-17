@@ -1,4 +1,5 @@
 
+#include <mini_engine/PlatformTools.hpp>
 #include <mini_engine/core/Image.hpp>
 #include <mini_engine/core/Init.hpp>
 
@@ -15,24 +16,37 @@ void Image::cmdTransitionImage(
     VkPipelineStageFlags2 srcStageMask,
     VkAccessFlags2        srcAccessMask,
     VkPipelineStageFlags2 dstStageMask,
-    VkAccessFlags2        dstAccessMask
+    VkAccessFlags2        dstAccessMask,
+    VkImageAspectFlags    aspectMask
 ) {
     VkImageMemoryBarrier2 imageBarrier = {};
+    imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
     imageBarrier.srcStageMask = srcStageMask;
     imageBarrier.srcAccessMask = srcAccessMask;
     imageBarrier.dstStageMask = dstStageMask;
-    imageBarrier.dstAccessMask = dstStageMask;
-    
+    imageBarrier.dstAccessMask = dstStageMask; 
     imageBarrier.oldLayout = oldLayout;
     imageBarrier.newLayout = newLayout;
+
+    if (aspectMask == 0) {
+        aspectMask = newLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL ?
+            VK_IMAGE_ASPECT_DEPTH_BIT :
+            VK_IMAGE_ASPECT_COLOR_BIT;
+    }
+    imageBarrier.subresourceRange = Image::subresourceRange(aspectMask);
     imageBarrier.image = image;
-    
+
     VkDependencyInfo dependencies = {};
     dependencies.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
     dependencies.imageMemoryBarrierCount = 1;
     dependencies.pImageMemoryBarriers = &imageBarrier;
     
+
+#ifdef MINI_ENGINE_IS_WINDOWS
+    vkCmdPipelineBarrier2(cmd, &dependencies);
+#else
     vkCmdPipelineBarrier2KHR(cmd, &dependencies);
+#endif
 }
 
 VkImageSubresourceRange Image::subresourceRange(VkImageAspectFlags aspectMask)
@@ -84,7 +98,11 @@ void Image::cmdCopy(
 	blitInfo.regionCount = 1;
 	blitInfo.pRegions = &blitRegion;
 
-	vkCmdBlitImage2KHR(cmd, &blitInfo);
+#ifdef MINI_ENGINE_IS_WINDOWS
+	vkCmdBlitImage2(cmd, &blitInfo);
+#else
+    vkCmdBlitImage2KHR(cmd, &blitInfo);
+#endif
 }
 
 Image* Image::createAllocatedImage(

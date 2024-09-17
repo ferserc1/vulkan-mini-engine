@@ -40,6 +40,15 @@
     <Filter Include="third-party\vk-bootstrap">
       <UniqueIdentifier>{faa6391c-f66e-4eca-a45d-0df33b84c0aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mini_engine\core">
+      <UniqueIdentifier>{e3fe5e46-4efe-4afd-bafb-b396ad60c21d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mini_engine">
+      <UniqueIdentifier>{65e5033e-60c4-4da0-aba0-65d05bcefcd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mini_engine\core">
+      <UniqueIdentifier>{f9be87f5-473d-4c23-a19f-86c439872f38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -88,16 +97,31 @@
       <Filter>Source Files\mini_engine</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\DrawLoop.cpp">
+      <Filter>Source Files\mini_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\core\Command.cpp">
+      <Filter>Source Files\mini_engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\core\FrameResources.cpp">
+      <Filter>Source Files\mini_engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\core\Image.cpp">
+      <Filter>Source Files\mini_engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\core\Init.cpp">
+      <Filter>Source Files\mini_engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mini_engine\core\vk_mem_alloc.cpp">
       <Filter>Source Files\mini_engine\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\mini_engine\MainLoop.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\mini_engine\PlatformTools.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
       <Filter>third-party\fastgltf\include</Filter>
     </ClInclude>
@@ -152,11 +176,41 @@
     <ClInclude Include="..\third-party\vk-bootstrap\src\VkBootstrapDispatch.h">
       <Filter>third-party\vk-bootstrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\VulkanData.hpp">
+    <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\mini_engine\DrawLoop.hpp">
+      <Filter>Header Files\mini_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\MainLoop.hpp">
+      <Filter>Header Files\mini_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\PlatformTools.hpp">
+      <Filter>Header Files\mini_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\VulkanData.hpp">
+      <Filter>Header Files\mini_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\CleanupManager.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\Command.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\common.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\FrameResources.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\Image.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mini_engine\core\Init.hpp">
+      <Filter>Header Files\mini_engine\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp">
-      <Filter>Header Files\core</Filter>
+      <Filter>Header Files\mini_engine\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

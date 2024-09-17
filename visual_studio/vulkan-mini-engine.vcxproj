@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
   </PropertyGroup>
@@ -150,7 +150,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\Command.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\FrameResources.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\Image.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\Init.cpp" />
+    <ClCompile Include="..\src\mini_engine\core\vk_mem_alloc.cpp" />
+    <ClCompile Include="..\src\mini_engine\DrawLoop.cpp" />
     <ClCompile Include="..\src\mini_engine\MainLoop.cpp" />
     <ClCompile Include="..\src\mini_engine\PlatformTools.cpp" />
     <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp" />
@@ -168,9 +175,17 @@
     <ClCompile Include="..\third-party\vk-bootstrap\src\VkBootstrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\CleanupManager.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\Command.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\common.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\FrameResources.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\Image.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\Init.hpp" />
+    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp" />
+    <ClInclude Include="..\include\mini_engine\DrawLoop.hpp" />
     <ClInclude Include="..\include\mini_engine\MainLoop.hpp" />
     <ClInclude Include="..\include\mini_engine\PlatformTools.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp" />
     <ClInclude Include="..\include\mini_engine\VulkanData.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\glm_element_traits.hpp" />
