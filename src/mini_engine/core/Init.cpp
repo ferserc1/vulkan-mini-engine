@@ -1,5 +1,5 @@
 
-#include <mini_engine/core/init.hpp>
+#include <mini_engine/core/Init.hpp>
 
 namespace miniengine {
 namespace core {

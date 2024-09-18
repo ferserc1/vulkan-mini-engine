@@ -33,7 +33,7 @@ std::string mini_engine_platform_tools_macos_resources_path()
 
 #endif
 
-std::string mini_engine::PlatformTools::shader_path()
+std::string miniengine::PlatformTools::shaderPath()
 {
 #ifdef MINI_ENGINE_IS_MAC
     return mini_engine_platform_tools_macos_resources_path() + "shaders/";
@@ -42,7 +42,7 @@ std::string mini_engine::PlatformTools::shader_path()
 #endif
 }
 
-std::string mini_engine::PlatformTools::asset_path()
+std::string miniengine::PlatformTools::assetPath()
 {
 #ifdef MINI_ENGINE_IS_MAC
     return mini_engine_platform_tools_macos_resources_path() + "assets/";

@@ -11,7 +11,7 @@ void ClearBackgroundDrawDelegate::init(miniengine::VulkanData * vulkanData)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    vulkanData->cleanupManager().push([=] {
+    vulkanData->cleanupManager().push([this] {
         _drawImage->cleanup();
     });
 }

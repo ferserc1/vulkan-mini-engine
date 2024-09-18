@@ -28,12 +28,12 @@ static const bool is_linux = true;
 
 #endif
 
-namespace mini_engine {
+namespace miniengine {
 
 class PlatformTools {
 public:
-    static std::string shader_path();
-    static std::string asset_path();
+    static std::string shaderPath();
+    static std::string assetPath();
 };
 
 }

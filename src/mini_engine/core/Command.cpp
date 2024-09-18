@@ -14,8 +14,6 @@ void Command::init(VulkanData *vulkanData, vkb::Device *bDevice)
     
     _graphicsQueue = bDevice->get_queue(vkb::QueueType::graphics).value();
     _graphicsQueueFamily = bDevice->get_queue_index(vkb::QueueType::graphics).value();
-
-    auto poolInfo = Init::commandPoolCreateInfo(_graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 }
 
 VkCommandPool Command::createCommandPool(VkCommandPoolCreateFlags flags)

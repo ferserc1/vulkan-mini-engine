@@ -113,6 +113,7 @@ Image* Image::createAllocatedImage(
     VkImageAspectFlags aspectFlags
 )
 {
+    // TODO: Refactoring. Extract this code to a factory/Image class
     auto result = new Image();
     result->_vulkanData = vulkanData;
     result->_extent = { extent.width, extent.height, 1 };
