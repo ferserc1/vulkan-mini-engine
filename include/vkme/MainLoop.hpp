@@ -4,6 +4,7 @@
 #include <SDL_vulkan.h>
 
 #include <string>
+#include <memory>
 
 #include <vkme/VulkanData.hpp>
 #include <vkme/DrawLoop.hpp>
@@ -16,7 +17,8 @@ public:
     
     inline void initWindowSize(uint32_t width, uint32_t height) { _windowWidth = width; _windowHeight = height; }
     inline void initWindowTitle(const std::string& title) { _windowTitle = title; }
-    inline void setDrawLoopDelegate(DrawLoopDelegate * d) { _drawLoop.setDrawDelegate(d); }
+    inline void setDrawLoopDelegate(std::shared_ptr<DrawLoopDelegate> d) { _drawLoop.setDelegate(d); }
+    inline void setUIDelegate(std::shared_ptr<UserInterfaceDelegate> d) { _userInterface.setDelegate(d); }
     int32_t run();
 
 protected:

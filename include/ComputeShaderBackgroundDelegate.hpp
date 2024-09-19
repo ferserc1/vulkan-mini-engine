@@ -5,13 +5,21 @@
 #include <vkme/DrawLoop.hpp>
 #include <vkme/core/DescriptorSetAllocator.hpp>
 #include <vkme/core/DescriptorSet.hpp>
+#include <vkme/UserInterface.hpp>
 #include <memory>
 
 
-class ComputeShaderBackgroundDrawDelegate : public vkme::DrawLoopDelegate {
+/*
+    This example draws a background over the render image using a compute shader such as
+    DrawLoopDelegate. In addition, it also implements UserInterfaceDelegate to draw the
+    IMGUI demo user interface.
+ */
+class ComputeShaderBackgroundDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
+    void init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui);
     VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    void drawUI();
 
 protected:
     

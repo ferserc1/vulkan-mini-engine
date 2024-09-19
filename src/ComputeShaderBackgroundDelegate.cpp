@@ -1,9 +1,9 @@
-#include <ComputeShaderBackgroundDrawDelegate.hpp>
+#include <ComputeShaderBackgroundDelegate.hpp>
 
 #include <vkme/factory/DescriptorSetLayout.hpp>
 #include <vkme/factory/ComputePipeline.hpp>
 
-void ComputeShaderBackgroundDrawDelegate::init(vkme::VulkanData * vulkanData)
+void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData)
 {
     _vulkanData = vulkanData;
     
@@ -25,7 +25,13 @@ void ComputeShaderBackgroundDrawDelegate::init(vkme::VulkanData * vulkanData)
     initPipelines();
 }
 
-VkImageLayout ComputeShaderBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui)
+{
+    _vulkanData = vulkanData;
+    
+}
+
+VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
 {
     using namespace vkme;
     
@@ -63,7 +69,12 @@ VkImageLayout ComputeShaderBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkI
     return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 }
 
-void ComputeShaderBackgroundDrawDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, VkExtent2D imageExtent)
+void ComputeShaderBackgroundDelegate::drawUI()
+{
+    ImGui::ShowDemoWindow();
+}
+
+void ComputeShaderBackgroundDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, VkExtent2D imageExtent)
 {
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, _gradientPipeline);
     
@@ -83,7 +94,7 @@ void ComputeShaderBackgroundDrawDelegate::drawBackground(VkCommandBuffer cmd, ui
 
 
 
-void ComputeShaderBackgroundDrawDelegate::initDescriptors()
+void ComputeShaderBackgroundDelegate::initDescriptors()
 {
     using namespace vkme::core;
     std::vector<DescriptorSetAllocator::PoolSizeRatio> sizes =
@@ -110,7 +121,7 @@ void ComputeShaderBackgroundDrawDelegate::initDescriptors()
     });
 }
 
-void ComputeShaderBackgroundDrawDelegate::initPipelines()
+void ComputeShaderBackgroundDelegate::initPipelines()
 {
     using namespace vkme;
     

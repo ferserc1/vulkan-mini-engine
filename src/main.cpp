@@ -2,7 +2,7 @@
 #include <vkme/MainLoop.hpp>
 
 #include <ClearBackgroundDrawDelegate.hpp>
-#include <ComputeShaderBackgroundDrawDelegate.hpp>
+#include <ComputeShaderBackgroundDelegate.hpp>
 
 // A function that print hello world
 void sayHello() {
@@ -16,10 +16,13 @@ int main(int argc, char** argv) {
     app.initWindowSize(1400, 700);
     
     // Example 1
-    //app.setDrawLoopDelegate(new ClearBackgroundDrawDelegate());
+    //app.setDrawLoopDelegate(std::shared_ptr<ClearBackgroundDrawDelegate>(new ClearBackgroundDrawDelegate()));
     
     // Example 2
-    app.setDrawLoopDelegate(new ComputeShaderBackgroundDrawDelegate());
+    // This delegate extends the draw and ui delegates, so we can use it for both.
+    auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
+    app.setDrawLoopDelegate(delegate);
+    app.setUIDelegate(delegate);
     
     return app.run();
 }

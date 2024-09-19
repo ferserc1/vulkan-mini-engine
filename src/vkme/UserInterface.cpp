@@ -28,7 +28,9 @@ void UserInterface::newFrame()
     ImGui::NewFrame();
 
     // TODO: Create here the user interface. Maybe UserInterfaceDelegate?
-    ImGui::ShowDemoWindow();
+    if (_delegate) {
+        _delegate->drawUI();
+    }
 
     ImGui::Render();
 }

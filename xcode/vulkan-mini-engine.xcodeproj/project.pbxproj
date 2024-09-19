@@ -14,7 +14,7 @@
 		ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */; };
 		ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A462C9AC60B00315207 /* DescriptorSetLayout.cpp */; };
 		ED330A4B2C9B03DF00315207 /* DescriptorSetAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4A2C9B03DF00315207 /* DescriptorSetAllocator.cpp */; };
-		ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp */; };
+		ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */; };
 		ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4F2C9B220C00315207 /* ShaderModule.cpp */; };
 		ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */; };
 		ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */; };
@@ -91,8 +91,8 @@
 		ED330A462C9AC60B00315207 /* DescriptorSetLayout.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSetLayout.cpp; sourceTree = "<group>"; };
 		ED330A492C9B03D900315207 /* DescriptorSetAllocator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DescriptorSetAllocator.hpp; sourceTree = "<group>"; };
 		ED330A4A2C9B03DF00315207 /* DescriptorSetAllocator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSetAllocator.cpp; sourceTree = "<group>"; };
-		ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComputeShaderBackgroundDrawDelegate.cpp; sourceTree = "<group>"; };
-		ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDrawDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComputeShaderBackgroundDrawDelegate.hpp; sourceTree = "<group>"; };
+		ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComputeShaderBackgroundDelegate.cpp; sourceTree = "<group>"; };
+		ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComputeShaderBackgroundDelegate.hpp; sourceTree = "<group>"; };
 		ED330A4F2C9B220C00315207 /* ShaderModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderModule.cpp; sourceTree = "<group>"; };
 		ED330A512C9B221700315207 /* ShaderModule.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderModule.hpp; sourceTree = "<group>"; };
 		ED330A542C9B226E00315207 /* gradient.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = gradient.comp.glsl; sourceTree = "<group>"; };
@@ -272,7 +272,7 @@
 			isa = PBXGroup;
 			children = (
 				ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */,
-				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp */,
+				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
 				ED4F37C32C971769009B120B /* vkme */,
 			);
@@ -284,7 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
-				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDrawDelegate.hpp */,
+				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
 			);
 			name = include;
@@ -612,7 +612,7 @@
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
 				ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */,
-				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp in Sources */,
+				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */,
 				ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */,
 				ED4F37992C970E37009B120B /* imgui_draw.cpp in Sources */,
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,

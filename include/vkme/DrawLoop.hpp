@@ -10,6 +10,8 @@ namespace vkme {
 
 class DrawLoopDelegate {
 public:
+    virtual ~DrawLoopDelegate() {}
+
     virtual void init(VulkanData *) {}
 
     // This call must return the last swapchainImage layout, or VK_IMAGE_LAYOUT_UNDEFINED if it is not used
@@ -32,13 +34,13 @@ public:
         }
     }
     
-    inline void setDrawDelegate(DrawLoopDelegate * delegate) { _drawDelegate = delegate; }
+    inline void setDelegate(std::shared_ptr<DrawLoopDelegate> delegate) { _drawDelegate = delegate; }
 
 protected:
     VulkanData * _vulkanData = nullptr;
     UserInterface * _userInterface = nullptr;
     
-    DrawLoopDelegate * _drawDelegate = nullptr;
+    std::shared_ptr<DrawLoopDelegate> _drawDelegate;
 };
 
 }
