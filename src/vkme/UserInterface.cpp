@@ -27,7 +27,6 @@ void UserInterface::newFrame()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    // TODO: Create here the user interface. Maybe UserInterfaceDelegate?
     if (_delegate) {
         _delegate->drawUI();
     }

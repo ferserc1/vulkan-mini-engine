@@ -28,7 +28,6 @@ void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData)
 void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui)
 {
     _vulkanData = vulkanData;
-    
 }
 
 VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
@@ -97,11 +96,10 @@ void ComputeShaderBackgroundDelegate::drawBackground(VkCommandBuffer cmd, uint32
 void ComputeShaderBackgroundDelegate::initDescriptors()
 {
     using namespace vkme::core;
-    std::vector<DescriptorSetAllocator::PoolSizeRatio> sizes =
-    {
-        // One image to pass the draw image to the compute shader
-        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1 }
-    };
+    std::vector<DescriptorSetAllocator::PoolSizeRatio> sizes = {};
+
+    // One image to pass the draw image to the compute shader
+    sizes.push_back({ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1 });
     
     _descriptorAllocator.init(_vulkanData);
     _descriptorAllocator.initPool(_vulkanData->device(), 10, sizes);

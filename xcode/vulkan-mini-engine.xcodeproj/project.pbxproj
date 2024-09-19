@@ -47,6 +47,7 @@
 		ED4F37AD2C970F02009B120B /* libSDL2-2.0.0.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37AE2C970F04009B120B /* libvulkan.1.3.290.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
+		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 /* End PBXBuildFile section */
 
@@ -156,6 +157,10 @@
 		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<group>"; };
 		ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
+		ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PushConstantsComputeShaderDelegate.cpp; sourceTree = "<group>"; };
+		ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PushConstantsComputeShaderDelegate.hpp; sourceTree = "<group>"; };
+		ED8DC3A62C9D7B480011812D /* gradient_color.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = gradient_color.comp.glsl; sourceTree = "<group>"; };
+		ED8DC3A72C9D83E80011812D /* sky.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = sky.comp.glsl; sourceTree = "<group>"; };
 		EDA2144C2C9C888E009161FA /* UserInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UserInterface.hpp; sourceTree = "<group>"; };
 		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -198,7 +203,9 @@
 		ED330A592C9B226E00315207 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				ED8DC3A62C9D7B480011812D /* gradient_color.comp.glsl */,
 				ED330A542C9B226E00315207 /* gradient.comp.glsl */,
+				ED8DC3A72C9D83E80011812D /* sky.comp.glsl */,
 				ED330A572C9B226E00315207 /* test.frag.glsl */,
 				ED330A582C9B226E00315207 /* test.vert.glsl */,
 			);
@@ -274,6 +281,7 @@
 				ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */,
 				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
+				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
 				ED4F37C32C971769009B120B /* vkme */,
 			);
 			name = src;
@@ -285,6 +293,7 @@
 			children = (
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
+				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
 			);
 			name = include;
@@ -618,6 +627,7 @@
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
 				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */,
+				ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */,
 				ED4F37982C970E37009B120B /* imgui_demo.cpp in Sources */,
 				ED4F37962C970E37009B120B /* base64.cpp in Sources */,
 			);

@@ -3,6 +3,7 @@
 
 #include <ClearBackgroundDrawDelegate.hpp>
 #include <ComputeShaderBackgroundDelegate.hpp>
+#include <PushConstantsComputeShaderDelegate.hpp>
 
 int main(int argc, char** argv) {
     vkme::MainLoop app;
@@ -15,7 +16,8 @@ int main(int argc, char** argv) {
     
     // Example 2
     // This delegate extends the draw and ui delegates, so we can use it for both.
-    auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
+    //auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
+    auto delegate = std::shared_ptr<PushConstantsComputeShaderDelegate>(new PushConstantsComputeShaderDelegate());
     app.setDrawLoopDelegate(delegate);
     app.setUIDelegate(delegate);
     
