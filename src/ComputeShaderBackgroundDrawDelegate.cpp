@@ -1,13 +1,13 @@
 #include <ComputeShaderBackgroundDrawDelegate.hpp>
 
-#include <mini_engine/factory/DescriptorSetLayout.hpp>
-#include <mini_engine/factory/ComputePipeline.hpp>
+#include <vkme/factory/DescriptorSetLayout.hpp>
+#include <vkme/factory/ComputePipeline.hpp>
 
-void ComputeShaderBackgroundDrawDelegate::init(miniengine::VulkanData * vulkanData)
+void ComputeShaderBackgroundDrawDelegate::init(vkme::VulkanData * vulkanData)
 {
     _vulkanData = vulkanData;
     
-    _drawImage = std::shared_ptr<miniengine::core::Image>(miniengine::core::Image::createAllocatedImage(
+    _drawImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
         vulkanData,
         VK_FORMAT_R16G16B16A16_SFLOAT,
         vulkanData->swapchain().extent(),
@@ -25,9 +25,9 @@ void ComputeShaderBackgroundDrawDelegate::init(miniengine::VulkanData * vulkanDa
     initPipelines();
 }
 
-void ComputeShaderBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout ComputeShaderBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
 {
-    using namespace miniengine;
+    using namespace vkme;
     
     // Transition draw image to render on it
     core::Image::cmdTransitionImage(
@@ -60,13 +60,7 @@ void ComputeShaderBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swap
         swapchainImage, imageExtent
     );
     
-    // Transition swapchain image to be presented in the surface
-    core::Image::cmdTransitionImage(
-        cmd,
-        swapchainImage,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-    );
+    return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 }
 
 void ComputeShaderBackgroundDrawDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, VkExtent2D imageExtent)
@@ -91,7 +85,7 @@ void ComputeShaderBackgroundDrawDelegate::drawBackground(VkCommandBuffer cmd, ui
 
 void ComputeShaderBackgroundDrawDelegate::initDescriptors()
 {
-    using namespace miniengine::core;
+    using namespace vkme::core;
     std::vector<DescriptorSetAllocator::PoolSizeRatio> sizes =
     {
         // One image to pass the draw image to the compute shader
@@ -101,11 +95,11 @@ void ComputeShaderBackgroundDrawDelegate::initDescriptors()
     _descriptorAllocator.init(_vulkanData);
     _descriptorAllocator.initPool(_vulkanData->device(), 10, sizes);
     
-    miniengine::factory::DescriptorSetLayout dsFactory;
+    vkme::factory::DescriptorSetLayout dsFactory;
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
     _drawImageDescriptorLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_COMPUTE_BIT);
     
-    // Wrapped method: using a miniengine::core::DescriptorSet wrapper
+    // Wrapped method: using a vkme::core::DescriptorSet wrapper
     _drawImageDescriptors = std::unique_ptr<DescriptorSet>(_descriptorAllocator.allocate(_drawImageDescriptorLayout));
     _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
     
@@ -118,7 +112,7 @@ void ComputeShaderBackgroundDrawDelegate::initDescriptors()
 
 void ComputeShaderBackgroundDrawDelegate::initPipelines()
 {
-    using namespace miniengine;
+    using namespace vkme;
     
     VkPipelineLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

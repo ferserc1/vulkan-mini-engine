@@ -21,7 +21,7 @@
 		ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911C92C98551400B07513 /* Swapchain.cpp */; };
 		ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911CD2C9855EC00B07513 /* FrameResources.cpp */; };
 		ED3911D12C98575900B07513 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D02C98575900B07513 /* Command.cpp */; };
-		ED3911D52C98609400B07513 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D42C98609400B07513 /* Init.cpp */; };
+		ED3911D52C98609400B07513 /* Info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D42C98609400B07513 /* Info.cpp */; };
 		ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D72C98846F00B07513 /* DrawLoop.cpp */; };
 		ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911DA2C989D7E00B07513 /* Image.cpp */; };
 		ED4F37562C970C2A009B120B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED4F37552C970C2A009B120B /* Assets.xcassets */; };
@@ -47,6 +47,7 @@
 		ED4F37AD2C970F02009B120B /* libSDL2-2.0.0.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37AE2C970F04009B120B /* libvulkan.1.3.290.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
+		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -108,8 +109,8 @@
 		ED3911CF2C98575400B07513 /* Command.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Command.hpp; sourceTree = "<group>"; };
 		ED3911D02C98575900B07513 /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command.cpp; sourceTree = "<group>"; };
 		ED3911D22C985DCC00B07513 /* common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
-		ED3911D32C98608F00B07513 /* Init.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Init.hpp; sourceTree = "<group>"; };
-		ED3911D42C98609400B07513 /* Init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Init.cpp; sourceTree = "<group>"; };
+		ED3911D32C98608F00B07513 /* Info.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Info.hpp; sourceTree = "<group>"; };
+		ED3911D42C98609400B07513 /* Info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Info.cpp; sourceTree = "<group>"; };
 		ED3911D62C98846700B07513 /* DrawLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawLoop.hpp; sourceTree = "<group>"; };
 		ED3911D72C98846F00B07513 /* DrawLoop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DrawLoop.cpp; sourceTree = "<group>"; };
 		ED3911D92C989D7800B07513 /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
@@ -155,6 +156,8 @@
 		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<group>"; };
 		ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
+		EDA2144C2C9C888E009161FA /* UserInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UserInterface.hpp; sourceTree = "<group>"; };
+		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +215,7 @@
 				ED330A492C9B03D900315207 /* DescriptorSetAllocator.hpp */,
 				ED3911CC2C9855E600B07513 /* FrameResources.hpp */,
 				ED3911D92C989D7800B07513 /* Image.hpp */,
-				ED3911D32C98608F00B07513 /* Init.hpp */,
+				ED3911D32C98608F00B07513 /* Info.hpp */,
 				ED3911C72C98550E00B07513 /* Swapchain.hpp */,
 			);
 			path = core;
@@ -226,7 +229,7 @@
 				ED330A4A2C9B03DF00315207 /* DescriptorSetAllocator.cpp */,
 				ED3911CD2C9855EC00B07513 /* FrameResources.cpp */,
 				ED3911DA2C989D7E00B07513 /* Image.cpp */,
-				ED3911D42C98609400B07513 /* Init.cpp */,
+				ED3911D42C98609400B07513 /* Info.cpp */,
 				ED3911C92C98551400B07513 /* Swapchain.cpp */,
 				ED3222092C99B0EC00F27ADA /* vk_mem_alloc.cpp */,
 			);
@@ -271,7 +274,7 @@
 				ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */,
 				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDrawDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
-				ED4F37C32C971769009B120B /* mini-engine */,
+				ED4F37C32C971769009B120B /* vkme */,
 			);
 			name = src;
 			path = ../src;
@@ -282,7 +285,7 @@
 			children = (
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDrawDelegate.hpp */,
-				ED4F37C02C9713B9009B120B /* mini-engine */,
+				ED4F37C02C9713B9009B120B /* vkme */,
 			);
 			name = include;
 			path = ../include;
@@ -442,7 +445,7 @@
 			path = ../resources;
 			sourceTree = "<group>";
 		};
-		ED4F37C02C9713B9009B120B /* mini-engine */ = {
+		ED4F37C02C9713B9009B120B /* vkme */ = {
 			isa = PBXGroup;
 			children = (
 				ED3911C82C98550E00B07513 /* core */,
@@ -450,13 +453,13 @@
 				ED3911D62C98846700B07513 /* DrawLoop.hpp */,
 				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
 				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
+				EDA2144C2C9C888E009161FA /* UserInterface.hpp */,
 				ED060AEB2C973EA60063ABDD /* VulkanData.hpp */,
 			);
-			name = "mini-engine";
-			path = mini_engine;
+			path = vkme;
 			sourceTree = "<group>";
 		};
-		ED4F37C32C971769009B120B /* mini-engine */ = {
+		ED4F37C32C971769009B120B /* vkme */ = {
 			isa = PBXGroup;
 			children = (
 				ED3911CA2C98551400B07513 /* core */,
@@ -464,10 +467,10 @@
 				ED3911D72C98846F00B07513 /* DrawLoop.cpp */,
 				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
 				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
+				EDA2144D2C9C8897009161FA /* UserInterface.cpp */,
 				ED060AE12C973E8F0063ABDD /* VulkanData.cpp */,
 			);
-			name = "mini-engine";
-			path = mini_engine;
+			path = vkme;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -593,6 +596,7 @@
 				ED4F379B2C970E37009B120B /* imgui_impl_vulkan.cpp in Sources */,
 				ED32220A2C99B0EC00F27ADA /* vk_mem_alloc.cpp in Sources */,
 				ED4F37A22C970E37009B120B /* VkBootstrap.cpp in Sources */,
+				EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */,
 				ED4F379D2C970E37009B120B /* imgui_widgets.cpp in Sources */,
 				ED4F37A02C970E37009B120B /* simdjson.cpp in Sources */,
 				ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */,
@@ -601,7 +605,7 @@
 				ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */,
 				ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */,
 				ED4F379A2C970E37009B120B /* imgui_impl_sdl2.cpp in Sources */,
-				ED3911D52C98609400B07513 /* Init.cpp in Sources */,
+				ED3911D52C98609400B07513 /* Info.cpp in Sources */,
 				ED330A4B2C9B03DF00315207 /* DescriptorSetAllocator.cpp in Sources */,
 				ED4F379E2C970E37009B120B /* imgui.cpp in Sources */,
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,

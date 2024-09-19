@@ -1,5 +1,5 @@
-#include <mini_engine/PlatformTools.hpp>
-#include <mini_engine/MainLoop.hpp>
+#include <vkme/PlatformTools.hpp>
+#include <vkme/MainLoop.hpp>
 
 #include <ClearBackgroundDrawDelegate.hpp>
 #include <ComputeShaderBackgroundDrawDelegate.hpp>
@@ -10,7 +10,7 @@ void sayHello() {
 }
 
 int main(int argc, char** argv) {
-    miniengine::MainLoop app;
+    vkme::MainLoop app;
     
     app.initWindowTitle("Mini Engine Test");
     app.initWindowSize(1400, 700);
