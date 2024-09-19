@@ -4,11 +4,6 @@
 #include <ClearBackgroundDrawDelegate.hpp>
 #include <ComputeShaderBackgroundDelegate.hpp>
 
-// A function that print hello world
-void sayHello() {
-    
-}
-
 int main(int argc, char** argv) {
     vkme::MainLoop app;
     
