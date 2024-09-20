@@ -180,5 +180,17 @@ VkRenderingInfo Info::renderingInfo(
     return renderInfo;
 }
 
+VkPipelineLayoutCreateInfo Info::pipelineLayoutInfo()
+{
+    VkPipelineLayoutCreateInfo info {};
+    info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    info.flags = 0;
+    info.setLayoutCount = 0;
+    info.pSetLayouts = nullptr;
+    info.pushConstantRangeCount = 0;
+    info.pPushConstantRanges = nullptr;
+    return info;
+}
+
 }
 }

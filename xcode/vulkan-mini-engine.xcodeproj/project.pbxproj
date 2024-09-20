@@ -49,6 +49,8 @@
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
 		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
+		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
+		EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -96,9 +98,6 @@
 		ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComputeShaderBackgroundDelegate.hpp; sourceTree = "<group>"; };
 		ED330A4F2C9B220C00315207 /* ShaderModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderModule.cpp; sourceTree = "<group>"; };
 		ED330A512C9B221700315207 /* ShaderModule.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderModule.hpp; sourceTree = "<group>"; };
-		ED330A542C9B226E00315207 /* gradient.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = gradient.comp.glsl; sourceTree = "<group>"; };
-		ED330A572C9B226E00315207 /* test.frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = test.frag.glsl; sourceTree = "<group>"; };
-		ED330A582C9B226E00315207 /* test.vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = test.vert.glsl; sourceTree = "<group>"; };
 		ED330A5A2C9B282E00315207 /* DescriptorSet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DescriptorSet.hpp; sourceTree = "<group>"; };
 		ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSet.cpp; sourceTree = "<group>"; };
 		ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComputePipeline.cpp; sourceTree = "<group>"; };
@@ -159,10 +158,12 @@
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
 		ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PushConstantsComputeShaderDelegate.cpp; sourceTree = "<group>"; };
 		ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PushConstantsComputeShaderDelegate.hpp; sourceTree = "<group>"; };
-		ED8DC3A62C9D7B480011812D /* gradient_color.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = gradient_color.comp.glsl; sourceTree = "<group>"; };
-		ED8DC3A72C9D83E80011812D /* sky.comp.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = sky.comp.glsl; sourceTree = "<group>"; };
 		EDA2144C2C9C888E009161FA /* UserInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UserInterface.hpp; sourceTree = "<group>"; };
 		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
+		EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorTriangleDelegate.hpp; sourceTree = "<group>"; };
+		EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColorTriangleDelegate.cpp; sourceTree = "<group>"; };
+		EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsPipeline.cpp; sourceTree = "<group>"; };
+		EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GraphicsPipeline.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +186,7 @@
 			children = (
 				ED330A5F2C9B2DDF00315207 /* ComputePipeline.hpp */,
 				ED330A442C9AC60300315207 /* DescriptorSetLayout.hpp */,
+				EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */,
 				ED330A512C9B221700315207 /* ShaderModule.hpp */,
 			);
 			path = factory;
@@ -195,21 +197,10 @@
 			children = (
 				ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */,
 				ED330A462C9AC60B00315207 /* DescriptorSetLayout.cpp */,
+				EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */,
 				ED330A4F2C9B220C00315207 /* ShaderModule.cpp */,
 			);
 			path = factory;
-			sourceTree = "<group>";
-		};
-		ED330A592C9B226E00315207 /* shaders */ = {
-			isa = PBXGroup;
-			children = (
-				ED8DC3A62C9D7B480011812D /* gradient_color.comp.glsl */,
-				ED330A542C9B226E00315207 /* gradient.comp.glsl */,
-				ED8DC3A72C9D83E80011812D /* sky.comp.glsl */,
-				ED330A572C9B226E00315207 /* test.frag.glsl */,
-				ED330A582C9B226E00315207 /* test.vert.glsl */,
-			);
-			path = shaders;
 			sourceTree = "<group>";
 		};
 		ED3911C82C98550E00B07513 /* core */ = {
@@ -246,7 +237,6 @@
 		ED4F37462C970C29009B120B = {
 			isa = PBXGroup;
 			children = (
-				ED330A592C9B226E00315207 /* shaders */,
 				ED4F37B12C970F4D009B120B /* resources */,
 				ED4F37A32C970E8E009B120B /* VulkanSDK */,
 				ED4F37952C970E37009B120B /* third-party */,
@@ -279,6 +269,7 @@
 			isa = PBXGroup;
 			children = (
 				ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */,
+				EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */,
 				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
@@ -292,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
+				EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */,
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
@@ -609,8 +601,10 @@
 				ED4F379D2C970E37009B120B /* imgui_widgets.cpp in Sources */,
 				ED4F37A02C970E37009B120B /* simdjson.cpp in Sources */,
 				ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */,
+				EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */,
 				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
 				ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */,
+				EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */,
 				ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */,
 				ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */,
 				ED4F379A2C970E37009B120B /* imgui_impl_sdl2.cpp in Sources */,

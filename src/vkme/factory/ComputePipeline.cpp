@@ -20,17 +20,17 @@ ComputePipeline::~ComputePipeline()
 
 void ComputePipeline::setShader(const std::string& fileName, const std::string& entryPoint,  const std::string& basePath)
 {
-    if (_shaderModule != VK_NULL_HANDLE)
-    {
-        vkDestroyShaderModule(_vulkanData->device(), _shaderModule, nullptr);
-    }
-
     _shaderModule = ShaderModule::loadFromSPV(fileName, _vulkanData->device(), basePath);
     setShader(_shaderModule, entryPoint);
 }
 
 void ComputePipeline::setShader(VkShaderModule shaderModule, const std::string& entryPoint)
 {
+    if (_shaderModule != VK_NULL_HANDLE)
+    {
+        vkDestroyShaderModule(_vulkanData->device(), _shaderModule, nullptr);
+    }
+    
     _shaderEntryPoint = entryPoint;
     _shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     _shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;

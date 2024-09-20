@@ -73,6 +73,8 @@ public:
         VkRenderingAttachmentInfo* colorAttachment,
         VkRenderingAttachmentInfo* depthAttachment
     );
+
+    static VkPipelineLayoutCreateInfo pipelineLayoutInfo();
 };
 
 }
