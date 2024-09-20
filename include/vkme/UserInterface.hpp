@@ -44,6 +44,7 @@ protected:
     VkFence _uiFence;
     VkCommandBuffer _commandBuffer;
     VkCommandPool _commandPool;
+    VkDescriptorPool _imguiPool;
 
     std::shared_ptr<UserInterfaceDelegate> _delegate;
     

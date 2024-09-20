@@ -2,6 +2,8 @@
 #include <vkme/factory/GraphicsPipeline.hpp>
 #include <vkme/core/Info.hpp>
 
+#include <vkme/PlatformTools.hpp>
+
 void ColorTriangleDelegate::init(vkme::VulkanData * vulkanData)
 {
     _vulkanData = vulkanData;
@@ -30,17 +32,17 @@ VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchain
         cmd,
         _drawImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL//VK_IMAGE_LAYOUT_GENERAL
+        VK_IMAGE_LAYOUT_GENERAL
     );
     
     drawBackground(cmd, currentFrame);
     
-//    core::Image::cmdTransitionImage(
-//        cmd,
-//        _drawImage->image(),
-//        VK_IMAGE_LAYOUT_GENERAL,
-//        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-//    );
+    core::Image::cmdTransitionImage(
+        cmd,
+        _drawImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    );
     
     drawGeometry(cmd, _drawImage->imageView(), imageExtent);
     
@@ -111,8 +113,13 @@ void ColorTriangleDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView curren
 {
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, nullptr);
-    vkCmdBeginRenderingKHR(cmd, &renderInfo);
     
+#ifdef MINI_ENGINE_IS_WINDOWS
+    vkCmdBeginRendering(cmd, &renderInfo);
+#else
+    vkCmdBeginRenderingKHR(cmd, &renderInfo);
+#endif
+
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
     
     VkViewport viewport = {};
@@ -130,5 +137,9 @@ void ColorTriangleDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView curren
     
     vkCmdDraw(cmd, 3, 1, 0, 0);
     
+#ifdef MINI_ENGINE_IS_WINDOWS
+    vkCmdEndRendering(cmd);
+#else
     vkCmdEndRenderingKHR(cmd);
+#endif
 }

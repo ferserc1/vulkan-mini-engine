@@ -1,6 +1,7 @@
 #include <vkme/UserInterface.hpp>
 #include <vkme/core/Command.hpp>
 #include <vkme/core/Info.hpp>
+#include <vkme/PlatformTools.hpp>
 
 namespace vkme {
 
@@ -48,11 +49,19 @@ void UserInterface::draw(VkCommandBuffer cmd, VkImageView targetImageView)
         nullptr
     );
     
+#ifdef MINI_ENGINE_IS_WINDOWS
+    vkCmdBeginRendering(cmd, &renderingInfo);
+#else
     vkCmdBeginRenderingKHR(cmd, &renderingInfo);
-    
+#endif
+
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
     
+#ifdef MINI_ENGINE_IS_WINDOWS
+    vkCmdEndRendering(cmd);
+#else
     vkCmdEndRenderingKHR(cmd);
+#endif
 }
 
 void UserInterface::cleanup()
@@ -89,12 +98,12 @@ void UserInterface::initImGui()
     
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     poolInfo.maxSets = 1000;
     poolInfo.poolSizeCount = uint32_t(std::size(poolSizes));
     poolInfo.pPoolSizes = poolSizes;
     
-    VkDescriptorPool imguiPool;
-    VK_ASSERT(vkCreateDescriptorPool(_vulkanData->device(), &poolInfo, nullptr, &imguiPool));
+    VK_ASSERT(vkCreateDescriptorPool(_vulkanData->device(), &poolInfo, nullptr, &_imguiPool));
     
     ImGui::CreateContext();
     
@@ -106,7 +115,7 @@ void UserInterface::initImGui()
     initInfo.PhysicalDevice = _vulkanData->physicalDevice();
     initInfo.Device = _vulkanData->device();
     initInfo.Queue = _vulkanData->command().graphicsQueue();
-    initInfo.DescriptorPool = imguiPool;
+    initInfo.DescriptorPool = _imguiPool;
     initInfo.MinImageCount = 3;
     initInfo.ImageCount = 3;
     initInfo.UseDynamicRendering = true;
@@ -119,9 +128,9 @@ void UserInterface::initImGui()
     
     ImGui_ImplVulkan_Init(&initInfo);
     
-    _vulkanData->cleanupManager().push([=, this]() {
+    _vulkanData->cleanupManager().push([&, this]() {
         ImGui_ImplVulkan_Shutdown();
-        vkDestroyDescriptorPool(_vulkanData->device(), imguiPool, nullptr);
+        vkDestroyDescriptorPool(_vulkanData->device(), _imguiPool, nullptr);
     });
 }
 

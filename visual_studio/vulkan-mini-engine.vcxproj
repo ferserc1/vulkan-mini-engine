@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
   </PropertyGroup>
@@ -151,17 +151,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp" />
+    <ClCompile Include="..\src\ColorTriangleDelegate.cpp" />
+    <ClCompile Include="..\src\ComputeShaderBackgroundDelegate.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\Command.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\FrameResources.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\Image.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\Init.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\vk_mem_alloc.cpp" />
-    <ClCompile Include="..\src\mini_engine\DrawLoop.cpp" />
-    <ClCompile Include="..\src\mini_engine\MainLoop.cpp" />
-    <ClCompile Include="..\src\mini_engine\PlatformTools.cpp" />
-    <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp" />
-    <ClCompile Include="..\src\mini_engine\VulkanData.cpp" />
+    <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
+    <ClCompile Include="..\src\vkme\core\Command.cpp" />
+    <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp" />
+    <ClCompile Include="..\src\vkme\core\DescriptorSetAllocator.cpp" />
+    <ClCompile Include="..\src\vkme\core\FrameResources.cpp" />
+    <ClCompile Include="..\src\vkme\core\Image.cpp" />
+    <ClCompile Include="..\src\vkme\core\Info.cpp" />
+    <ClCompile Include="..\src\vkme\core\Swapchain.cpp" />
+    <ClCompile Include="..\src\vkme\core\vk_mem_alloc.cpp" />
+    <ClCompile Include="..\src\vkme\DrawLoop.cpp" />
+    <ClCompile Include="..\src\vkme\factory\ComputePipeline.cpp" />
+    <ClCompile Include="..\src\vkme\factory\DescriptorSetLayout.cpp" />
+    <ClCompile Include="..\src\vkme\factory\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp" />
+    <ClCompile Include="..\src\vkme\MainLoop.cpp" />
+    <ClCompile Include="..\src\vkme\PlatformTools.cpp" />
+    <ClCompile Include="..\src\vkme\UserInterface.cpp" />
+    <ClCompile Include="..\src\vkme\VulkanData.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp" />
     <ClCompile Include="..\third-party\fastgltf\src\fastgltf.cpp" />
     <ClCompile Include="..\third-party\imgui\imgui.cpp" />
@@ -176,17 +186,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\CleanupManager.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\Command.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\common.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\FrameResources.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\Image.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\Init.hpp" />
-    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp" />
-    <ClInclude Include="..\include\mini_engine\DrawLoop.hpp" />
-    <ClInclude Include="..\include\mini_engine\MainLoop.hpp" />
-    <ClInclude Include="..\include\mini_engine\PlatformTools.hpp" />
-    <ClInclude Include="..\include\mini_engine\VulkanData.hpp" />
+    <ClInclude Include="..\include\ColorTriangleDelegate.hpp" />
+    <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp" />
+    <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
+    <ClInclude Include="..\include\vkme\core\CleanupManager.hpp" />
+    <ClInclude Include="..\include\vkme\core\Command.hpp" />
+    <ClInclude Include="..\include\vkme\core\common.hpp" />
+    <ClInclude Include="..\include\vkme\core\DescriptorSet.hpp" />
+    <ClInclude Include="..\include\vkme\core\DescriptorSetAllocator.hpp" />
+    <ClInclude Include="..\include\vkme\core\FrameResources.hpp" />
+    <ClInclude Include="..\include\vkme\core\Image.hpp" />
+    <ClInclude Include="..\include\vkme\core\Info.hpp" />
+    <ClInclude Include="..\include\vkme\core\Swapchain.hpp" />
+    <ClInclude Include="..\include\vkme\DrawLoop.hpp" />
+    <ClInclude Include="..\include\vkme\factory\ComputePipeline.hpp" />
+    <ClInclude Include="..\include\vkme\factory\DescriptorSetLayout.hpp" />
+    <ClInclude Include="..\include\vkme\factory\GraphicsPipeline.hpp" />
+    <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp" />
+    <ClInclude Include="..\include\vkme\MainLoop.hpp" />
+    <ClInclude Include="..\include\vkme\PlatformTools.hpp" />
+    <ClInclude Include="..\include\vkme\UserInterface.hpp" />
+    <ClInclude Include="..\include\vkme\VulkanData.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\glm_element_traits.hpp" />
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\parser.hpp" />

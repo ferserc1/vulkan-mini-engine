@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\mini_engine">
-      <UniqueIdentifier>{339ec492-1603-49ee-8468-0e640a3cdd5d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="third-party">
       <UniqueIdentifier>{59cd319e-2133-442b-a9b6-12787b5b4c56}</UniqueIdentifier>
     </Filter>
@@ -40,26 +37,26 @@
     <Filter Include="third-party\vk-bootstrap">
       <UniqueIdentifier>{faa6391c-f66e-4eca-a45d-0df33b84c0aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\mini_engine\core">
-      <UniqueIdentifier>{e3fe5e46-4efe-4afd-bafb-b396ad60c21d}</UniqueIdentifier>
+    <Filter Include="Header Files\vkme">
+      <UniqueIdentifier>{88edd93f-ed55-493b-80e7-51ca58107633}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\mini_engine">
-      <UniqueIdentifier>{65e5033e-60c4-4da0-aba0-65d05bcefcd5}</UniqueIdentifier>
+    <Filter Include="Header Files\vkme\core">
+      <UniqueIdentifier>{4c058234-8577-4af5-8c59-e31f050dfd56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\mini_engine\core">
-      <UniqueIdentifier>{f9be87f5-473d-4c23-a19f-86c439872f38}</UniqueIdentifier>
+    <Filter Include="Header Files\vkme\factory">
+      <UniqueIdentifier>{fafc0af4-e604-4892-bc8e-8fa3e7f9b43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vkme">
+      <UniqueIdentifier>{b0d57d3e-71bd-49bc-9b58-d619e23d3588}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vkme\core">
+      <UniqueIdentifier>{90332080-8e24-475c-be9e-423b628b7ae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vkme\factory">
+      <UniqueIdentifier>{eaa04c37-f618-4937-b15f-ca7b74492cf3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mini_engine\MainLoop.cpp">
-      <Filter>Source Files\mini_engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mini_engine\PlatformTools.cpp">
-      <Filter>Source Files\mini_engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp">
       <Filter>third-party\fastgltf\src</Filter>
     </ClCompile>
@@ -93,32 +90,71 @@
     <ClCompile Include="..\third-party\vk-bootstrap\src\VkBootstrap.cpp">
       <Filter>third-party\vk-bootstrap</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\VulkanData.cpp">
-      <Filter>Source Files\mini_engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\Swapchain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\DrawLoop.cpp">
-      <Filter>Source Files\mini_engine</Filter>
+    <ClCompile Include="..\src\ColorTriangleDelegate.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\Command.cpp">
-      <Filter>Source Files\mini_engine\core</Filter>
+    <ClCompile Include="..\src\ComputeShaderBackgroundDelegate.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\FrameResources.cpp">
-      <Filter>Source Files\mini_engine\core</Filter>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\Image.cpp">
-      <Filter>Source Files\mini_engine\core</Filter>
+    <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\Init.cpp">
-      <Filter>Source Files\mini_engine\core</Filter>
+    <ClCompile Include="..\src\vkme\DrawLoop.cpp">
+      <Filter>Source Files\vkme</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mini_engine\core\vk_mem_alloc.cpp">
-      <Filter>Source Files\mini_engine\core</Filter>
+    <ClCompile Include="..\src\vkme\MainLoop.cpp">
+      <Filter>Source Files\vkme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\PlatformTools.cpp">
+      <Filter>Source Files\vkme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\UserInterface.cpp">
+      <Filter>Source Files\vkme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\VulkanData.cpp">
+      <Filter>Source Files\vkme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\Command.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\DescriptorSetAllocator.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\FrameResources.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\Image.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\Info.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\Swapchain.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\vk_mem_alloc.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\factory\DescriptorSetLayout.cpp">
+      <Filter>Source Files\vkme\factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\factory\GraphicsPipeline.cpp">
+      <Filter>Source Files\vkme\factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp">
+      <Filter>Source Files\vkme\factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\factory\ComputePipeline.cpp">
+      <Filter>Source Files\vkme\factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,38 +215,68 @@
     <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\DrawLoop.hpp">
-      <Filter>Header Files\mini_engine</Filter>
+    <ClInclude Include="..\include\ColorTriangleDelegate.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\MainLoop.hpp">
-      <Filter>Header Files\mini_engine</Filter>
+    <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\PlatformTools.hpp">
-      <Filter>Header Files\mini_engine</Filter>
+    <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\VulkanData.hpp">
-      <Filter>Header Files\mini_engine</Filter>
+    <ClInclude Include="..\include\vkme\DrawLoop.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\CleanupManager.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\MainLoop.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\Command.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\PlatformTools.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\common.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\UserInterface.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\FrameResources.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\VulkanData.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\Image.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\core\CleanupManager.hpp">
+      <Filter>Header Files\vkme\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\Init.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\core\Command.hpp">
+      <Filter>Header Files\vkme\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mini_engine\core\Swapchain.hpp">
-      <Filter>Header Files\mini_engine\core</Filter>
+    <ClInclude Include="..\include\vkme\core\common.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\DescriptorSet.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\DescriptorSetAllocator.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\FrameResources.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\Image.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\Info.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\Swapchain.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\factory\ComputePipeline.hpp">
+      <Filter>Header Files\vkme\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\factory\DescriptorSetLayout.hpp">
+      <Filter>Header Files\vkme\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\factory\GraphicsPipeline.hpp">
+      <Filter>Header Files\vkme\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp">
+      <Filter>Header Files\vkme\factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

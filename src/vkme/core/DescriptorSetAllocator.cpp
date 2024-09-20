@@ -24,7 +24,7 @@ void DescriptorSetAllocator::initPool(
     }
     VkDescriptorPoolCreateInfo  poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.flags = 0;
+    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     poolInfo.maxSets = maxSets;
     poolInfo.poolSizeCount = uint32_t(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();

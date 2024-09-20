@@ -25,6 +25,7 @@ VkShaderModule ShaderModule::loadFromSPV(const std::string& fileName, VkDevice d
     file.close();
     
     VkShaderModuleCreateInfo info = {};
+    info.pNext = nullptr;
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     info.codeSize = buffer.size() * sizeof(uint32_t);
     info.pCode = buffer.data();

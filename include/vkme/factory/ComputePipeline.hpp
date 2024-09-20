@@ -19,7 +19,7 @@ public:
 protected:
     VulkanData * _vulkanData;
 
-    VkShaderModule _shaderModule = VK_NULL_HANDLE;
+    VkShaderModule _shaderModule;
     std::string _shaderEntryPoint = "main";
     VkPipelineShaderStageCreateInfo _shaderStageInfo = {};
 };

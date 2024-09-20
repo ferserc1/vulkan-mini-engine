@@ -151,13 +151,14 @@ VkImageViewCreateInfo Info::imageViewCreateInfo(
 VkRenderingAttachmentInfo Info::attachmentInfo(
     VkImageView view,
     VkClearValue* clearValue,
-    VkImageLayout layou
+    VkImageLayout layout
 ) {
     VkRenderingAttachmentInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
     info.imageView = view;
     info.loadOp = clearValue ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
     info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    info.imageLayout = layout;
     if (clearValue) {
         info.clearValue = *clearValue;
     }
