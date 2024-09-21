@@ -41,12 +41,7 @@ void Image::cmdTransitionImage(
     dependencies.imageMemoryBarrierCount = 1;
     dependencies.pImageMemoryBarriers = &imageBarrier;
     
-
-#ifdef MINI_ENGINE_IS_WINDOWS
-    vkCmdPipelineBarrier2(cmd, &dependencies);
-#else
-    vkCmdPipelineBarrier2KHR(cmd, &dependencies);
-#endif
+    cmdPipelineBarrier2(cmd, &dependencies);
 }
 
 VkImageSubresourceRange Image::subresourceRange(VkImageAspectFlags aspectMask)
@@ -98,11 +93,7 @@ void Image::cmdCopy(
 	blitInfo.regionCount = 1;
 	blitInfo.pRegions = &blitRegion;
 
-#ifdef MINI_ENGINE_IS_WINDOWS
-	vkCmdBlitImage2(cmd, &blitInfo);
-#else
-    vkCmdBlitImage2KHR(cmd, &blitInfo);
-#endif
+    cmdBlitImage2(cmd, &blitInfo);
 }
 
 Image* Image::createAllocatedImage(

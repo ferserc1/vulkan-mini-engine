@@ -49,19 +49,11 @@ void UserInterface::draw(VkCommandBuffer cmd, VkImageView targetImageView)
         nullptr
     );
     
-#ifdef MINI_ENGINE_IS_WINDOWS
-    vkCmdBeginRendering(cmd, &renderingInfo);
-#else
-    vkCmdBeginRenderingKHR(cmd, &renderingInfo);
-#endif
+    vkme::core::cmdBeginRendering(cmd, &renderingInfo);
 
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
     
-#ifdef MINI_ENGINE_IS_WINDOWS
-    vkCmdEndRendering(cmd);
-#else
-    vkCmdEndRenderingKHR(cmd);
-#endif
+    vkme::core::cmdEndRendering(cmd);
 }
 
 void UserInterface::cleanup()

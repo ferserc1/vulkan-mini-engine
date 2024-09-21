@@ -50,6 +50,7 @@
 		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
+		EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E22C9E9D7800F76C78 /* extensions.cpp */; };
 		EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */; };
 /* End PBXBuildFile section */
 
@@ -162,6 +163,8 @@
 		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
 		EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorTriangleDelegate.hpp; sourceTree = "<group>"; };
 		EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColorTriangleDelegate.cpp; sourceTree = "<group>"; };
+		EDC359E12C9E9D7200F76C78 /* extensions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = extensions.hpp; sourceTree = "<group>"; };
+		EDC359E22C9E9D7800F76C78 /* extensions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = extensions.cpp; sourceTree = "<group>"; };
 		EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsPipeline.cpp; sourceTree = "<group>"; };
 		EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GraphicsPipeline.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -211,6 +214,7 @@
 				ED3911D22C985DCC00B07513 /* common.hpp */,
 				ED330A5A2C9B282E00315207 /* DescriptorSet.hpp */,
 				ED330A492C9B03D900315207 /* DescriptorSetAllocator.hpp */,
+				EDC359E12C9E9D7200F76C78 /* extensions.hpp */,
 				ED3911CC2C9855E600B07513 /* FrameResources.hpp */,
 				ED3911D92C989D7800B07513 /* Image.hpp */,
 				ED3911D32C98608F00B07513 /* Info.hpp */,
@@ -225,6 +229,7 @@
 				ED3911D02C98575900B07513 /* Command.cpp */,
 				ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */,
 				ED330A4A2C9B03DF00315207 /* DescriptorSetAllocator.cpp */,
+				EDC359E22C9E9D7800F76C78 /* extensions.cpp */,
 				ED3911CD2C9855EC00B07513 /* FrameResources.cpp */,
 				ED3911DA2C989D7E00B07513 /* Image.cpp */,
 				ED3911D42C98609400B07513 /* Info.cpp */,
@@ -604,6 +609,7 @@
 				EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */,
 				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
 				ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */,
+				EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */,
 				EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */,
 				ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */,
 				ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */,

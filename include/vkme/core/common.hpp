@@ -24,6 +24,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <vkme/core/extensions.hpp>
+
 #define VK_ASSERT(x)                                                                         \
     do {                                                                                     \
         VkResult err = x;                                                                    \

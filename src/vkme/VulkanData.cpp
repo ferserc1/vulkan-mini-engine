@@ -34,7 +34,7 @@ void VulkanData::cleanup()
 
     vkDestroyDevice(_device, nullptr);
     
-    vkDestroySurfaceKHR(_instance, _surface, nullptr);
+    core::destroySurface(_instance, _surface, nullptr);
 
     vkb::destroy_debug_utils_messenger(_instance, _debugMessenger, nullptr);
     vkDestroyInstance(_instance, nullptr);
@@ -42,12 +42,9 @@ void VulkanData::cleanup()
 
 void VulkanData::createInstance()
 {
-    vkb::InstanceBuilder builder;
-
-    auto instanceBuilder = builder.set_app_name("Vulkan MiniEngine")
+    auto instanceBuilder = core::createInstanceBuilder("Vulkan MiniEngine")
         .request_validation_layers(_debugLayers)
         .use_default_debug_messenger()
-        .require_api_version(1, 3, 0)
         .build();
 
     _vkbInstance = instanceBuilder.value();
@@ -58,7 +55,6 @@ void VulkanData::createInstance()
 void VulkanData::createSurface()
 {
     SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
-
 }
 
 void VulkanData::createDevicesAndQueues()

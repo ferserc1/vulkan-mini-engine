@@ -114,11 +114,7 @@ void ColorTriangleDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView curren
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, nullptr);
     
-#ifdef MINI_ENGINE_IS_WINDOWS
-    vkCmdBeginRendering(cmd, &renderInfo);
-#else
-    vkCmdBeginRenderingKHR(cmd, &renderInfo);
-#endif
+    vkme::core::cmdBeginRendering(cmd, &renderInfo);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
     
@@ -137,9 +133,5 @@ void ColorTriangleDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView curren
     
     vkCmdDraw(cmd, 3, 1, 0, 0);
     
-#ifdef MINI_ENGINE_IS_WINDOWS
-    vkCmdEndRendering(cmd);
-#else
-    vkCmdEndRenderingKHR(cmd);
-#endif
+    vkme::core::cmdEndRendering(cmd);
 }

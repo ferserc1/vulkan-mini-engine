@@ -40,7 +40,7 @@ void Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32_t height)
 
 void Swapchain::cleanup()
 {
-	vkDestroySwapchainKHR(_vulkanData->device(), _swapchain, nullptr);
+	destroySwapchain(_vulkanData->device(), _swapchain, nullptr);
 
 	for (auto it = _imageViews.begin(); it != _imageViews.end(); ++it)
 	{

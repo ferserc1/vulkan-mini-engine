@@ -44,7 +44,7 @@ void DrawLoop::acquireAndPresent()
     frameRes.flushFrameData();
     
     uint32_t swapchainImageIndex;
-    VK_ASSERT(vkAcquireNextImageKHR(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex));
+    VK_ASSERT(core::acquireNextImage(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex));
     
     auto swapchainImage = swapchainData.image(swapchainImageIndex);
     auto swapchainImageView = swapchainData.imageView(swapchainImageIndex);
@@ -89,15 +89,11 @@ void DrawLoop::acquireAndPresent()
         renderSemaphore
     );
     auto submitInfo = core::Info::submitInfo(&cmdInfo, &signalSemaphoreInfo, &waitSemaphoreInfo);
-#ifdef MINI_ENGINE_IS_WINDOWS
-    VK_ASSERT(vkQueueSubmit2(graphicsQueue, 1, &submitInfo, frameFence));
-#else
-    VK_ASSERT(vkQueueSubmit2KHR(graphicsQueue, 1, &submitInfo, frameFence));
-#endif
+    VK_ASSERT(core::queueSubmit2(graphicsQueue, 1, &submitInfo, frameFence));
 
     // Present frame
     auto presentInfo = core::Info::presentInfo(swapchain, renderSemaphore, swapchainImageIndex);
-    VK_ASSERT(vkQueuePresentKHR(graphicsQueue, &presentInfo));
+    VK_ASSERT(core::queuePresent(graphicsQueue, &presentInfo));
     
     // Next frame
     _vulkanData->nextFrame();
