@@ -158,6 +158,7 @@
     <ClCompile Include="..\src\vkme\core\Command.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSetAllocator.cpp" />
+    <ClCompile Include="..\src\vkme\core\extensions.cpp" />
     <ClCompile Include="..\src\vkme\core\FrameResources.cpp" />
     <ClCompile Include="..\src\vkme\core\Image.cpp" />
     <ClCompile Include="..\src\vkme\core\Info.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="..\include\vkme\core\common.hpp" />
     <ClInclude Include="..\include\vkme\core\DescriptorSet.hpp" />
     <ClInclude Include="..\include\vkme\core\DescriptorSetAllocator.hpp" />
+    <ClInclude Include="..\include\vkme\core\extensions.hpp" />
     <ClInclude Include="..\include\vkme\core\FrameResources.hpp" />
     <ClInclude Include="..\include\vkme\core\Image.hpp" />
     <ClInclude Include="..\include\vkme\core\Info.hpp" />

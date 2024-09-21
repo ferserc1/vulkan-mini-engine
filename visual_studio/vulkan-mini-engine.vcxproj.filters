@@ -156,6 +156,9 @@
     <ClCompile Include="..\src\vkme\factory\ComputePipeline.cpp">
       <Filter>Source Files\vkme\factory</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vkme\core\extensions.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp">
       <Filter>Header Files\vkme\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\extensions.hpp">
+      <Filter>Header Files\vkme\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
