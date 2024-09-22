@@ -30,8 +30,8 @@ void PushConstantsComputeShaderDelegate::init(vkme::VulkanData * vulkanData, vkm
     _vulkanData = vulkanData;
 }
 
-VkImageLayout PushConstantsComputeShaderDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
-{
+VkImageLayout PushConstantsComputeShaderDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage
+) {
     using namespace vkme;
     
     // Transition draw image to render on it

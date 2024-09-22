@@ -9,7 +9,7 @@
 class MeshBuffersDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawUI();
 
 protected:

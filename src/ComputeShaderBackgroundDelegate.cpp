@@ -30,7 +30,7 @@ void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData, vkme::
     _vulkanData = vulkanData;
 }
 
-VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     using namespace vkme;
     

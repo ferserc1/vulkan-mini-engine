@@ -36,10 +36,21 @@ void Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32_t height)
 	_swapchain = vkbSwapchain.swapchain;
 	_images = vkbSwapchain.get_images().value();
 	_imageViews = vkbSwapchain.get_image_views().value();
+ 
+    _depthImage = Image::createAllocatedImage(
+        vulkanData,
+        VK_FORMAT_D32_SFLOAT,
+        _extent,
+        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        VK_IMAGE_ASPECT_DEPTH_BIT
+    );
 }
 
 void Swapchain::cleanup()
 {
+    _depthImage->cleanup();
+    delete _depthImage;
+    
 	destroySwapchain(_vulkanData->device(), _swapchain, nullptr);
 
 	for (auto it = _imageViews.begin(); it != _imageViews.end(); ++it)

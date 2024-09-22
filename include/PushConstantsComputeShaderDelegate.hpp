@@ -8,6 +8,7 @@
 #include <vkme/UserInterface.hpp>
 #include <memory>
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
 
@@ -18,7 +19,7 @@ class PushConstantsComputeShaderDelegate : public vkme::DrawLoopDelegate, public
 public:
     void init(vkme::VulkanData * vulkanData);
     void init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui);
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawUI();
     
     // Structture to mirror the push constants from the shader

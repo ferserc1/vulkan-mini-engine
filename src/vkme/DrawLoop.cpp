@@ -48,12 +48,20 @@ void DrawLoop::acquireAndPresent()
     
     auto swapchainImage = swapchainData.image(swapchainImageIndex);
     auto swapchainImageView = swapchainData.imageView(swapchainImageIndex);
+    auto depthImage = swapchainData.depthImage()->image();
     
     auto cmdBeginInfo = core::Info::commandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
     
     VK_ASSERT(vkBeginCommandBuffer(cmd, &cmdBeginInfo));
     
-    auto lastSwapchainLayout = draw(cmd, swapchainImage, swapchainData.extent());
+    core::Image::cmdTransitionImage(
+        cmd,
+        depthImage,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+    );
+    
+    auto lastSwapchainLayout = draw(cmd, swapchainImage, swapchainData.extent(), swapchainData.depthImage());
     
     if (lastSwapchainLayout != VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
         core::Image::cmdTransitionImage(

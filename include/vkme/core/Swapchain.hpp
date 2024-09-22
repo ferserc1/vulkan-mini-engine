@@ -1,7 +1,9 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vkme/core/Image.hpp>
 #include <vector>
+#include <memory>
 
 namespace vkme {
 
@@ -11,7 +13,7 @@ namespace core {
 
 class Swapchain {
 public:
-
+    
     void init(VulkanData * vulkanData, uint32_t width, uint32_t height);
     void cleanup();
     
@@ -23,6 +25,9 @@ public:
     inline VkImage image(uint32_t index) const { return _images[index]; }
     inline VkImageView imageView(uint32_t index) const { return _imageViews[index]; }
 
+    inline const Image* depthImage() const { return _depthImage; }
+    inline const VkFormat depthImageFormat() const { return _depthImage != nullptr ? _depthImage->format() : VK_FORMAT_UNDEFINED; }
+
 protected:
     VkSwapchainKHR _swapchain;
     VkFormat _imageFormat;
@@ -30,6 +35,8 @@ protected:
     std::vector<VkImage> _images;
     std::vector<VkImageView> _imageViews;
     VkExtent2D _extent;
+    
+    Image * _depthImage;
 
     VulkanData* _vulkanData = nullptr;
 };

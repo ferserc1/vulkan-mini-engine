@@ -25,7 +25,7 @@ void MeshBuffersDelegate::init(vkme::VulkanData * vulkanData)
     initPipeline();
 }
 
-VkImageLayout MeshBuffersDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout MeshBuffersDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     using namespace vkme;
     

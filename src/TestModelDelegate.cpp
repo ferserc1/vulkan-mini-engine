@@ -25,7 +25,7 @@ void TestModelDelegate::init(vkme::VulkanData * vulkanData)
     initPipeline();
 }
 
-VkImageLayout TestModelDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout TestModelDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     using namespace vkme;
     
@@ -46,7 +46,7 @@ VkImageLayout TestModelDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImag
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     );
     
-    drawGeometry(cmd, _drawImage->imageView(), imageExtent);
+    drawGeometry(cmd, _drawImage->imageView(), imageExtent, depthImage, currentFrame);
     
     // Transition _drawImage and swapchain image to copy the first one to the second one
     core::Image::cmdTransitionImage(
@@ -95,8 +95,10 @@ void TestModelDelegate::initPipeline()
     
     VK_ASSERT(vkCreatePipelineLayout(_vulkanData->device(), &layoutInfo, nullptr, &_pipelineLayout));
     plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
-    
+    plFactory.setDepthFormat(_vulkanData->swapchain().depthImageFormat());
+    plFactory.enableDepthtest(true, VK_COMPARE_OP_GREATER_OR_EQUAL);
     plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    plFactory.setCullMode(true, VK_FRONT_FACE_COUNTER_CLOCKWISE);
     _pipeline = plFactory.build(_pipelineLayout);
     
     _vulkanData->cleanupManager().push([&]() {
@@ -108,26 +110,9 @@ void TestModelDelegate::initPipeline()
 
 void TestModelDelegate::initMesh()
 {
-    std::vector<vkme::geo::Vertex> rectVertices;
-    rectVertices.resize(4);
-    rectVertices[0].setPosition({ 0.5,-0.5, 0}); rectVertices[0].setColor({ 0.8, 0.2, 1.0, 1.0 });
-	rectVertices[1].setPosition({ 0.5, 0.5, 0}); rectVertices[1].setColor({ 1.5, 0.5, 0.5, 1.0 });
-	rectVertices[2].setPosition({-0.5, 0.5, 0}); rectVertices[2].setColor({ 1.0, 0.3, 0.0, 1.0 });
-	rectVertices[3].setPosition({-0.5,-0.5, 0}); rectVertices[3].setColor({ 0.0, 1.0, 0.9, 1.0 });
-    
-	std::vector<uint32_t> rectIndices;
-    rectIndices.resize(6);
-	rectIndices[0] = 0;
-	rectIndices[1] = 1;
-	rectIndices[2] = 2;
-	rectIndices[3] = 2;
-	rectIndices[4] = 3;
-	rectIndices[5] = 0;
- 
     std::string assetsPath = vkme::PlatformTools::assetPath() + "basicmesh.glb";
     
     _models = vkme::geo::Model::loadGltf(_vulkanData, assetsPath);
-    
     
     _vulkanData->cleanupManager().push([&]() {
         for (auto m : _models) {
@@ -149,12 +134,19 @@ void TestModelDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFram
         VK_IMAGE_LAYOUT_GENERAL,
         &clearValue, 1, &clearRange
     );
+
 }
 
-void TestModelDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView currentImage, VkExtent2D imageExtent)
-{
+void TestModelDelegate::drawGeometry(
+    VkCommandBuffer cmd,
+    VkImageView currentImage,
+    VkExtent2D imageExtent,
+    const vkme::core::Image* depthImage,
+    uint32_t currentFrame
+) {
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
-    auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, nullptr);
+    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
+    auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
 
@@ -175,11 +167,15 @@ void TestModelDelegate::drawGeometry(VkCommandBuffer cmd, VkImageView currentIma
     
     vkme::geo::MeshPushConstants pushConstants;
     
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-    glm::mat4 proj = glm::perspective(glm::radians(70.0f), float(imageExtent.width) / float(imageExtent.height), 0.1f, 100.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 5.0f));
+    // We are using a technique that consist in reversing the depth test (1 is the near plane and 0 is the far plane).
+    // This technique increases the quality of the depth test.
+    glm::mat4 proj = glm::perspective(glm::radians(70.0f), float(imageExtent.width) / float(imageExtent.height), 100.0f, 0.1f);
     proj[1][1] *= -1.0f;
     
-    pushConstants.modelMatrix = proj * view * glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    pushConstants.modelMatrix = proj * view *
+        glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 1.0f, 0.0f));
+        
     
     pushConstants.vertexBufferAddress = _models[2]->meshBuffers()->vertexBufferAddress;
     

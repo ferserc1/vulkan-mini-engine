@@ -7,7 +7,7 @@
 class ClearBackgroundDrawDelegate : public vkme::DrawLoopDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
 
 protected:
     std::shared_ptr<vkme::core::Image> _drawImage;

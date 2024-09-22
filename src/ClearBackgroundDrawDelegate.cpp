@@ -16,7 +16,7 @@ void ClearBackgroundDrawDelegate::init(vkme::VulkanData * vulkanData)
     });
 }
 
-VkImageLayout ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     using namespace vkme;
     

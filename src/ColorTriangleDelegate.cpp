@@ -23,7 +23,7 @@ void ColorTriangleDelegate::init(vkme::VulkanData * vulkanData)
     initPipeline();
 }
 
-VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame)
+VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     using namespace vkme;
     

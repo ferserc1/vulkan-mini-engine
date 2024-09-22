@@ -10,7 +10,7 @@
 class TestModelDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawUI();
 
 protected:
@@ -28,5 +28,11 @@ protected:
     void initMesh();
 
     void drawBackground(VkCommandBuffer cmd, uint32_t currentFrame);
-    void drawGeometry(VkCommandBuffer cmd, VkImageView currentImage, VkExtent2D imageExtent);
+    void drawGeometry(
+        VkCommandBuffer cmd,
+        VkImageView currentImage,
+        VkExtent2D imageExtent,
+        const vkme::core::Image* depthImage,
+        uint32_t currentFrame
+    );
 };

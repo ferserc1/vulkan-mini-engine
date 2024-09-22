@@ -18,7 +18,7 @@ class ComputeShaderBackgroundDelegate : public vkme::DrawLoopDelegate, public vk
 public:
     void init(vkme::VulkanData * vulkanData);
     void init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui);
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame);
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawUI();
 
 protected:

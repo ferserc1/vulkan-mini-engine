@@ -15,7 +15,7 @@ public:
     virtual void init(VulkanData *) {}
 
     // This call must return the last swapchainImage layout, or VK_IMAGE_LAYOUT_UNDEFINED if it is not used
-    virtual VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame) = 0;
+    virtual VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const core::Image* depthImage) = 0;
 };
 
 class DrawLoop {
@@ -24,10 +24,10 @@ public:
     
     void acquireAndPresent();
     
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent)
+    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, const core::Image* depthImage)
     {
         if (_drawDelegate) {
-            return _drawDelegate->draw(cmd, swapchainImage, imageExtent, _vulkanData->currentFrame());
+            return _drawDelegate->draw(cmd, swapchainImage, imageExtent, _vulkanData->currentFrame(), depthImage);
         }
         else {
             return VK_IMAGE_LAYOUT_UNDEFINED;
