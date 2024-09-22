@@ -51,6 +51,9 @@
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
 		EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E22C9E9D7800F76C78 /* extensions.cpp */; };
+		EDC359E52C9ECD7600F76C78 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E42C9ECD7600F76C78 /* Buffer.cpp */; };
+		EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */; };
+		EDC359EE2C9EE20100F76C78 /* mesh_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */; };
 		EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */; };
 /* End PBXBuildFile section */
 
@@ -165,8 +168,15 @@
 		EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColorTriangleDelegate.cpp; sourceTree = "<group>"; };
 		EDC359E12C9E9D7200F76C78 /* extensions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = extensions.hpp; sourceTree = "<group>"; };
 		EDC359E22C9E9D7800F76C78 /* extensions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = extensions.cpp; sourceTree = "<group>"; };
+		EDC359E42C9ECD7600F76C78 /* Buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
+		EDC359E62C9ECD7C00F76C78 /* Buffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Buffer.hpp; sourceTree = "<group>"; };
+		EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MeshBuffersDelegate.hpp; sourceTree = "<group>"; };
+		EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MeshBuffersDelegate.cpp; sourceTree = "<group>"; };
+		EDC359EA2C9ED48C00F76C78 /* mesh_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mesh_data.hpp; sourceTree = "<group>"; };
+		EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mesh_data.cpp; sourceTree = "<group>"; };
 		EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsPipeline.cpp; sourceTree = "<group>"; };
 		EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GraphicsPipeline.hpp; sourceTree = "<group>"; };
+		EDE168162C9FFA3A003E4736 /* vma_allocation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vma_allocation.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +219,7 @@
 		ED3911C82C98550E00B07513 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				EDC359E62C9ECD7C00F76C78 /* Buffer.hpp */,
 				ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */,
 				ED3911CF2C98575400B07513 /* Command.hpp */,
 				ED3911D22C985DCC00B07513 /* common.hpp */,
@@ -219,6 +230,7 @@
 				ED3911D92C989D7800B07513 /* Image.hpp */,
 				ED3911D32C98608F00B07513 /* Info.hpp */,
 				ED3911C72C98550E00B07513 /* Swapchain.hpp */,
+				EDE168162C9FFA3A003E4736 /* vma_allocation.hpp */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -226,6 +238,7 @@
 		ED3911CA2C98551400B07513 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				EDC359E42C9ECD7600F76C78 /* Buffer.cpp */,
 				ED3911D02C98575900B07513 /* Command.cpp */,
 				ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */,
 				ED330A4A2C9B03DF00315207 /* DescriptorSetAllocator.cpp */,
@@ -277,6 +290,7 @@
 				EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */,
 				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
+				EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
 				ED4F37C32C971769009B120B /* vkme */,
 			);
@@ -290,6 +304,7 @@
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
 				EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */,
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
+				EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
 			);
@@ -456,6 +471,7 @@
 			children = (
 				ED3911C82C98550E00B07513 /* core */,
 				ED330A452C9AC60300315207 /* factory */,
+				EDC359EB2C9ED48C00F76C78 /* geo */,
 				ED3911D62C98846700B07513 /* DrawLoop.hpp */,
 				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
 				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
@@ -470,6 +486,7 @@
 			children = (
 				ED3911CA2C98551400B07513 /* core */,
 				ED330A472C9AC60B00315207 /* factory */,
+				EDC359ED2C9EE20100F76C78 /* geo */,
 				ED3911D72C98846F00B07513 /* DrawLoop.cpp */,
 				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
 				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
@@ -477,6 +494,22 @@
 				ED060AE12C973E8F0063ABDD /* VulkanData.cpp */,
 			);
 			path = vkme;
+			sourceTree = "<group>";
+		};
+		EDC359EB2C9ED48C00F76C78 /* geo */ = {
+			isa = PBXGroup;
+			children = (
+				EDC359EA2C9ED48C00F76C78 /* mesh_data.hpp */,
+			);
+			path = geo;
+			sourceTree = "<group>";
+		};
+		EDC359ED2C9EE20100F76C78 /* geo */ = {
+			isa = PBXGroup;
+			children = (
+				EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */,
+			);
+			path = geo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -612,10 +645,12 @@
 				EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */,
 				EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */,
 				ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */,
+				EDC359E52C9ECD7600F76C78 /* Buffer.cpp in Sources */,
 				ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */,
 				ED4F379A2C970E37009B120B /* imgui_impl_sdl2.cpp in Sources */,
 				ED3911D52C98609400B07513 /* Info.cpp in Sources */,
 				ED330A4B2C9B03DF00315207 /* DescriptorSetAllocator.cpp in Sources */,
+				EDC359EE2C9EE20100F76C78 /* mesh_data.cpp in Sources */,
 				ED4F379E2C970E37009B120B /* imgui.cpp in Sources */,
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
@@ -624,6 +659,7 @@
 				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */,
 				ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */,
 				ED4F37992C970E37009B120B /* imgui_draw.cpp in Sources */,
+				EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */,
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
 				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */,

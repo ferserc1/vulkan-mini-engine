@@ -66,6 +66,9 @@ public:
     inline VkFormat format() const { return _format; }
 
 protected:
+    // Only allow create images using factory functions
+    Image() = default;
+    
     VkImage _image = VK_NULL_HANDLE;
     VkImageView _imageView = VK_NULL_HANDLE;
     VmaAllocation _allocation = VK_NULL_HANDLE;

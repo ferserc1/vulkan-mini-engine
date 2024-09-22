@@ -23,9 +23,15 @@ public:
     inline VkQueue graphicsQueue() const { return _graphicsQueue; }
     inline uint32_t graphicsQueueFamily() const { return _graphicsQueueFamily; }
 
+    void immediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
+
 protected:
     VkQueue _graphicsQueue;
     uint32_t _graphicsQueueFamily;
+
+    VkCommandPool _immediateCmdPool;
+    VkCommandBuffer _immediateCmdBuffer;
+    VkFence _immediateCmdFence;
 
 private:
     VulkanData* _vulkanData = nullptr;
