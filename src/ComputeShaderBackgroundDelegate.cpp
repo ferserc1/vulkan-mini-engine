@@ -17,7 +17,7 @@ void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData)
     ));
     
     vulkanData->cleanupManager().push([this] {
-        _drawImage->cleanup();
+        this->cleanup();
     });
     
     initDescriptors();
@@ -28,6 +28,28 @@ void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData)
 void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui)
 {
     _vulkanData = vulkanData;
+}
+
+void ComputeShaderBackgroundDelegate::cleanup()
+{
+    _drawImage->cleanup();
+}
+
+void ComputeShaderBackgroundDelegate::swapchainResized(VkExtent2D newExtent)
+{
+    // Resize the target imagge
+    _drawImage->cleanup();
+    _drawImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
+        _vulkanData,
+        VK_FORMAT_R16G16B16A16_SFLOAT,
+        newExtent,
+        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+        VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        VK_IMAGE_ASPECT_COLOR_BIT
+    ));
+
+    // Set the new image to the compute shader descriptor set
+    _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
 }
 
 VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)

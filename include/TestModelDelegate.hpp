@@ -10,8 +10,11 @@
 class TestModelDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
+    void swapchainResized(VkExtent2D newExtent);
     VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawUI();
+    
+    void cleanup();
 
 protected:
     vkme::VulkanData * _vulkanData;

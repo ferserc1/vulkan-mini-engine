@@ -40,6 +40,23 @@ void VulkanData::cleanup()
     vkDestroyInstance(_instance, nullptr);
 }
 
+bool VulkanData::newFrame()
+{
+    if (_resizeRequested)
+    {
+        vkDeviceWaitIdle(_device);
+
+        int w, h;
+        SDL_GetWindowSize(_window, &w, &h);
+        _swapchain.resize(uint32_t(w), uint32_t(h));
+        
+        _resizeRequested = false;
+        return true;
+    }
+    
+    return false;
+}
+
 void VulkanData::createInstance()
 {
     auto instanceBuilder = core::createInstanceBuilder("Vulkan MiniEngine")

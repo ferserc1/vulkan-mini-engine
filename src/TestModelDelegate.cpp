@@ -17,12 +17,31 @@ void TestModelDelegate::init(vkme::VulkanData * vulkanData)
     ));
     
     vulkanData->cleanupManager().push([this] {
-        _drawImage->cleanup();
+        this->cleanup();
     });
     
     initMesh();
     
     initPipeline();
+}
+
+void TestModelDelegate::swapchainResized(VkExtent2D newExtent)
+{
+    // Resize the target imagge
+    _drawImage->cleanup();
+    _drawImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
+        _vulkanData,
+        VK_FORMAT_R16G16B16A16_SFLOAT,
+        newExtent,
+        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+        VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        VK_IMAGE_ASPECT_COLOR_BIT
+    ));
+}
+
+void TestModelDelegate::cleanup()
+{
+    _drawImage->cleanup();
 }
 
 VkImageLayout TestModelDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
@@ -99,6 +118,8 @@ void TestModelDelegate::initPipeline()
     plFactory.enableDepthtest(true, VK_COMPARE_OP_GREATER_OR_EQUAL);
     plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     plFactory.setCullMode(true, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+    //plFactory.enableBlendingAdditive();
+    //plFactory.disableDepthtest();
     _pipeline = plFactory.build(_pipelineLayout);
     
     _vulkanData->cleanupManager().push([&]() {

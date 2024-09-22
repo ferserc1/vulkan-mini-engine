@@ -18,8 +18,15 @@
 class PushConstantsComputeShaderDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
+
     void init(vkme::VulkanData * vulkanData, vkme::UserInterface * ui);
+
+    void cleanup();
+    
+    void swapchainResized(VkExtent2D newExtent);
+    
     VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
+    
     void drawUI();
     
     // Structture to mirror the push constants from the shader

@@ -19,6 +19,15 @@ void DrawLoop::init(VulkanData * vulkanData, UserInterface * ui)
     }
 }
 
+void DrawLoop::swapchainResized()
+{
+    if (_drawDelegate)
+    {
+        auto newExtent = _vulkanData->swapchain().extent();
+        _drawDelegate->swapchainResized(newExtent);
+    }
+}
+
 void DrawLoop::acquireAndPresent()
 {
     if (!_vulkanData) {
@@ -44,7 +53,16 @@ void DrawLoop::acquireAndPresent()
     frameRes.flushFrameData();
     
     uint32_t swapchainImageIndex;
-    VK_ASSERT(core::acquireNextImage(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex));
+    auto acquireResult = core::acquireNextImage(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex);
+    if (acquireResult == VK_SUBOPTIMAL_KHR)
+    {
+        _vulkanData->updateSwapchainSize();
+    }
+    else if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        _vulkanData->updateSwapchainSize();
+        return;
+    }
     
     auto swapchainImage = swapchainData.image(swapchainImageIndex);
     auto swapchainImageView = swapchainData.imageView(swapchainImageIndex);
@@ -101,7 +119,11 @@ void DrawLoop::acquireAndPresent()
 
     // Present frame
     auto presentInfo = core::Info::presentInfo(swapchain, renderSemaphore, swapchainImageIndex);
-    VK_ASSERT(core::queuePresent(graphicsQueue, &presentInfo));
+    auto presentResult = core::queuePresent(graphicsQueue, &presentInfo);
+    if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR)
+    {
+        _vulkanData->updateSwapchainSize();
+    }
     
     // Next frame
     _vulkanData->nextFrame();

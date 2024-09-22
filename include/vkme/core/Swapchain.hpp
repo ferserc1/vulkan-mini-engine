@@ -15,6 +15,7 @@ class Swapchain {
 public:
     
     void init(VulkanData * vulkanData, uint32_t width, uint32_t height);
+    void resize(uint32_t width, uint32_t height);
     void cleanup();
     
     inline VkSwapchainKHR swapchain() const { return _swapchain; }

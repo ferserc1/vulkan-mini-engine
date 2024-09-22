@@ -41,6 +41,11 @@ public:
     inline core::CleanupManager& cleanupManager() { return _cleanupManager; }
     
     inline VmaAllocator allocator() const { return _allocator; }
+    
+    inline void updateSwapchainSize() { _resizeRequested = true; }
+    
+    // This function returns true if the swapchain have been resized
+    bool newFrame();
 
 protected:
     SDL_Window * _window;
@@ -66,6 +71,9 @@ private:
     core::CleanupManager _cleanupManager;
     
     VmaAllocator _allocator;
+    
+    bool _resizeRequested = false;
+
 
     void createInstance();
     void createSurface();

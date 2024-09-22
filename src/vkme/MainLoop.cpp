@@ -47,6 +47,12 @@ int32_t vkme::MainLoop::run()
                 stopRendering = false;
             }
             
+            if (event.type == SDL_WINDOWEVENT &&
+                event.window.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                _vulkanData.updateSwapchainSize();
+            }
+            
             _userInterface.processEvent(&event);
         }
         
@@ -54,6 +60,11 @@ int32_t vkme::MainLoop::run()
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             continue;
+        }
+        
+        if (_vulkanData.newFrame())
+        {
+            _drawLoop.swapchainResized();
         }
         
         _userInterface.newFrame();

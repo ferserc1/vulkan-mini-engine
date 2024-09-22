@@ -13,12 +13,9 @@ int main(int argc, char** argv) {
     
     app.initWindowTitle("Mini Engine Test");
     app.initWindowSize(1400, 700);
-    
-    // Example 1
-    //app.setDrawLoopDelegate(std::shared_ptr<ClearBackgroundDrawDelegate>(new ClearBackgroundDrawDelegate()));
-    
-    // Example 2
+
     // This delegate extends the draw and ui delegates, so we can use it for both.
+    //auto delegate = std::shared_ptr<ClearBackgroundDrawDelegate>(new ClearBackgroundDrawDelegate());
     //auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
     //auto delegate = std::shared_ptr<PushConstantsComputeShaderDelegate>(new PushConstantsComputeShaderDelegate());
     //auto delegate = std::shared_ptr<ColorTriangleDelegate>(new ColorTriangleDelegate());
