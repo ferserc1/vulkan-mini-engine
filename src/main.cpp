@@ -6,6 +6,7 @@
 #include <PushConstantsComputeShaderDelegate.hpp>
 #include <ColorTriangleDelegate.hpp>
 #include <MeshBuffersDelegate.hpp>
+#include <TestModelDelegate.hpp>
 
 int main(int argc, char** argv) {
     vkme::MainLoop app;
@@ -21,7 +22,8 @@ int main(int argc, char** argv) {
     //auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
     //auto delegate = std::shared_ptr<PushConstantsComputeShaderDelegate>(new PushConstantsComputeShaderDelegate());
     //auto delegate = std::shared_ptr<ColorTriangleDelegate>(new ColorTriangleDelegate());
-    auto delegate = std::shared_ptr<MeshBuffersDelegate>(new MeshBuffersDelegate());
+    //auto delegate = std::shared_ptr<MeshBuffersDelegate>(new MeshBuffersDelegate());
+    auto delegate = std::shared_ptr<TestModelDelegate>(new TestModelDelegate());
     app.setDrawLoopDelegate(delegate);
     app.setUIDelegate(delegate);
     

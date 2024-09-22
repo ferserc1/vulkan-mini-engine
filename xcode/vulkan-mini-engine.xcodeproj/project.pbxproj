@@ -55,6 +55,9 @@
 		EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */; };
 		EDC359EE2C9EE20100F76C78 /* mesh_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */; };
 		EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */; };
+		EDE168192CA05930003E4736 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE168182CA05930003E4736 /* Model.cpp */; };
+		EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */; };
+		EDE168212CA066FA003E4736 /* basicmesh.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = EDE1681D2CA066B2003E4736 /* basicmesh.glb */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -80,6 +83,17 @@
 				ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */,
 			);
 			name = "Copy ICD";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EDE168202CA066E7003E4736 /* Copy Assets */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = assets;
+			dstSubfolderSpec = 7;
+			files = (
+				EDE168212CA066FA003E4736 /* basicmesh.glb in Copy Assets */,
+			);
+			name = "Copy Assets";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -177,6 +191,11 @@
 		EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsPipeline.cpp; sourceTree = "<group>"; };
 		EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GraphicsPipeline.hpp; sourceTree = "<group>"; };
 		EDE168162C9FFA3A003E4736 /* vma_allocation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vma_allocation.hpp; sourceTree = "<group>"; };
+		EDE168172CA05928003E4736 /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
+		EDE168182CA05930003E4736 /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestModelDelegate.cpp; sourceTree = "<group>"; };
+		EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestModelDelegate.hpp; sourceTree = "<group>"; };
+		EDE1681D2CA066B2003E4736 /* basicmesh.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = basicmesh.glb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +274,7 @@
 		ED4F37462C970C29009B120B = {
 			isa = PBXGroup;
 			children = (
+				EDE1681E2CA066B2003E4736 /* assets */,
 				ED4F37B12C970F4D009B120B /* resources */,
 				ED4F37A32C970E8E009B120B /* VulkanSDK */,
 				ED4F37952C970E37009B120B /* third-party */,
@@ -292,6 +312,7 @@
 				ED4F37622C970C87009B120B /* main.cpp */,
 				EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
+				EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */,
 				ED4F37C32C971769009B120B /* vkme */,
 			);
 			name = src;
@@ -306,6 +327,7 @@
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
 				EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
+				EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
 			);
 			name = include;
@@ -500,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				EDC359EA2C9ED48C00F76C78 /* mesh_data.hpp */,
+				EDE168172CA05928003E4736 /* Model.hpp */,
 			);
 			path = geo;
 			sourceTree = "<group>";
@@ -508,8 +531,17 @@
 			isa = PBXGroup;
 			children = (
 				EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */,
+				EDE168182CA05930003E4736 /* Model.cpp */,
 			);
 			path = geo;
+			sourceTree = "<group>";
+		};
+		EDE1681E2CA066B2003E4736 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				EDE1681D2CA066B2003E4736 /* basicmesh.glb */,
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -526,6 +558,7 @@
 				ED4F37B22C970F62009B120B /* Copy ICD */,
 				ED4F37B42C970F8B009B120B /* Create Vulkan Symbolic Link */,
 				ED4F37BE2C971156009B120B /* Compile Shaders */,
+				EDE168202CA066E7003E4736 /* Copy Assets */,
 			);
 			buildRules = (
 			);
@@ -640,6 +673,7 @@
 				ED4F37A02C970E37009B120B /* simdjson.cpp in Sources */,
 				ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */,
 				EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */,
+				EDE168192CA05930003E4736 /* Model.cpp in Sources */,
 				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
 				ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */,
 				EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */,
@@ -655,6 +689,7 @@
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
+				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,
 				ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */,
 				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */,
 				ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */,
