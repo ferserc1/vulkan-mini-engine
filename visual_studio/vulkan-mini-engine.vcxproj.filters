@@ -55,6 +55,12 @@
     <Filter Include="Source Files\vkme\factory">
       <UniqueIdentifier>{eaa04c37-f618-4937-b15f-ca7b74492cf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\vkme\geo">
+      <UniqueIdentifier>{72d83d18-1b26-4ea4-b990-587ac0daa9e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vkme\geo">
+      <UniqueIdentifier>{da0e0218-307e-4344-9cd7-1fff5664a3d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp">
@@ -157,6 +163,15 @@
       <Filter>Source Files\vkme\factory</Filter>
     </ClCompile>
     <ClCompile Include="..\src\vkme\core\extensions.cpp">
+      <Filter>Source Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\geo\mesh_data.cpp">
+      <Filter>Source Files\vkme\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MeshBuffersDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\Buffer.cpp">
       <Filter>Source Files\vkme\core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -282,6 +297,15 @@
       <Filter>Header Files\vkme\factory</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vkme\core\extensions.hpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\geo\mesh_data.hpp">
+      <Filter>Header Files\vkme\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MeshBuffersDelegate.hpp">
+      <Filter>Header Files\vkme</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\core\Buffer.hpp">
       <Filter>Header Files\vkme\core</Filter>
     </ClInclude>
   </ItemGroup>

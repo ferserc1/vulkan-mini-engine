@@ -154,7 +154,9 @@
     <ClCompile Include="..\src\ColorTriangleDelegate.cpp" />
     <ClCompile Include="..\src\ComputeShaderBackgroundDelegate.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\MeshBuffersDelegate.cpp" />
     <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
+    <ClCompile Include="..\src\vkme\core\Buffer.cpp" />
     <ClCompile Include="..\src\vkme\core\Command.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSetAllocator.cpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="..\src\vkme\factory\DescriptorSetLayout.cpp" />
     <ClCompile Include="..\src\vkme\factory\GraphicsPipeline.cpp" />
     <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp" />
+    <ClCompile Include="..\src\vkme\geo\mesh_data.cpp" />
     <ClCompile Include="..\src\vkme\MainLoop.cpp" />
     <ClCompile Include="..\src\vkme\PlatformTools.cpp" />
     <ClCompile Include="..\src\vkme\UserInterface.cpp" />
@@ -189,7 +192,9 @@
     <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp" />
     <ClInclude Include="..\include\ColorTriangleDelegate.hpp" />
     <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp" />
+    <ClInclude Include="..\include\MeshBuffersDelegate.hpp" />
     <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
+    <ClInclude Include="..\include\vkme\core\Buffer.hpp" />
     <ClInclude Include="..\include\vkme\core\CleanupManager.hpp" />
     <ClInclude Include="..\include\vkme\core\Command.hpp" />
     <ClInclude Include="..\include\vkme\core\common.hpp" />
@@ -205,6 +210,7 @@
     <ClInclude Include="..\include\vkme\factory\DescriptorSetLayout.hpp" />
     <ClInclude Include="..\include\vkme\factory\GraphicsPipeline.hpp" />
     <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp" />
+    <ClInclude Include="..\include\vkme\geo\mesh_data.hpp" />
     <ClInclude Include="..\include\vkme\MainLoop.hpp" />
     <ClInclude Include="..\include\vkme\PlatformTools.hpp" />
     <ClInclude Include="..\include\vkme\UserInterface.hpp" />

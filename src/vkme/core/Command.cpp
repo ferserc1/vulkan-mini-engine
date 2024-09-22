@@ -15,7 +15,7 @@ void Command::init(VulkanData *vulkanData, vkb::Device *bDevice)
     _graphicsQueue = bDevice->get_queue(vkb::QueueType::graphics).value();
     _graphicsQueueFamily = bDevice->get_queue_index(vkb::QueueType::graphics).value();
 
-    auto cmdPoolInfo = Info::commandPoolCreateInfo(_graphicsQueueFamily);
+    auto cmdPoolInfo = Info::commandPoolCreateInfo(_graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     VK_ASSERT(vkCreateCommandPool(_vulkanData->device(), &cmdPoolInfo, nullptr, &_immediateCmdPool));
     
     auto cmdAllocInfo = Info::commandBufferAllocateInfo(_immediateCmdPool);

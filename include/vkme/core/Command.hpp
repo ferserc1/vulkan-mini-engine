@@ -2,6 +2,8 @@
 #pragma once
 
 #include <vkme/core/common.hpp>
+#include <functional>
+
 
 namespace vkme {
 
