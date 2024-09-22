@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
   </PropertyGroup>
@@ -126,7 +126,11 @@
       <AdditionalDependencies>SDL2d.lib;SDL2maind.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(SolutionDir)..\build\shaders</Command>
+      <Command>xcopy /i /e /s /y /f $(SolutionDir)..\assets $(OutDir)assets
+
+$(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(SolutionDir)..\build\shaders
+
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,6 +152,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /i /e /s /y /f $(SolutionDir)..\assets $(OutDir)assets
+
+$(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(SolutionDir)..\build\shaders
+
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp" />
@@ -156,6 +167,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MeshBuffersDelegate.cpp" />
     <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
+    <ClCompile Include="..\src\TestModelDelegate.cpp" />
     <ClCompile Include="..\src\vkme\core\Buffer.cpp" />
     <ClCompile Include="..\src\vkme\core\Command.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp" />
@@ -172,6 +184,7 @@
     <ClCompile Include="..\src\vkme\factory\GraphicsPipeline.cpp" />
     <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp" />
     <ClCompile Include="..\src\vkme\geo\mesh_data.cpp" />
+    <ClCompile Include="..\src\vkme\geo\Model.cpp" />
     <ClCompile Include="..\src\vkme\MainLoop.cpp" />
     <ClCompile Include="..\src\vkme\PlatformTools.cpp" />
     <ClCompile Include="..\src\vkme\UserInterface.cpp" />
@@ -194,6 +207,7 @@
     <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp" />
     <ClInclude Include="..\include\MeshBuffersDelegate.hpp" />
     <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
+    <ClInclude Include="..\include\TestModelDelegate.hpp" />
     <ClInclude Include="..\include\vkme\core\Buffer.hpp" />
     <ClInclude Include="..\include\vkme\core\CleanupManager.hpp" />
     <ClInclude Include="..\include\vkme\core\Command.hpp" />
@@ -211,6 +225,7 @@
     <ClInclude Include="..\include\vkme\factory\GraphicsPipeline.hpp" />
     <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp" />
     <ClInclude Include="..\include\vkme\geo\mesh_data.hpp" />
+    <ClInclude Include="..\include\vkme\geo\Model.hpp" />
     <ClInclude Include="..\include\vkme\MainLoop.hpp" />
     <ClInclude Include="..\include\vkme\PlatformTools.hpp" />
     <ClInclude Include="..\include\vkme\UserInterface.hpp" />
