@@ -58,6 +58,7 @@
 		EDE168192CA05930003E4736 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE168182CA05930003E4736 /* Model.cpp */; };
 		EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */; };
 		EDE168212CA066FA003E4736 /* basicmesh.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = EDE1681D2CA066B2003E4736 /* basicmesh.glb */; };
+		EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */; };
 		EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */; };
 /* End PBXBuildFile section */
 
@@ -197,6 +198,8 @@
 		EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestModelDelegate.cpp; sourceTree = "<group>"; };
 		EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestModelDelegate.hpp; sourceTree = "<group>"; };
 		EDE1681D2CA066B2003E4736 /* basicmesh.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = basicmesh.glb; sourceTree = "<group>"; };
+		EDEC55F92CA1B15D0051F3B3 /* VertexBuffersDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexBuffersDelegate.hpp; sourceTree = "<group>"; };
+		EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VertexBuffersDelegate.cpp; sourceTree = "<group>"; };
 		EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleTriangle.cpp; sourceTree = "<group>"; };
 		EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleTriangle.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -317,6 +320,7 @@
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
 				EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */,
 				EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */,
+				EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */,
 				ED4F37C32C971769009B120B /* vkme */,
 			);
 			name = src;
@@ -333,6 +337,7 @@
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */,
 				EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */,
+				EDEC55F92CA1B15D0051F3B3 /* VertexBuffersDelegate.hpp */,
 				ED4F37C02C9713B9009B120B /* vkme */,
 			);
 			name = include;
@@ -679,6 +684,7 @@
 				ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */,
 				EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */,
 				EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */,
+				EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */,
 				EDE168192CA05930003E4736 /* Model.cpp in Sources */,
 				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
 				ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */,

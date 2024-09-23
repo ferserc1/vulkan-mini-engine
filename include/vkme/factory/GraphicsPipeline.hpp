@@ -29,6 +29,7 @@ public:
     void enableBlendingAdditive();
     void enableBlendingAlphablend();
     
+    VkPipelineVertexInputStateCreateInfo vertexInputState = {};
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     VkPipelineRasterizationStateCreateInfo rasterizer = {};
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};

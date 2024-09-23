@@ -8,6 +8,7 @@
 #include <ColorTriangleDelegate.hpp>
 #include <MeshBuffersDelegate.hpp>
 #include <TestModelDelegate.hpp>
+#include <VertexBuffersDelegate.hpp>
 
 int main(int argc, char** argv) {
     vkme::MainLoop app;
@@ -16,7 +17,8 @@ int main(int argc, char** argv) {
     app.initWindowSize(1400, 700);
 
     
-    auto delegate = std::shared_ptr<SimpleTriangleDelegate>(new SimpleTriangleDelegate());
+    // auto delegate = std::shared_ptr<SimpleTriangleDelegate>(new SimpleTriangleDelegate());
+    auto delegate = std::shared_ptr<VertexBuffersDelegate>(new VertexBuffersDelegate());
     
     //auto delegate = std::shared_ptr<ClearBackgroundDrawDelegate>(new ClearBackgroundDrawDelegate());
     //auto delegate = std::shared_ptr<ComputeShaderBackgroundDelegate>(new ComputeShaderBackgroundDelegate());
