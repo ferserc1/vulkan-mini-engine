@@ -151,6 +151,7 @@ void PushConstantsComputeShaderDelegate::initDescriptors()
     
     // Wrapped method: using a vkme::core::DescriptorSet wrapper
     _drawImageDescriptors = std::unique_ptr<DescriptorSet>(_descriptorAllocator.allocate(_drawImageDescriptorLayout));
+    
     _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
     
     _vulkanData->cleanupManager().push([&](VkDevice dev) {
