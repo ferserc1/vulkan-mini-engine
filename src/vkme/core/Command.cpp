@@ -23,7 +23,7 @@ void Command::init(VulkanData *vulkanData, vkb::Device *bDevice)
     
     auto fenceInfo = Info::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
     VK_ASSERT(vkCreateFence(_vulkanData->device(), &fenceInfo, nullptr, &_immediateCmdFence));
-    _vulkanData->cleanupManager().push([&] {
+    _vulkanData->cleanupManager().push([&](VkDevice) {
         vkDestroyCommandPool(_vulkanData->device(), _immediateCmdPool, nullptr);
         vkDestroyFence(_vulkanData->device(), _immediateCmdFence, nullptr);
     });

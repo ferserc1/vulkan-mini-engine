@@ -16,7 +16,7 @@ struct FrameResources {
     VkFence frameFence;
     CleanupManager cleanupManager;
     
-    void init(Command * command);
+    void init(VkDevice device, Command * command);
     
     // Remove temporary resources used by this frame
     void flushFrameData();
@@ -25,6 +25,7 @@ struct FrameResources {
     void cleanup();
     
 private:
+    VkDevice _device;
     Command * _command;
 };
 

@@ -16,7 +16,7 @@ void ColorTriangleDelegate::init(vkme::VulkanData * vulkanData)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    vulkanData->cleanupManager().push([this] {
+    vulkanData->cleanupManager().push([this](VkDevice) {
         this->cleanup();
     });
     
@@ -110,9 +110,9 @@ void ColorTriangleDelegate::initPipeline()
     plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
     _pipeline = plFactory.build(_pipelineLayout);
     
-    _vulkanData->cleanupManager().push([&]() {
-        vkDestroyPipeline(_vulkanData->device(), _pipeline, nullptr);
-        vkDestroyPipelineLayout(_vulkanData->device(), _pipelineLayout, nullptr);
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyPipeline(dev, _pipeline, nullptr);
+        vkDestroyPipelineLayout(dev, _pipelineLayout, nullptr);
     });
     
 }

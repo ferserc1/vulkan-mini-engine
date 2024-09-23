@@ -16,7 +16,7 @@ void ComputeShaderBackgroundDelegate::init(vkme::VulkanData * vulkanData)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    vulkanData->cleanupManager().push([this] {
+    vulkanData->cleanupManager().push([this](VkDevice) {
         this->cleanup();
     });
     
@@ -138,10 +138,10 @@ void ComputeShaderBackgroundDelegate::initDescriptors()
     _drawImageDescriptors = std::unique_ptr<DescriptorSet>(_descriptorAllocator.allocate(_drawImageDescriptorLayout));
     _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
     
-    _vulkanData->cleanupManager().push([&] {
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
         _descriptorAllocator.destroy();
         
-        vkDestroyDescriptorSetLayout(_vulkanData->device(), _drawImageDescriptorLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _drawImageDescriptorLayout, nullptr);
     });
 }
 
@@ -166,9 +166,9 @@ void ComputeShaderBackgroundDelegate::initPipelines()
     pipelineFactory.setShader("gradient.comp.spv");
     _gradientPipeline = pipelineFactory.build(_gradientPipelineLayout);
     
-    _vulkanData->cleanupManager().push([&]() {
-        vkDestroyPipeline(_vulkanData->device(), _gradientPipeline, nullptr);
-        vkDestroyPipelineLayout(_vulkanData->device(), _gradientPipelineLayout, nullptr);
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyPipeline(dev, _gradientPipeline, nullptr);
+        vkDestroyPipelineLayout(dev, _gradientPipelineLayout, nullptr);
     });
     
 }

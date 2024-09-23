@@ -56,11 +56,11 @@ private:
 
     vkb::Instance _vkbInstance;
 
-    VkInstance _instance;
+    VkInstance _instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT _debugMessenger;
-    VkPhysicalDevice _physicalDevice;
-    VkDevice _device;
-    VkSurfaceKHR _surface;
+    VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+    VkDevice _device = VK_NULL_HANDLE;
+    VkSurfaceKHR _surface = VK_NULL_HANDLE;
 
     core::Swapchain _swapchain;
     core::Command _command;
@@ -70,7 +70,7 @@ private:
     
     core::CleanupManager _cleanupManager;
     
-    VmaAllocator _allocator;
+    VmaAllocator _allocator = VK_NULL_HANDLE;
     
     bool _resizeRequested = false;
 

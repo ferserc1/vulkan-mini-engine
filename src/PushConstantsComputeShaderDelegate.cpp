@@ -16,7 +16,7 @@ void PushConstantsComputeShaderDelegate::init(vkme::VulkanData * vulkanData)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    vulkanData->cleanupManager().push([this] {
+    vulkanData->cleanupManager().push([this](VkDevice) {
         this->cleanup();
     });
     
@@ -153,10 +153,10 @@ void PushConstantsComputeShaderDelegate::initDescriptors()
     _drawImageDescriptors = std::unique_ptr<DescriptorSet>(_descriptorAllocator.allocate(_drawImageDescriptorLayout));
     _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
     
-    _vulkanData->cleanupManager().push([&] {
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
         _descriptorAllocator.destroy();
         
-        vkDestroyDescriptorSetLayout(_vulkanData->device(), _drawImageDescriptorLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _drawImageDescriptorLayout, nullptr);
     });
 }
 
@@ -233,10 +233,10 @@ void PushConstantsComputeShaderDelegate::initPipelines()
     
     _currentBackgroundEffect = 2;
     
-    _vulkanData->cleanupManager().push([&]() {
-        vkDestroyPipelineLayout(_vulkanData->device(), _pipelineLayout, nullptr);
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyPipelineLayout(dev, _pipelineLayout, nullptr);
         for (auto &effect : _backgroundEffect) {
-            vkDestroyPipeline(_vulkanData->device(), effect.pipeline, nullptr);
+            vkDestroyPipeline(dev, effect.pipeline, nullptr);
         }
     });
     

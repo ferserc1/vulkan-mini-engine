@@ -12,7 +12,7 @@ void ClearBackgroundDrawDelegate::init(vkme::VulkanData * vulkanData)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    vulkanData->cleanupManager().push([this] {
+    vulkanData->cleanupManager().push([this](VkDevice) {
         this->cleanup();
     });
 }

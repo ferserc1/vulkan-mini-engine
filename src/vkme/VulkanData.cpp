@@ -24,7 +24,7 @@ void VulkanData::cleanup()
 {
     vkDeviceWaitIdle(_device);
     
-    _cleanupManager.flush();
+    _cleanupManager.flush(_device);
     
     cleanupFrameResources();
     
@@ -119,7 +119,7 @@ void VulkanData::createFrameResources()
 {
     for (int i = 0; i < core::FRAME_OVERLAP; ++i)
     {
-        _frameResources[i].init(&_command);
+        _frameResources[i].init(_device, &_command);
     }
 }
 

@@ -66,8 +66,8 @@ void UserInterface::initCommands()
     _commandPool = _vulkanData->command().createCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     _commandBuffer = _vulkanData->command().allocateCommandBuffer(_commandPool, 1);
 
-    _vulkanData->cleanupManager().push([&](){
-        vkDestroyFence(_vulkanData->device(), _uiFence, nullptr);
+    _vulkanData->cleanupManager().push([&](VkDevice dev){
+        vkDestroyFence(dev, _uiFence, nullptr);
         _vulkanData->command().destroyComandPool(_commandPool);
     });
 }
@@ -120,9 +120,9 @@ void UserInterface::initImGui()
     
     ImGui_ImplVulkan_Init(&initInfo);
     
-    _vulkanData->cleanupManager().push([&, this]() {
+    _vulkanData->cleanupManager().push([&, this](VkDevice dev) {
         ImGui_ImplVulkan_Shutdown();
-        vkDestroyDescriptorPool(_vulkanData->device(), _imguiPool, nullptr);
+        vkDestroyDescriptorPool(dev, _imguiPool, nullptr);
     });
 }
 

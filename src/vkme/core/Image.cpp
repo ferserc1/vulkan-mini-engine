@@ -119,8 +119,9 @@ Image* Image::createAllocatedImage(
     allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
     allocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     
+    VmaAllocator alloc = vulkanData->allocator();
     vmaCreateImage(
-        vulkanData->allocator(),
+        alloc,
         &imgInfo,
         &allocInfo,
         &result->_image,

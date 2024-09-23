@@ -63,9 +63,9 @@ void SimpleTriangleDelegate::initPipeline()
     pipelineFactory.setColorAttachmentFormat(_vulkanData->swapchain().imageFormat());
     _pipeline = pipelineFactory.build(_layout);
     
-    _vulkanData->cleanupManager().push([&]() {
-        vkDestroyPipeline(_vulkanData->device(), _pipeline, nullptr);
-        vkDestroyPipelineLayout(_vulkanData->device(), _layout, nullptr);
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyPipeline(dev, _pipeline, nullptr);
+        vkDestroyPipelineLayout(dev, _layout, nullptr);
     });
     
 }

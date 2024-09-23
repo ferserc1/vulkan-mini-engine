@@ -5,8 +5,9 @@
 namespace vkme {
 namespace core {
 
-void FrameResources::init(Command * command)
+void FrameResources::init(VkDevice device, Command * command)
 {
+    _device = device;
     _command = command;
     
     // Command pool and command buffer
@@ -24,7 +25,7 @@ void FrameResources::init(Command * command)
 
 void FrameResources::flushFrameData()
 {
-    cleanupManager.flush();
+    cleanupManager.flush(_device);
 }
 
 void FrameResources::cleanup()
@@ -38,7 +39,7 @@ void FrameResources::cleanup()
     vkDestroySemaphore(_command->device(), renderSemaphore, nullptr);
     
     // Destroy frame cleanup manager
-    cleanupManager.flush();
+    cleanupManager.flush(_device);
 }
 
 
