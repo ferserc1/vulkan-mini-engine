@@ -26,14 +26,22 @@ public:
 
     void destroy();
 
-    VkDescriptorSet allocateRaw(VkDescriptorSetLayout layout);
+    VkDescriptorSet allocateRaw(VkDescriptorSetLayout layout, void* pNext = nullptr);
     
-    DescriptorSet * allocate(VkDescriptorSetLayout layout);
+    DescriptorSet * allocate(VkDescriptorSetLayout layout, void* pNext = nullptr);
 
 protected:
-    VkDescriptorPool _pool;
+    std::vector<VkDescriptorPoolSize> _poolSizes;
+    std::vector<VkDescriptorPool> _fullPools;
+    std::vector<VkDescriptorPool> _readyPools;
+    uint32_t _setsPerPool;
+    //VkDescriptorPool _pool;
+    
+    VkDescriptorPool getPool();
+    VkDescriptorPool createPool(uint32_t setCount);
 
     VulkanData * _vulkanData;
+    
 };
 
 }
