@@ -3,7 +3,7 @@
 #include <vkme/DrawLoop.hpp>
 #include <vkme/UserInterface.hpp>
 #include <vkme/core/Buffer.hpp>
-
+#include <array>
 
 class VertexBuffersDelegate :
     // Required to draw

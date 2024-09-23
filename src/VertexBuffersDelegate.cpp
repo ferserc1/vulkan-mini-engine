@@ -51,8 +51,9 @@ VkImageLayout VertexBuffersDelegate::draw(
     VkBuffer vertexBuffers[] = {_vertexBuffer->buffer()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(cmd, 0, 1, vertexBuffers, offsets);
-    //vkCmdDraw(cmd, 3, 1, 0, 0);
     vkCmdDraw(cmd, uint32_t(_vertices.size()), 1, 0, 0);
+
+    vkme::core::cmdEndRendering(cmd);
     
     return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 }

@@ -47,6 +47,8 @@ VkImageLayout SimpleTriangleDelegate::draw(
     cmdSetDefaultViewportAndScissor(cmd, colorImage->extent2D());
     
     vkCmdDraw(cmd, 3, 1, 0, 0);
+
+	vkme::core::cmdEndRendering(cmd);
     
     return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 }

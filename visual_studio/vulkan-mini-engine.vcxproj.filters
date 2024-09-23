@@ -180,6 +180,12 @@
     <ClCompile Include="..\src\vkme\geo\Model.cpp">
       <Filter>Source Files\vkme\geo</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SimpleTriangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VertexBuffersDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -308,9 +314,6 @@
     <ClInclude Include="..\include\vkme\geo\mesh_data.hpp">
       <Filter>Header Files\vkme\geo</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MeshBuffersDelegate.hpp">
-      <Filter>Header Files\vkme</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\vkme\core\Buffer.hpp">
       <Filter>Header Files\vkme\core</Filter>
     </ClInclude>
@@ -319,6 +322,15 @@
     </ClInclude>
     <ClInclude Include="..\include\vkme\geo\Model.hpp">
       <Filter>Header Files\vkme\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\VertexBuffersDelegate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SimpleTriangle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MeshBuffersDelegate.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

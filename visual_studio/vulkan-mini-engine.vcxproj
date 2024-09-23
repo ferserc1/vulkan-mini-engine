@@ -167,7 +167,9 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MeshBuffersDelegate.cpp" />
     <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
+    <ClCompile Include="..\src\SimpleTriangle.cpp" />
     <ClCompile Include="..\src\TestModelDelegate.cpp" />
+    <ClCompile Include="..\src\VertexBuffersDelegate.cpp" />
     <ClCompile Include="..\src\vkme\core\Buffer.cpp" />
     <ClCompile Include="..\src\vkme\core\Command.cpp" />
     <ClCompile Include="..\src\vkme\core\DescriptorSet.cpp" />
@@ -207,7 +209,9 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp" />
     <ClInclude Include="..\include\MeshBuffersDelegate.hpp" />
     <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
+    <ClInclude Include="..\include\SimpleTriangle.hpp" />
     <ClInclude Include="..\include\TestModelDelegate.hpp" />
+    <ClInclude Include="..\include\VertexBuffersDelegate.hpp" />
     <ClInclude Include="..\include\vkme\core\Buffer.hpp" />
     <ClInclude Include="..\include\vkme\core\CleanupManager.hpp" />
     <ClInclude Include="..\include\vkme\core\Command.hpp" />
