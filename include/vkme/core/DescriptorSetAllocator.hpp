@@ -7,6 +7,8 @@
 namespace vkme {
 namespace core {
 
+class DescriptorSet;
+
 class DescriptorSetAllocator {
 public:
     struct PoolSizeRatio {
@@ -17,7 +19,6 @@ public:
     void init(VulkanData * vulkanData);
 
     void initPool(
-        VkDevice device,
         uint32_t maxSets,
         std::vector<PoolSizeRatio> poolRatios
     );

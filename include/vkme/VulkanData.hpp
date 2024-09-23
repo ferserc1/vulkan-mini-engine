@@ -37,6 +37,7 @@ public:
     inline const core::FrameResources& currentFrameResources() const { return _frameResources[_currentFrame % core::FRAME_OVERLAP]; }
     inline uint32_t currentFrame() const { return _currentFrame; }
     inline void nextFrame() { ++_currentFrame; }
+    void iterateFrameResources(std::function<void(core::FrameResources&)> cb);
     
     inline core::CleanupManager& cleanupManager() { return _cleanupManager; }
     

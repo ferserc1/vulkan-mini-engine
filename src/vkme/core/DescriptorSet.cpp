@@ -1,5 +1,6 @@
 #include <vkme/core/DescriptorSet.hpp>
 #include <vulkan/vulkan.h>
+#include <vkme/core/Buffer.hpp>
 
 namespace vkme {
 namespace core {
@@ -10,6 +11,24 @@ void DescriptorSet::init(
 ) {
     _vulkanData = vd;
     _ds = ds;
+}
+
+void DescriptorSet::updateBuffer(
+    uint32_t binding,
+    VkDescriptorType type,
+    Buffer* buffer,
+    size_t size,
+    size_t offset
+) {
+    beginUpdate();
+    addBuffer(
+        binding,
+        type,
+        buffer,
+        size,
+        offset
+    );
+    endUpdate();
 }
 
 void DescriptorSet::addImage(
@@ -60,6 +79,16 @@ void DescriptorSet::addBuffer(
     write.descriptorType = type;
     write.pBufferInfo = &info;
     _writes.push_back(write);
+}
+
+void DescriptorSet::addBuffer(
+    uint32_t binding,
+    VkDescriptorType type,
+    Buffer* buffer,
+    size_t size,
+    size_t offset
+) {
+    addBuffer(binding, type, buffer->buffer(), size, offset);
 }
 
 void DescriptorSet::endUpdate()

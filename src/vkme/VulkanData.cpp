@@ -131,4 +131,12 @@ void VulkanData::cleanupFrameResources()
     }
 }
 
+void VulkanData::iterateFrameResources(std::function<void(core::FrameResources&)> cb)
+{
+    for (auto i = 0; i < core::FRAME_OVERLAP; ++i)
+    {
+        cb(_frameResources[i]);
+    }
+}
+
 }

@@ -9,6 +9,8 @@
 namespace vkme {
 namespace core {
 
+class Buffer;
+
 class DescriptorSet {
 public:
 
@@ -45,23 +47,13 @@ public:
         endUpdate();
     }
     
-    inline void updateBuffer(
+    void updateBuffer(
         uint32_t binding,
         VkDescriptorType type,
         Buffer* buffer,
         size_t size,
         size_t offset
-    ) {
-        beginUpdate();
-        addBuffer(
-            binding,
-            type,
-            buffer,
-            size,
-            offset
-        );
-        endUpdate();
-    }
+    );
     
     inline void beginUpdate() { clear(); }
     
@@ -83,15 +75,13 @@ public:
         VkSampler sampler = VK_NULL_HANDLE
     );
     
-    inline void addBuffer(
+    void addBuffer(
         uint32_t binding,
         VkDescriptorType type,
         Buffer* buffer,
         size_t size,
         size_t offset
-    ) {
-        addBuffer(binding, type, buffer->buffer(), size, offset);
-    }
+    );
     
     void addBuffer(
         uint32_t binding,

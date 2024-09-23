@@ -10,7 +10,6 @@ void DescriptorSetAllocator::init(VulkanData * vulkanData)
 }
 
 void DescriptorSetAllocator::initPool(
-    VkDevice device,
     uint32_t maxSets,
     std::vector<PoolSizeRatio> poolRatios
 ) {

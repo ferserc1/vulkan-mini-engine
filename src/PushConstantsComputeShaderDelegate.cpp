@@ -143,7 +143,7 @@ void PushConstantsComputeShaderDelegate::initDescriptors()
     sizes.push_back({ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1 });
     
     _descriptorAllocator.init(_vulkanData);
-    _descriptorAllocator.initPool(_vulkanData->device(), 10, sizes);
+    _descriptorAllocator.initPool(10, sizes);
     
     vkme::factory::DescriptorSetLayout dsFactory;
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);

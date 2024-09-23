@@ -10,6 +10,7 @@
 class TestModelDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
+    void initFrameResources(vkme::core::DescriptorSetAllocator * allocator);
     void swapchainResized(VkExtent2D newExtent);
     VkImageLayout draw(
         VkCommandBuffer cmd,

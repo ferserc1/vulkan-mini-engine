@@ -4,9 +4,12 @@
 
 #include <vkme/core/Command.hpp>
 #include <vkme/core/CleanupManager.hpp>
+//#include <vkme/core/DescriptorSetAllocator.hpp>
 
 namespace vkme {
 namespace core {
+
+class DescriptorSetAllocator;
 
 struct FrameResources {
     VkCommandPool commandPool;
@@ -15,6 +18,7 @@ struct FrameResources {
     VkSemaphore renderSemaphore;
     VkFence frameFence;
     CleanupManager cleanupManager;
+    DescriptorSetAllocator* descriptorAllocator;
     
     void init(VkDevice device, Command * command);
     

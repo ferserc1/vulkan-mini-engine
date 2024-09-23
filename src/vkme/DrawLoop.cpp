@@ -5,6 +5,7 @@
 #include <vkme/core/Info.hpp>
 #include <vkme/core/Image.hpp>
 #include <vkme/PlatformTools.hpp>
+#include <vkme/core/DescriptorSetAllocator.hpp>
 
 namespace vkme {
 
@@ -33,6 +34,12 @@ void DrawLoop::init(VulkanData * vulkanData, UserInterface * ui)
     {
         _drawDelegate->init(vulkanData);
     }
+    
+    // Initialize frame resources
+    _vulkanData->iterateFrameResources([&](core::FrameResources& res) {
+        res.descriptorAllocator->init(_vulkanData);
+        initFrameResources(res.descriptorAllocator);
+    });
 }
 
 void DrawLoop::swapchainResized()

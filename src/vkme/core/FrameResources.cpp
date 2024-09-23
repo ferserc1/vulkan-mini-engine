@@ -1,4 +1,5 @@
 #include <vkme/core/FrameResources.hpp>
+#include <vkme/core/DescriptorSetAllocator.hpp>
 
 #include <vkme/core/Info.hpp>
 
@@ -21,15 +22,22 @@ void FrameResources::init(VkDevice device, Command * command)
     auto semaphoreInfo = Info::semaphoreCreateInfo();
     VK_ASSERT(vkCreateSemaphore(_command->device(), &semaphoreInfo, nullptr, &swapchainSemaphore));
     VK_ASSERT(vkCreateSemaphore(_command->device(), &semaphoreInfo, nullptr, &renderSemaphore));
+    
+    descriptorAllocator = new DescriptorSetAllocator();
 }
 
 void FrameResources::flushFrameData()
 {
     cleanupManager.flush(_device);
+    descriptorAllocator->clearDescriptors();
 }
 
 void FrameResources::cleanup()
 {
+    descriptorAllocator->clearDescriptors();
+    descriptorAllocator->destroy();
+    delete descriptorAllocator;
+    
     // Destroy command pool
     _command->destroyComandPool(commandPool);
     

@@ -25,6 +25,26 @@ void TestModelDelegate::init(vkme::VulkanData * vulkanData)
     initPipeline();
 }
 
+void TestModelDelegate::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
+{
+
+    // Example: we're going to use a descriptor set with one uniform buffer, another
+    // with an uniform buffer and an image sampler, and other woth two image sampleres.
+    // We need to add every types of descriptor sets and the number of sets required to
+    // allocate every types of descriptor sets. We pass 10 because we want to allocate 10
+    // sets. If the pool is fill, the allocator will create another pool, but one pool must
+    // have sufficient amount of size to store every kind of descriptor set, and also we
+    // need to provide all the types of descriptor sets that we need to use.
+//    allocator->initPool(10, {
+//        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 },
+//        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}
+//    });
+    
+    // You'll need to use the frame descriptor set allocator only when you need to create dynamic
+    // descriptor sets for the current frame. If you have objects that live during all the application,
+    // you'll probably want to store them in other place, for example in the delegate itself.
+}
+
 void TestModelDelegate::swapchainResized(VkExtent2D newExtent)
 {
     // Resize the target imagge

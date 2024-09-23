@@ -3,6 +3,7 @@
 #include <vkme/VulkanData.hpp>
 #include <vkme/core/Image.hpp>
 #include <vkme/UserInterface.hpp>
+#include <vkme/core/DescriptorSetAllocator.hpp>
 
 #include <memory>
 
@@ -13,6 +14,14 @@ public:
     virtual ~DrawLoopDelegate() {}
 
     virtual void init(VulkanData *) {}
+    
+    // This function is called to initialize the frame specific resources,
+    // and will be called once per on-flight frame resources. There are
+    //  usually two or three frames that are rendered on the fly, so it will
+    //  be called two or three times. This function is so we can indicate
+    //  the types of descriptor set we're going to use in the rendering, so
+    //  we'll use it to initialise the DescriptorSetAllocator
+    virtual void initFrameResources(core::DescriptorSetAllocator* dsAllocator) {}
     
     // This function is called when the swapchain has been resized. Inside this function you can
     // recreate any resource that depends on the viewport size, because the VulkanData class
@@ -42,6 +51,14 @@ public:
     // recreate any resource that depends on the viewport size, because the VulkanData class
     // ensures that the device is iddle before calling this function.
     void swapchainResized();
+    
+    void initFrameResources(core::DescriptorSetAllocator* dsAllocator)
+    {
+        if (_drawDelegate)
+        {
+            _drawDelegate->initFrameResources(dsAllocator);
+        }
+    }
     
     VkImageLayout draw(VkCommandBuffer cmd, const core::Image* colorImage, const core::Image* depthImage)
     {
