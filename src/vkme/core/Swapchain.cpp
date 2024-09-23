@@ -44,6 +44,13 @@ void Swapchain::init(VulkanData * vulkanData, uint32_t width, uint32_t height)
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         VK_IMAGE_ASPECT_DEPTH_BIT
     );
+    
+    // Array of core::Image wrappers
+    _colorImages.clear();
+    for (auto i = 0; i < _images.size(); ++i)
+    {
+        _colorImages.push_back(Image::wrapSwapchainImage(this, i));
+    }
 }
 
 void Swapchain::resize(uint32_t width, uint32_t height)
@@ -81,12 +88,24 @@ void Swapchain::resize(uint32_t width, uint32_t height)
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         VK_IMAGE_ASPECT_DEPTH_BIT
     );
+    
+    // Array of core::Image wrappers
+    _colorImages.clear();
+    for (auto i = 0; i < _images.size(); ++i)
+    {
+        _colorImages.push_back(Image::wrapSwapchainImage(this, i));
+    }
 }
 
 void Swapchain::cleanup()
 {
     if (_vulkanData)
     {
+        // This images should not be cleared because they are wrappers
+        // of the swapchain images and image views, that are cleared
+        // later in this function
+        _colorImages.clear();
+        
         _depthImage->cleanup();
         delete _depthImage;
         

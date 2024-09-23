@@ -15,7 +15,12 @@ public:
     // that the size of the swapchain is taken into account when implementing the delegate.
     void swapchainResized(VkExtent2D newExtent);
 
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
+    VkImageLayout draw(
+        VkCommandBuffer cmd,
+        uint32_t currentFrame,
+        const vkme::core::Image* colorImage,
+        const vkme::core::Image* depthImage
+    );
 
     // We don't draw UI here, but since in the main.cpp file we are setting the class as a delegate for drawing and
     // UI, we must implement this interface

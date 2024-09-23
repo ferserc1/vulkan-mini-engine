@@ -104,7 +104,6 @@ Image* Image::createAllocatedImage(
     VkImageAspectFlags aspectFlags
 )
 {
-    // TODO: Refactoring. Extract this code to a factory/Image class
     auto result = new Image();
     result->_vulkanData = vulkanData;
     result->_extent = { extent.width, extent.height, 1 };
@@ -132,6 +131,24 @@ Image* Image::createAllocatedImage(
     auto imgViewInfo = Info::imageViewCreateInfo(format, result->_image, aspectFlags);
     VK_ASSERT(vkCreateImageView(vulkanData->device(), &imgViewInfo, nullptr, &result->_imageView));
     
+    return result;
+}
+
+Image* Image::wrapSwapchainImage(
+    const Swapchain* swapchain,
+    uint32_t swapchainImageIndex
+) {
+    auto result = new Image();
+    
+    result->_image = swapchain->image(swapchainImageIndex);
+    result->_imageView = swapchain->imageView(swapchainImageIndex);
+    result->_format = swapchain->imageFormat();
+    result->_extent = VkExtent3D{
+        swapchain->extent().width,
+        swapchain->extent().height,
+        1
+    };
+
     return result;
 }
 

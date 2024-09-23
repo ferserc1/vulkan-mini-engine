@@ -52,8 +52,12 @@ void ComputeShaderBackgroundDelegate::swapchainResized(VkExtent2D newExtent)
     _drawImageDescriptors->updateImage(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _drawImage->imageView(), VK_IMAGE_LAYOUT_GENERAL);
 }
 
-VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
-{
+VkImageLayout ComputeShaderBackgroundDelegate::draw(
+    VkCommandBuffer cmd,
+    uint32_t currentFrame,
+    const vkme::core::Image* colorImage,
+    const vkme::core::Image* depthImage
+) {
     using namespace vkme;
     
     // Transition draw image to render on it
@@ -64,7 +68,7 @@ VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage
         VK_IMAGE_LAYOUT_GENERAL
     );
     
-    drawBackground(cmd, currentFrame, imageExtent);
+    drawBackground(cmd, currentFrame, colorImage->extent2D());
     
     // Transition _drawImage and swapchain image to copy the first one to the second one
     core::Image::cmdTransitionImage(
@@ -75,7 +79,7 @@ VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage
     );
     core::Image::cmdTransitionImage(
         cmd,
-        swapchainImage,
+        colorImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
     );
@@ -84,7 +88,7 @@ VkImageLayout ComputeShaderBackgroundDelegate::draw(VkCommandBuffer cmd, VkImage
     core::Image::cmdCopy(
         cmd,
         _drawImage->image(), _drawImage->extent2D(),
-        swapchainImage, imageExtent
+        colorImage->image(), colorImage->extent2D()
     );
     
     return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;

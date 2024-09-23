@@ -41,8 +41,12 @@ void ClearBackgroundDrawDelegate::drawUI()
     // No UI
 }
 
-VkImageLayout ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
-{
+VkImageLayout ClearBackgroundDrawDelegate::draw(
+        VkCommandBuffer cmd,
+        uint32_t currentFrame,
+        const vkme::core::Image* colorImage,
+        const vkme::core::Image* depthImage
+) {
     using namespace vkme;
     
     // Transition draw image to render on it
@@ -64,7 +68,7 @@ VkImageLayout ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swa
     );
     core::Image::cmdTransitionImage(
         cmd,
-        swapchainImage,
+        colorImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
     );
@@ -73,7 +77,7 @@ VkImageLayout ClearBackgroundDrawDelegate::draw(VkCommandBuffer cmd, VkImage swa
     core::Image::cmdCopy(
         cmd,
         _drawImage->image(), _drawImage->extent2D(),
-        swapchainImage, imageExtent
+        colorImage->image(), colorImage->extent2D()
     );
     
     return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;

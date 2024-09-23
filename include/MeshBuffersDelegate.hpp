@@ -14,7 +14,12 @@ public:
     
     void swapchainResized(VkExtent2D newExtent);
     
-    VkImageLayout draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage);
+    VkImageLayout draw(
+        VkCommandBuffer cmd,
+        uint32_t currentFrame,
+        const vkme::core::Image* colorImage,
+        const vkme::core::Image* depthImage
+    );
     
     void drawUI();
 

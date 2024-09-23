@@ -42,8 +42,12 @@ void ColorTriangleDelegate::swapchainResized(VkExtent2D newExtent)
     ));
 }
 
-VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchainImage, VkExtent2D imageExtent, uint32_t currentFrame, const vkme::core::Image* depthImage)
-{
+VkImageLayout ColorTriangleDelegate::draw(
+    VkCommandBuffer cmd,
+    uint32_t currentFrame,
+    const vkme::core::Image* colorImage,
+    const vkme::core::Image* depthImage
+) {
     using namespace vkme;
     
     // Transition draw image to render on it
@@ -63,7 +67,7 @@ VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchain
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     );
     
-    drawGeometry(cmd, _drawImage->imageView(), imageExtent);
+    drawGeometry(cmd, _drawImage->imageView(), colorImage->extent2D());
     
     // Transition _drawImage and swapchain image to copy the first one to the second one
     core::Image::cmdTransitionImage(
@@ -74,7 +78,7 @@ VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchain
     );
     core::Image::cmdTransitionImage(
         cmd,
-        swapchainImage,
+        colorImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
     );
@@ -83,7 +87,7 @@ VkImageLayout ColorTriangleDelegate::draw(VkCommandBuffer cmd, VkImage swapchain
     core::Image::cmdCopy(
         cmd,
         _drawImage->image(), _drawImage->extent2D(),
-        swapchainImage, imageExtent
+        colorImage->image(), colorImage->extent2D()
     );
     
     return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;

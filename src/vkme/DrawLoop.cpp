@@ -8,6 +8,22 @@
 
 namespace vkme {
 
+void DrawLoopDelegate::cmdSetDefaultViewportAndScissor(VkCommandBuffer cmd, VkExtent2D viewportExtent)
+{
+    VkViewport viewport = {};
+    viewport.x = 0; viewport.y = 0;
+    viewport.width = float(viewportExtent.width);
+    viewport.height = float(viewportExtent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(cmd, 0, 1, &viewport);
+
+    VkRect2D scissor = {};
+    scissor.offset = {0, 0};
+    scissor.extent = viewportExtent;
+    vkCmdSetScissor(cmd, 0, 1, &scissor);
+}
+
 void DrawLoop::init(VulkanData * vulkanData, UserInterface * ui)
 {
     _vulkanData = vulkanData;
@@ -64,9 +80,8 @@ void DrawLoop::acquireAndPresent()
         return;
     }
     
-    auto swapchainImage = swapchainData.image(swapchainImageIndex);
-    auto swapchainImageView = swapchainData.imageView(swapchainImageIndex);
-    auto depthImage = swapchainData.depthImage()->image();
+    auto swapchainImage = swapchainData.colorImage(swapchainImageIndex);
+    auto depthImage = swapchainData.depthImage();
     
     auto cmdBeginInfo = core::Info::commandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
     
@@ -74,17 +89,22 @@ void DrawLoop::acquireAndPresent()
     
     core::Image::cmdTransitionImage(
         cmd,
-        depthImage,
+        depthImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
     );
     
-    auto lastSwapchainLayout = draw(cmd, swapchainImage, swapchainData.extent(), swapchainData.depthImage());
+    auto lastSwapchainLayout = draw(
+        cmd,
+        swapchainImage,
+        depthImage
+    );
+    //auto lastSwapchainLayout = draw(cmd, swapchainImage, swapchainData.extent(), swapchainData.depthImage());
     
     if (lastSwapchainLayout != VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
         core::Image::cmdTransitionImage(
             cmd,
-            swapchainImage,
+            swapchainImage->image(),
             lastSwapchainLayout,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
         );
@@ -92,11 +112,14 @@ void DrawLoop::acquireAndPresent()
     
     // TODO: Instead of using the swapchain image to render the user interface, we could use another image
     // and combine it with the swap chain here
-    _userInterface->draw(cmd, swapchainImageView);
+    _userInterface->draw(
+        cmd,
+        swapchainImage->imageView()
+    );
     
     core::Image::cmdTransitionImage(
         cmd,
-        swapchainImage,
+        swapchainImage->image(),
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
     );

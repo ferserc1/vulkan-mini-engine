@@ -9,6 +9,8 @@ class VulkanData;
 
 namespace core {
 
+class Swapchain;
+
 class Image {
 public:
     /*
@@ -54,6 +56,11 @@ public:
         VkExtent2D extent,
         VkImageUsageFlags usage,
         VkImageAspectFlags aspectFlags
+    );
+
+    static Image* wrapSwapchainImage(
+        const Swapchain* swapchain,
+        uint32_t swapchainImageIndex
     );
     
     void cleanup();

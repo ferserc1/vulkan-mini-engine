@@ -26,7 +26,14 @@ public:
     inline VkImage image(uint32_t index) const { return _images[index]; }
     inline VkImageView imageView(uint32_t index) const { return _imageViews[index]; }
 
+    // Return the image, imageView, extent and format, wrapped into
+    // a vmke::core::Image object.
+    inline const Image* colorImage(uint32_t index) const {
+        return _colorImages[index];
+    }
+    
     inline const Image* depthImage() const { return _depthImage; }
+    
     inline const VkFormat depthImageFormat() const { return _depthImage != nullptr ? _depthImage->format() : VK_FORMAT_UNDEFINED; }
 
 protected:
@@ -37,6 +44,7 @@ protected:
     std::vector<VkImageView> _imageViews;
     VkExtent2D _extent;
     
+    std::vector<Image *> _colorImages;
     Image * _depthImage;
 
     VulkanData* _vulkanData = nullptr;
