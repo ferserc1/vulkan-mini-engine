@@ -56,6 +56,7 @@ public:
 struct MeshPushConstants
 {
     glm::mat4 modelMatrix;
+    glm::mat4 normalMatrix;
     VkDeviceAddress vertexBufferAddress;
 };
 

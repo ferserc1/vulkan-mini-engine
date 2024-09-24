@@ -18,6 +18,7 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer {
 
 layout(push_constant) uniform constants {
     mat4 worldMatrix;
+    mat4 normalMatrix;
     VertexBuffer vertexBuffer;
 } PushConstants;
 
