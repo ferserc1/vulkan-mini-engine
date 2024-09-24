@@ -16,7 +16,8 @@ VkImageLayout SimpleTriangleDelegate::draw(
     VkCommandBuffer cmd,
     uint32_t currentFrame,
     const vkme::core::Image* colorImage,
-    const vkme::core::Image* depthImage
+    const vkme::core::Image* depthImage,
+    vkme::core::FrameResources& frameResources
 ) {
 
     vkme::core::Image::cmdTransitionImage(cmd, colorImage->image(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);

@@ -21,6 +21,7 @@ public:
         {
             (*it)(device);
         }
+        _deleters.clear();
     }
 
 protected:

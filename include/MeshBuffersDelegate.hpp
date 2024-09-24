@@ -18,7 +18,8 @@ public:
         VkCommandBuffer cmd,
         uint32_t currentFrame,
         const vkme::core::Image* colorImage,
-        const vkme::core::Image* depthImage
+        const vkme::core::Image* depthImage,
+        vkme::core::FrameResources& frameResources
     );
     
     void drawUI();

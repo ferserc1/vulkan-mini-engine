@@ -7,7 +7,8 @@
 #include <vkme/geo/mesh_data.hpp>
 #include <vkme/geo/Model.hpp>
 
-class TestModelDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
+
+class TexturesTestDelegate : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
     void initFrameResources(vkme::core::DescriptorSetAllocator * allocator);
@@ -33,6 +34,19 @@ protected:
         
     std::vector<std::shared_ptr<vkme::geo::Model>> _models;
     
+    struct SceneData
+    {
+        glm::mat4 view;
+        glm::mat4 proj;
+        glm::mat4 viewProj;
+        glm::vec4 ambientColor;
+        glm::vec4 sunlightDirection;
+        glm::vec4 sunlightColor;
+    };
+    
+    SceneData _sceneData;
+    VkDescriptorSetLayout _sceneDataDescriptorLayout;
+    
     void initPipeline();
     
     void initMesh();
@@ -43,6 +57,7 @@ protected:
         VkImageView currentImage,
         VkExtent2D imageExtent,
         const vkme::core::Image* depthImage,
-        uint32_t currentFrame
+        uint32_t currentFrame,
+        vkme::core::FrameResources& frameResources
     );
 };

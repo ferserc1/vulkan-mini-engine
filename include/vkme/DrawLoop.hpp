@@ -36,7 +36,7 @@ public:
     virtual void swapchainResized(VkExtent2D newExtent) = 0;
 
     // This call must return the last swapchainImage layout, or VK_IMAGE_LAYOUT_UNDEFINED if it is not used
-    virtual VkImageLayout draw(VkCommandBuffer cmd, uint32_t currentFrame, const core::Image* colorImage, const core::Image* depthImage) = 0;
+    virtual VkImageLayout draw(VkCommandBuffer cmd, uint32_t currentFrame, const core::Image* colorImage, const core::Image* depthImage, core::FrameResources& frameResources) = 0;
 
     void cmdSetDefaultViewportAndScissor(VkCommandBuffer cmd, VkExtent2D viewportExtent);
 };
@@ -60,10 +60,10 @@ public:
         }
     }
     
-    VkImageLayout draw(VkCommandBuffer cmd, const core::Image* colorImage, const core::Image* depthImage)
+    VkImageLayout draw(VkCommandBuffer cmd, const core::Image* colorImage, const core::Image* depthImage, core::FrameResources& frameResources)
     {
         if (_drawDelegate) {
-            return _drawDelegate->draw(cmd, _vulkanData->currentFrame(), colorImage, depthImage);
+            return _drawDelegate->draw(cmd, _vulkanData->currentFrame(), colorImage, depthImage, frameResources);
         }
         else {
             return VK_IMAGE_LAYOUT_UNDEFINED;

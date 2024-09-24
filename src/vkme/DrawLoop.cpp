@@ -64,7 +64,7 @@ void DrawLoop::acquireAndPresent()
     auto graphicsQueue = _vulkanData->command().graphicsQueue();
     
     // Current frame resources
-    core::FrameResources frameRes = _vulkanData->currentFrameResources();
+    core::FrameResources& frameRes = _vulkanData->currentFrameResources();
     auto cmd = frameRes.commandBuffer;
     auto frameFence = frameRes.frameFence;
     auto swapchainSemaphore = frameRes.swapchainSemaphore;
@@ -104,7 +104,8 @@ void DrawLoop::acquireAndPresent()
     auto lastSwapchainLayout = draw(
         cmd,
         swapchainImage,
-        depthImage
+        depthImage,
+        frameRes
     );
     //auto lastSwapchainLayout = draw(cmd, swapchainImage, swapchainData.extent(), swapchainData.depthImage());
     

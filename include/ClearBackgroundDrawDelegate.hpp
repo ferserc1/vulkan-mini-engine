@@ -19,7 +19,8 @@ public:
         VkCommandBuffer cmd,
         uint32_t currentFrame,
         const vkme::core::Image* colorImage,
-        const vkme::core::Image* depthImage
+        const vkme::core::Image* depthImage,
+        vkme::core::FrameResources& frameResources
     );
 
     // We don't draw UI here, but since in the main.cpp file we are setting the class as a delegate for drawing and
