@@ -2,6 +2,7 @@
 #include <vkme/PlatformTools.hpp>
 #include <vkme/core/Image.hpp>
 #include <vkme/core/Info.hpp>
+#include <vkme/core/Buffer.hpp>
 
 #include <vkme/VulkanData.hpp>
 
@@ -133,6 +134,73 @@ Image* Image::createAllocatedImage(
     VK_ASSERT(vkCreateImageView(vulkanData->device(), &imgViewInfo, nullptr, &result->_imageView));
     
     return result;
+}
+
+Image* Image::createAllocatedImage(
+    VulkanData * vulkanData,
+    void* data,
+    VkExtent2D extent,
+    uint32_t dataBytesPerPixel,  // WARNING: for now, it only works with 4 bpp
+    VkFormat imageFormat,
+    VkImageUsageFlags usage,
+    VkImageAspectFlags aspectFlags
+) {
+    size_t dataSize = extent.width * extent.height * dataBytesPerPixel;
+    auto uploadBuffer = std::unique_ptr<Buffer>(
+        Buffer::createAllocatedBuffer(
+            vulkanData,
+            dataSize,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VMA_MEMORY_USAGE_CPU_TO_GPU
+        )
+    );
+    
+    auto uploadData = uploadBuffer->allocatedData();
+    memcpy(uploadData, data, dataSize);
+    
+    auto image = createAllocatedImage(
+        vulkanData,
+        imageFormat,
+        extent,
+        usage,
+        aspectFlags
+    );
+    
+    vulkanData->command().immediateSubmit([&](VkCommandBuffer cmd) {
+        Image::cmdTransitionImage(
+            cmd,
+            image->image(),
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+        );
+        
+        VkBufferImageCopy copyRgn = {};
+        copyRgn.imageSubresource.aspectMask = aspectFlags;
+        copyRgn.imageSubresource.mipLevel = 0;
+        copyRgn.imageSubresource.baseArrayLayer = 0;
+        copyRgn.imageSubresource.layerCount = 1;
+        copyRgn.imageExtent = VkExtent3D { extent.width, extent.height, 1 };
+        
+        vkCmdCopyBufferToImage(
+            cmd,
+            uploadBuffer->buffer(),
+            image->image(),
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            1,
+            &copyRgn
+        );
+        
+        Image::cmdTransitionImage(
+            cmd,
+            image->image(),
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        );
+    });
+    
+    uploadBuffer->cleanup();
+    
+    return image;
 }
 
 Image* Image::wrapSwapchainImage(

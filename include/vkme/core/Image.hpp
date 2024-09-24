@@ -55,7 +55,17 @@ public:
         VkFormat format,
         VkExtent2D extent,
         VkImageUsageFlags usage,
-        VkImageAspectFlags aspectFlags
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
+    );
+    
+    static Image* createAllocatedImage(
+        VulkanData * vulkanData,
+        void* data,
+        VkExtent2D extent,
+        uint32_t dataBytesPerPixel,  // WARNING: for now, it only works with 4 bpp
+        VkFormat imageFormat,
+        VkImageUsageFlags usage,
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
     );
 
     static Image* wrapSwapchainImage(

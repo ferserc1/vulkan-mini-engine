@@ -31,6 +31,8 @@ protected:
     
     VkPipelineLayout _pipelineLayout;
     VkPipeline _pipeline;
+    VkPipeline _transparentPipeline;
+    bool _transparentMaterial = false;
         
     std::vector<std::shared_ptr<vkme::geo::Model>> _models;
     
@@ -47,8 +49,15 @@ protected:
     SceneData _sceneData;
     VkDescriptorSetLayout _sceneDataDescriptorLayout;
     
-    void initPipeline();
+    std::unique_ptr<vkme::core::Image> _textureImage;
+    VkDescriptorSetLayout _imageDescriptorLayout;
+    VkSampler _imageSampler;
     
+    // 0: no rotation, 1: x, 2: y, 3: z
+    uint32_t _rotateAxis = 0;
+    
+    void initPipeline();
+    void initScene();
     void initMesh();
 
     void drawBackground(VkCommandBuffer cmd, uint32_t currentFrame);
