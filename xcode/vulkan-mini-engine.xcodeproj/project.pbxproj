@@ -18,6 +18,12 @@
 		ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4F2C9B220C00315207 /* ShaderModule.cpp */; };
 		ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */; };
 		ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */; };
+		ED38FC742CA5D1A800275782 /* basicmesh.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC6E2CA5D16E00275782 /* basicmesh.glb */; };
+		ED38FC752CA5D1A800275782 /* lamp_baseColor.jpeg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */; };
+		ED38FC762CA5D1A800275782 /* lamp_normal.jpeg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */; };
+		ED38FC772CA5D1A800275782 /* lamp_occlusionRoughnessMetallic.jpeg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC712CA5D16E00275782 /* lamp_occlusionRoughnessMetallic.jpeg */; };
+		ED38FC782CA5D1A800275782 /* lamp2.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC722CA5D16E00275782 /* lamp2.glb */; };
+		ED39070C2CA5C982003F51B2 /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED39070B2CA5C982003F51B2 /* stb_image.cpp */; };
 		ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911C92C98551400B07513 /* Swapchain.cpp */; };
 		ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911CD2C9855EC00B07513 /* FrameResources.cpp */; };
 		ED3911D12C98575900B07513 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3911D02C98575900B07513 /* Command.cpp */; };
@@ -58,7 +64,6 @@
 		EDDE56232C9D942C00DC443D /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */; };
 		EDE168192CA05930003E4736 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE168182CA05930003E4736 /* Model.cpp */; };
 		EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */; };
-		EDE168212CA066FA003E4736 /* basicmesh.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = EDE1681D2CA066B2003E4736 /* basicmesh.glb */; };
 		EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */; };
 		EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */; };
 /* End PBXBuildFile section */
@@ -94,7 +99,11 @@
 			dstPath = assets;
 			dstSubfolderSpec = 7;
 			files = (
-				EDE168212CA066FA003E4736 /* basicmesh.glb in Copy Assets */,
+				ED38FC742CA5D1A800275782 /* basicmesh.glb in Copy Assets */,
+				ED38FC752CA5D1A800275782 /* lamp_baseColor.jpeg in Copy Assets */,
+				ED38FC762CA5D1A800275782 /* lamp_normal.jpeg in Copy Assets */,
+				ED38FC772CA5D1A800275782 /* lamp_occlusionRoughnessMetallic.jpeg in Copy Assets */,
+				ED38FC782CA5D1A800275782 /* lamp2.glb in Copy Assets */,
 			);
 			name = "Copy Assets";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -123,6 +132,12 @@
 		ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSet.cpp; sourceTree = "<group>"; };
 		ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComputePipeline.cpp; sourceTree = "<group>"; };
 		ED330A5F2C9B2DDF00315207 /* ComputePipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComputePipeline.hpp; sourceTree = "<group>"; };
+		ED38FC6E2CA5D16E00275782 /* basicmesh.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = basicmesh.glb; sourceTree = "<group>"; };
+		ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamp_baseColor.jpeg; sourceTree = "<group>"; };
+		ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamp_normal.jpeg; sourceTree = "<group>"; };
+		ED38FC712CA5D16E00275782 /* lamp_occlusionRoughnessMetallic.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamp_occlusionRoughnessMetallic.jpeg; sourceTree = "<group>"; };
+		ED38FC722CA5D16E00275782 /* lamp2.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = lamp2.glb; sourceTree = "<group>"; };
+		ED39070B2CA5C982003F51B2 /* stb_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stb_image.cpp; sourceTree = "<group>"; };
 		ED3911C72C98550E00B07513 /* Swapchain.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Swapchain.hpp; sourceTree = "<group>"; };
 		ED3911C92C98551400B07513 /* Swapchain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Swapchain.cpp; sourceTree = "<group>"; };
 		ED3911CC2C9855E600B07513 /* FrameResources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FrameResources.hpp; sourceTree = "<group>"; };
@@ -200,7 +215,6 @@
 		EDE168182CA05930003E4736 /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestModelDelegate.cpp; sourceTree = "<group>"; };
 		EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestModelDelegate.hpp; sourceTree = "<group>"; };
-		EDE1681D2CA066B2003E4736 /* basicmesh.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = basicmesh.glb; sourceTree = "<group>"; };
 		EDEC55F92CA1B15D0051F3B3 /* VertexBuffersDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexBuffersDelegate.hpp; sourceTree = "<group>"; };
 		EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VertexBuffersDelegate.cpp; sourceTree = "<group>"; };
 		EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleTriangle.cpp; sourceTree = "<group>"; };
@@ -244,6 +258,19 @@
 			path = factory;
 			sourceTree = "<group>";
 		};
+		ED38FC732CA5D16E00275782 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				ED38FC6E2CA5D16E00275782 /* basicmesh.glb */,
+				ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */,
+				ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */,
+				ED38FC712CA5D16E00275782 /* lamp_occlusionRoughnessMetallic.jpeg */,
+				ED38FC722CA5D16E00275782 /* lamp2.glb */,
+			);
+			name = assets;
+			path = ../assets;
+			sourceTree = SOURCE_ROOT;
+		};
 		ED3911C82C98550E00B07513 /* core */ = {
 			isa = PBXGroup;
 			children = (
@@ -274,6 +301,7 @@
 				ED3911CD2C9855EC00B07513 /* FrameResources.cpp */,
 				ED3911DA2C989D7E00B07513 /* Image.cpp */,
 				ED3911D42C98609400B07513 /* Info.cpp */,
+				ED39070B2CA5C982003F51B2 /* stb_image.cpp */,
 				ED3911C92C98551400B07513 /* Swapchain.cpp */,
 				ED3222092C99B0EC00F27ADA /* vk_mem_alloc.cpp */,
 			);
@@ -283,7 +311,7 @@
 		ED4F37462C970C29009B120B = {
 			isa = PBXGroup;
 			children = (
-				EDE1681E2CA066B2003E4736 /* assets */,
+				ED38FC732CA5D16E00275782 /* assets */,
 				ED4F37B12C970F4D009B120B /* resources */,
 				ED4F37A32C970E8E009B120B /* VulkanSDK */,
 				ED4F37952C970E37009B120B /* third-party */,
@@ -551,14 +579,6 @@
 			path = geo;
 			sourceTree = "<group>";
 		};
-		EDE1681E2CA066B2003E4736 /* assets */ = {
-			isa = PBXGroup;
-			children = (
-				EDE1681D2CA066B2003E4736 /* basicmesh.glb */,
-			);
-			path = assets;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -705,6 +725,7 @@
 				EDC359EE2C9EE20100F76C78 /* mesh_data.cpp in Sources */,
 				ED4F379E2C970E37009B120B /* imgui.cpp in Sources */,
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,
+				ED39070C2CA5C982003F51B2 /* stb_image.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
 				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,

@@ -73,6 +73,13 @@ public:
         uint32_t swapchainImageIndex
     );
     
+    static Image* loadImage(
+        VulkanData * vulkanData,
+        const std::string& filePath,
+        VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT,
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
+    );
+    
     void cleanup();
 
     inline VkImage image() const { return _image; }

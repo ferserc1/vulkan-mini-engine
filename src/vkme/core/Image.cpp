@@ -6,6 +6,8 @@
 
 #include <vkme/VulkanData.hpp>
 
+#include <stb_image.h>
+
 namespace vkme {
 namespace core {
 
@@ -218,6 +220,23 @@ Image* Image::wrapSwapchainImage(
         1
     };
 
+    return result;
+}
+
+Image* Image::loadImage(
+    VulkanData * vulkanData,
+    const std::string& filePath,
+    VkImageUsageFlags usage,
+    VkImageAspectFlags aspectFlags
+) {
+    int width, height, channels;
+    unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channels, 4);
+    if (!data) {
+        throw std::runtime_error("Error loading image at path " + filePath);
+    }
+    
+    VkExtent2D extent { uint32_t(width), uint32_t(height) };
+    auto result = Image::createAllocatedImage(vulkanData, data, extent, 4, VK_FORMAT_R8G8B8A8_UNORM, usage, aspectFlags);
     return result;
 }
 

@@ -25,6 +25,8 @@ public:
     void cleanup();
 
     inline const MeshBuffers* meshBuffers() const { return _meshBuffers.get(); }
+    inline const uint32_t numSurfaces() const { return uint32_t(_surfaces.size()); }
+    inline const const std::vector<GeoSurface>& surfaces() const { return _surfaces; }
     inline const GeoSurface& surface(uint32_t index) const { return _surfaces[index]; }
 
 protected:

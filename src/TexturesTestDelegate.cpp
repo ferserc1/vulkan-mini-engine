@@ -223,24 +223,29 @@ void TexturesTestDelegate::initScene()
     _sceneData.sunlightColor = glm::vec4{0.9, 0.87, 0.82, 1.0f};
     _sceneData.sunlightDirection = glm::vec4{5.0, 5.0, 0.0, 1.0};
     
-    // Create a checkerboard image
-    uint32_t yellow = glm::packUnorm4x8(glm::vec4(1, 1, 0, 0));
-	uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
-	std::array<uint32_t, 16 *16 > pixels; //for 16x16 checkerboard texture
-	for (int x = 0; x < 16; x++) {
-		for (int y = 0; y < 16; y++) {
-			pixels[y*16 + x] = ((x % 2) ^ (y % 2)) ? magenta : yellow;
-		}
-	}
+//    // Create a checkerboard image
+//    uint32_t yellow = glm::packUnorm4x8(glm::vec4(1, 1, 0, 0));
+//	uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
+//	std::array<uint32_t, 16 *16 > pixels; //for 16x16 checkerboard texture
+//	for (int x = 0; x < 16; x++) {
+//		for (int y = 0; y < 16; y++) {
+//			pixels[y*16 + x] = ((x % 2) ^ (y % 2)) ? magenta : yellow;
+//		}
+//	}
+//    _textureImage = std::unique_ptr<vkme::core::Image>(
+//        vkme::core::Image::createAllocatedImage(
+//            _vulkanData,
+//            pixels.data(),
+//            VkExtent2D{ 16, 16 },
+//            4,
+//            VK_FORMAT_R8G8B8A8_UNORM,
+//            VK_IMAGE_USAGE_SAMPLED_BIT
+//        )
+//    );
+
+    const std::string imagePath = vkme::PlatformTools::assetPath() + "lamp_baseColor.jpeg";
     _textureImage = std::unique_ptr<vkme::core::Image>(
-        vkme::core::Image::createAllocatedImage(
-            _vulkanData,
-            pixels.data(),
-            VkExtent2D{ 16, 16 },
-            4,
-            VK_FORMAT_R8G8B8A8_UNORM,
-            VK_IMAGE_USAGE_SAMPLED_BIT
-        )
+        vkme::core::Image::loadImage(_vulkanData, imagePath)
     );
     
     VkSamplerCreateInfo samplerInfo = {};
@@ -257,7 +262,7 @@ void TexturesTestDelegate::initScene()
 
 void TexturesTestDelegate::initMesh()
 {
-    std::string assetsPath = vkme::PlatformTools::assetPath() + "basicmesh.glb";
+    std::string assetsPath = vkme::PlatformTools::assetPath() + "lamp2.glb";
     
     _models = vkme::geo::Model::loadGltf(_vulkanData, assetsPath);
     
@@ -359,8 +364,7 @@ void TexturesTestDelegate::drawGeometry(
     else {
         pushConstants.modelMatrix = glm::rotate(glm::mat4{ 1.0f }, glm::radians(float(180.f)), glm::vec3(0.0f, 1.0f, 0.0f));
     }
-        
-    pushConstants.vertexBufferAddress = _models[2]->meshBuffers()->vertexBufferAddress;
+    
     
   // End update code
   
@@ -387,17 +391,26 @@ void TexturesTestDelegate::drawGeometry(
     scissor.extent.height = imageExtent.height;
     vkCmdSetScissor(cmd, 0, 1, &scissor);
     
-    vkCmdPushConstants(cmd, _pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(vkme::geo::MeshPushConstants), &pushConstants);
-    vkCmdBindIndexBuffer(cmd, _models[2]->meshBuffers()->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
-
-    // Bind the scene descriptor set
-    VkDescriptorSet ds[] = {
-        sceneDS->descriptorSet(),
-        textureDS->descriptorSet()
-    };
-    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, ds, 0, nullptr);
     
-    vkCmdDrawIndexed(cmd, _models[2]->surface(0).indexCount, 1, _models[2]->surface(0).startIndex, 0, 0);
+    
+    for (auto m : _models)
+    {
+        pushConstants.vertexBufferAddress = m->meshBuffers()->vertexBufferAddress;
+        vkCmdPushConstants(cmd, _pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(vkme::geo::MeshPushConstants), &pushConstants);
+        vkCmdBindIndexBuffer(cmd, m->meshBuffers()->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
+        
+        // Bind the scene descriptor set
+        VkDescriptorSet ds[] = {
+            sceneDS->descriptorSet(),
+            textureDS->descriptorSet()
+        };
+        vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, ds, 0, nullptr);
+        for (auto s : m->surfaces())
+        {
+            vkCmdDrawIndexed(cmd, s.indexCount, 1, s.startIndex, 0, 0);
+        }
+    }
+    
     
     vkme::core::cmdEndRendering(cmd);
   // End rendering code
