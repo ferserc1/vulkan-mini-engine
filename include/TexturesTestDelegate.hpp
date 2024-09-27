@@ -49,6 +49,9 @@ protected:
     SceneData _sceneData;
     VkDescriptorSetLayout _sceneDataDescriptorLayout;
     
+    // Descriptor set allocator for materials
+    std::unique_ptr<vkme::core::DescriptorSetAllocator> _materialDescriptorSetAllocator;
+    
     std::unique_ptr<vkme::core::Image> _textureImage;
     VkDescriptorSetLayout _imageDescriptorLayout;
     VkSampler _imageSampler;

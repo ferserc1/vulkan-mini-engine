@@ -21,9 +21,14 @@ void TexturesTestDelegate::init(vkme::VulkanData * vulkanData)
         this->cleanup();
     });
     
-    initMesh();
-    initScene();
+    // Initialize the pipeline first, because we need the descriptor layout to initialize the
+    // model descriptor sets
     initPipeline();
+    
+    initScene();
+    
+    initMesh();
+    
 }
 
 void TexturesTestDelegate::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
@@ -32,7 +37,10 @@ void TexturesTestDelegate::initFrameResources(vkme::core::DescriptorSetAllocator
         1000,   // Each pool can store up to 1000 descriptor set
         {  // Each descriptor set can contain
             { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},         // One uniform buffer. We are using it to pass the SceneData struct
-            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 } // One combined image sampler. We are using it to pass the texture
+            
+            // Now this descriptor set is allocated from the _materialDescriptorAllocator, so
+            // we don't need this kind of descriptor in the frame resources
+            // { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 } // One combined image sampler. We are using it to pass the texture
         }
     );
     
@@ -222,7 +230,11 @@ void TexturesTestDelegate::initScene()
     _sceneData.ambientColor = glm::vec4{0.1f, 0.1f, 0.1f, 1.0f};
     _sceneData.sunlightColor = glm::vec4{0.9, 0.87, 0.82, 1.0f};
     _sceneData.sunlightDirection = glm::vec4{5.0, 5.0, 0.0, 1.0};
-    
+}
+
+void TexturesTestDelegate::initMesh()
+{
+    // Load material data
 //    // Create a checkerboard image
 //    uint32_t yellow = glm::packUnorm4x8(glm::vec4(1, 1, 0, 0));
 //	uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
@@ -258,13 +270,60 @@ void TexturesTestDelegate::initScene()
         _textureImage->cleanup();
         vkDestroySampler(dev, _imageSampler, nullptr);
     });
-}
+    
+    
 
-void TexturesTestDelegate::initMesh()
-{
+    // Initialize the material descriptor set allocator
+    _materialDescriptorSetAllocator = std::unique_ptr<vkme::core::DescriptorSetAllocator>(
+        new vkme::core::DescriptorSetAllocator()
+    );
+    _materialDescriptorSetAllocator->init(_vulkanData);
+    // Configure the descriptor set types that will hold out material
+    _materialDescriptorSetAllocator->initPool(1000, {
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 }
+    });
+    _vulkanData->cleanupManager().push([&](VkDevice) {
+        _materialDescriptorSetAllocator->clearDescriptors();
+        _materialDescriptorSetAllocator->destroy();
+    });
+    
+    
     std::string assetsPath = vkme::PlatformTools::assetPath() + "lamp2.glb";
     
     _models = vkme::geo::Model::loadGltf(_vulkanData, assetsPath);
+    
+    // Allocate model material descriptor sets and initialize the descriptor set
+    // data. In this example, our material shader have only one texture
+    for (auto m : _models)
+    {
+        m->allocateMaterialDescriptorSets(_materialDescriptorSetAllocator.get(), _imageDescriptorLayout);
+        
+        // Update model material descriptor set. We are using the same image for all the surfaces
+        // This function must to be executed every time we need to modify something in the
+        // material properties with the descriptor set (images, uniform buffers, etc)
+        // We are using the texture and sampler intialized in initScene function, and we
+        // are using the same textore for every surface in the model
+        m->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
+            ds->updateImage(
+                0,
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                _textureImage->imageView(),
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                _imageSampler
+            );
+            
+            // If the descriptor set contains more than one binding
+            // ds->beginUpdate();
+            // ds->addImage(0, , ,  )
+            // ds->addBuffer(1, , , , )
+            // ds->addBuffer(2, , , , )
+            // ds->addImage(3, , ,  )
+            // ...
+            // ds->endUpdate();
+        });
+    }
+    
+
     
     _vulkanData->cleanupManager().push([&](VkDevice) {
         for (auto m : _models) {
@@ -335,37 +394,38 @@ void TexturesTestDelegate::drawGeometry(
         0
     );
     
+    // TODO: Material descriptor set with all the properties of the material that we need to pass to the shader
+    // That properties will be stored in a MaterialInstance structure, that will be stored into the Model class
     // Create descriptor set for the image
-    auto textureDS = std::unique_ptr<vkme::core::DescriptorSet>(
-        frameResources.descriptorAllocator->allocate(_imageDescriptorLayout)
-    );
-    textureDS->updateImage(
-        0,  // binding
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        _textureImage->imageView(),
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        _imageSampler
-    );
+    // TODO: Store a vector with one material descriptor for each surface (surface is equivalent to polyList in bg2e)
+//    auto textureDS = std::unique_ptr<vkme::core::DescriptorSet>(
+//        frameResources.descriptorAllocator->allocate(_imageDescriptorLayout)
+//    );
+//    textureDS->updateImage(
+//        0,  // binding
+//        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//        _textureImage->imageView(),
+//        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+//        _imageSampler
+//    );
     
-    vkme::geo::MeshPushConstants pushConstants;
-    
-    if (_rotateAxis == 1)
-    {
-        pushConstants.modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(1.0f, 0.0f, 0.0f));
+    // Update loop:
+    for (auto& m : _models) {
+        glm::mat4 modelMatrix{ 1.0 };
+        if (_rotateAxis == 1)
+        {
+            modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        else if (_rotateAxis == 2)
+        {
+            modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+        else if (_rotateAxis == 3)
+        {
+            modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+        m->setModelMatrix(modelMatrix);
     }
-    else if (_rotateAxis == 2)
-    {
-        pushConstants.modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-    else if (_rotateAxis == 3)
-    {
-        pushConstants.modelMatrix = glm::rotate(glm::mat4(1.0), glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 0.0f, 1.0f));
-    }
-    else {
-        pushConstants.modelMatrix = glm::rotate(glm::mat4{ 1.0f }, glm::radians(float(180.f)), glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-    
-    
   // End update code
   
   // Begin rendering code: code executed after all scene elements have been updated
@@ -391,24 +451,24 @@ void TexturesTestDelegate::drawGeometry(
     scissor.extent.height = imageExtent.height;
     vkCmdSetScissor(cmd, 0, 1, &scissor);
     
-    
-    
     for (auto m : _models)
     {
-        pushConstants.vertexBufferAddress = m->meshBuffers()->vertexBufferAddress;
-        vkCmdPushConstants(cmd, _pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(vkme::geo::MeshPushConstants), &pushConstants);
-        vkCmdBindIndexBuffer(cmd, m->meshBuffers()->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
-        
-        // Bind the scene descriptor set
-        VkDescriptorSet ds[] = {
-            sceneDS->descriptorSet(),
-            textureDS->descriptorSet()
-        };
-        vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, ds, 0, nullptr);
-        for (auto s : m->surfaces())
-        {
-            vkCmdDrawIndexed(cmd, s.indexCount, 1, s.startIndex, 0, 0);
-        }
+        m->draw(cmd, _pipelineLayout, [&](vkme::core::DescriptorSet* matDesciptorSet) {
+            // matDescriptorSet is the descriptor set of the material for every surface.
+            // In this function we can add other descriptor sets specific for the frame
+            // or the scene, and then we'll bind to the pipeline
+            VkDescriptorSet ds[] =  {
+                sceneDS->descriptorSet(),
+                matDesciptorSet->descriptorSet()
+            };
+            vkCmdBindDescriptorSets(
+                cmd,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                _pipelineLayout, 0,
+                2, ds,
+                0, nullptr
+            );
+        });
     }
     
     

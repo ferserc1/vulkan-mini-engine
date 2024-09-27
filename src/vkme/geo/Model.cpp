@@ -7,6 +7,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include <glm/glm.hpp>
+
 #include <fastgltf/glm_element_traits.hpp>
 #include <fastgltf/parser.hpp>
 #include <fastgltf/tools.hpp>
@@ -136,6 +138,45 @@ std::vector<std::shared_ptr<Model>> Model::loadGltf(VulkanData* vulkanData, cons
 void Model::cleanup()
 {
     _meshBuffers->cleanup();
+}
+
+void Model::allocateMaterialDescriptorSets(core::DescriptorSetAllocator* allocator, VkDescriptorSetLayout descriptorLayout)
+{
+    _materialDescriptorSets.resize(numSurfaces());
+    for (auto& ds : _materialDescriptorSets)
+    {
+        ds = std::unique_ptr<core::DescriptorSet>(allocator->allocate(descriptorLayout));
+    }
+}
+
+void Model::updateDescriptorSets(std::function<void(core::DescriptorSet*)>&& updateFunc)
+{
+    for (auto index = 0; index < numSurfaces(); ++index)
+    {
+        updateFunc(_materialDescriptorSets[index].get());
+    }
+}
+
+void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, std::function<void(core::DescriptorSet*)>&& updateDsFunc)
+{
+    vkme::geo::MeshPushConstants pushConstants;
+    pushConstants.modelMatrix = modelMatrix();
+    pushConstants.normalMatrix = glm::transpose(glm::inverse(modelMatrix()));
+    pushConstants.normalMatrix[0][3] = 0.0f;
+    pushConstants.normalMatrix[1][3] = 0.0f;
+    pushConstants.normalMatrix[2][3] = 0.0f;
+    pushConstants.normalMatrix[3][3] = 1.0f;
+    pushConstants.vertexBufferAddress = meshBuffers()->vertexBufferAddress;
+    vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(vkme::geo::MeshPushConstants), &pushConstants);
+    vkCmdBindIndexBuffer(cmd, meshBuffers()->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
+    
+    auto i = 0;
+    for (auto s : surfaces())
+    {
+        updateDsFunc(_materialDescriptorSets[i].get());
+        vkCmdDrawIndexed(cmd, s.indexCount, 1, s.startIndex, 0, 0);
+        ++i;
+    }
 }
 
 }

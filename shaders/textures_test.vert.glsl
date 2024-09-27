@@ -38,5 +38,5 @@ void main() {
     gl_Position = sceneData.viewProjectionMatrix * PushConstants.worldMatrix * vec4(vertex.position, 1.0);
     outColor = vertex.color.xyz;
     outUV = vec2(vertex.uvX, vertex.uvY);
-    outNormal = vertex.normal;
+    outNormal = (PushConstants.normalMatrix * vec4(vertex.normal, 1.0)).xyz;
 }
