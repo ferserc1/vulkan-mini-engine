@@ -52,17 +52,6 @@ void SkySphereDelegate::swapchainResized(VkExtent2D newExtent)
     proj[0][0] *= -1.0f;
     _sceneData.proj = proj;
     _sceneData.viewProj = proj * _sceneData.view;
-    
-    _sceneData.viewProj = proj * _sceneData.view;
-    
-    _sceneDataBuffer->cleanup();
-    
-    _sceneDataBuffer = std::unique_ptr<vkme::core::Buffer>(vkme::core::Buffer::createAllocatedBuffer(
-        _vulkanData,
-        sizeof(SceneData),
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VMA_MEMORY_USAGE_CPU_TO_GPU
-    ));
 
     SceneData* sceneDataPtr = reinterpret_cast<SceneData*>(_sceneDataBuffer->allocatedData());
     *sceneDataPtr = _sceneData;
@@ -78,7 +67,6 @@ void SkySphereDelegate::swapchainResized(VkExtent2D newExtent)
 
 void SkySphereDelegate::cleanup()
 {
-    _sceneDataBuffer->cleanup();
     _drawImage->cleanup();
 }
 
@@ -270,6 +258,10 @@ void SkySphereDelegate::initScene()
         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
         VMA_MEMORY_USAGE_CPU_TO_GPU
     ));
+    
+    _vulkanData->cleanupManager().push([&](VkDevice) {
+        _sceneDataBuffer->cleanup();
+    });
     
     SceneData* sceneDataPtr = reinterpret_cast<SceneData*>(_sceneDataBuffer->allocatedData());
     *sceneDataPtr = _sceneData;
