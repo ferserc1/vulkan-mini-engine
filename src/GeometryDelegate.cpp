@@ -1,11 +1,13 @@
-#include <TexturesTestDelegate.hpp>
+#include <GeometryDelegate.hpp>
 #include <vkme/factory/GraphicsPipeline.hpp>
 #include <vkme/core/Info.hpp>
 #include <vkme/factory/DescriptorSetLayout.hpp>
+#include <vkme/geo/Sphere.hpp>
+#include <vkme/geo/Modifiers.hpp>
 
 #include <vkme/PlatformTools.hpp>
 
-void TexturesTestDelegate::init(vkme::VulkanData * vulkanData)
+void GeometryDelegate::init(vkme::VulkanData * vulkanData)
 {
     _vulkanData = vulkanData;
     _drawImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
@@ -21,8 +23,6 @@ void TexturesTestDelegate::init(vkme::VulkanData * vulkanData)
         this->cleanup();
     });
     
-    // Initialize the pipeline first, because we need the descriptor layout to initialize the
-    // model descriptor sets
     initPipeline();
     
     initScene();
@@ -31,37 +31,18 @@ void TexturesTestDelegate::init(vkme::VulkanData * vulkanData)
     
 }
 
-void TexturesTestDelegate::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
+void GeometryDelegate::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
 {
-    // In this example, we are storing the scene data descriptor set in the frame resources, for
-    // that reason we are using this function to configure the pool in the allocator.
-    // You also can store the descritor pool outside the frame resources, if you dont want to
-    // use per-frame data. In this case, you don't need to use this function
     allocator->initPool(
-        1000,   // Each pool can store up to 1000 descriptor set
-        {  // Each descriptor set can contain
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},         // One uniform buffer. We are using it to pass the SceneData struct
-            
-            // Now this descriptor set is allocated from the _materialDescriptorAllocator, so
-            // we don't need this kind of descriptor in the frame resources
-            // { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 } // One combined image sampler. We are using it to pass the texture
+        1000,
+        {
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
         }
     );
-    
-    // Note: if you may store more than one type of descriptor set layout, you must specify the
-    // types and count enought to store all of them. In this example we have two descriptor sets,
-    // une for the uniform buffer and another for the image sampler. If you need to define
-    // another descriptor set that contains two uniform buffers and three images, you must to
-    // specify 2 uniform buffers and 3 images in the above structure.
-    // It's also important to specify all the descriptor types that you need.
-    // If the allocator pool does not meet the requirements for a descriptor set, the allocation function
-    // will fail with an error. In that case, check that you are initializing the pool with all the
-    // descriptor types and the number of them you need for every descriptor sets.
 }
 
-void TexturesTestDelegate::swapchainResized(VkExtent2D newExtent)
+void GeometryDelegate::swapchainResized(VkExtent2D newExtent)
 {
-    // Resize the target imagge
     _drawImage->cleanup();
     _drawImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
         _vulkanData,
@@ -72,21 +53,19 @@ void TexturesTestDelegate::swapchainResized(VkExtent2D newExtent)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    // Resize the projection matrix
-    /// First update the projection matrix to match the
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 10.0f, 0.1f);
+    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 0.1f, 10.0f);
     proj[1][1] *= -1.0f;
     proj[0][0] *= -1.0f;
     _sceneData.proj = proj;
     _sceneData.viewProj = proj * _sceneData.view;
 }
 
-void TexturesTestDelegate::cleanup()
+void GeometryDelegate::cleanup()
 {
     _drawImage->cleanup();
 }
 
-VkImageLayout TexturesTestDelegate::draw(
+VkImageLayout GeometryDelegate::draw(
     VkCommandBuffer cmd,
     uint32_t currentFrame,
     const vkme::core::Image* colorImage,
@@ -103,7 +82,21 @@ VkImageLayout TexturesTestDelegate::draw(
         VK_IMAGE_LAYOUT_GENERAL
     );
     
-    drawBackground(cmd, currentFrame);
+    core::Image::cmdTransitionImage(
+        cmd,
+        depthImage->image(),
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_GENERAL
+    );
+    
+    drawBackground(cmd, currentFrame, depthImage);
+    
+    core::Image::cmdTransitionImage(
+        cmd,
+        depthImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+    );
     
     core::Image::cmdTransitionImage(
         cmd,
@@ -138,7 +131,7 @@ VkImageLayout TexturesTestDelegate::draw(
     return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 }
 
-void TexturesTestDelegate::drawUI()
+void GeometryDelegate::drawUI()
 {
     if (ImGui::Begin("Rotation"))
     {
@@ -166,7 +159,7 @@ void TexturesTestDelegate::drawUI()
     ImGui::End();
 }
 
-void TexturesTestDelegate::initPipeline()
+void GeometryDelegate::initPipeline()
 {
     vkme::factory::GraphicsPipeline plFactory(this->_vulkanData);
     
@@ -177,26 +170,18 @@ void TexturesTestDelegate::initPipeline()
     
     vkme::factory::DescriptorSetLayout dsFactory;
     
-    // Descriptor set layout to pass the view and model matrix, and the lighting data
-    // This descriptor set is stored in the frame resources, and is created every frame
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
     _sceneDataDescriptorLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
     
-    // Descriptor set layout to pass the texture to the fragment shader. This descriptor set
-    // is stored in _materialDescriptorSetAllocator, stored in this class.
     dsFactory.clear();
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
     _imageDescriptorLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
     
-    // Buffer range to pass the push constant, used to pass the model and normal matrixes and the
-    // vertex buffer pointer
     VkPushConstantRange bufferRange = {};
     bufferRange.offset = 0;
     bufferRange.size = sizeof(vkme::geo::MeshPushConstants);
     bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     
-    // CONFIGURE THE PIPELINE LAYOUT: if you are using a per-surface descriptor set
-    // in the layout, this must to be added always at the end of the setLayouts array.
     auto layoutInfo = vkme::core::Info::pipelineLayoutInfo();
     layoutInfo.pPushConstantRanges = &bufferRange;
     layoutInfo.pushConstantRangeCount = 1;
@@ -211,7 +196,7 @@ void TexturesTestDelegate::initPipeline()
     
     plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
     plFactory.setDepthFormat(_vulkanData->swapchain().depthImageFormat());
-    plFactory.enableDepthtest(true, VK_COMPARE_OP_GREATER_OR_EQUAL);
+    plFactory.enableDepthtest(true, VK_COMPARE_OP_LESS);
     plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     plFactory.setCullMode(true, VK_FRONT_FACE_CLOCKWISE);
     
@@ -229,15 +214,16 @@ void TexturesTestDelegate::initPipeline()
     
 }
 
-void TexturesTestDelegate::initScene()
+void GeometryDelegate::initScene()
 {
     auto viewportExtent = _vulkanData->swapchain().extent();
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 5.0f));
-    // We are using a technique that consist in reversing the depth test (1 is the near plane and 0 is the far plane).
-    // This technique increases the quality of the depth test.
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 10.0f, 0.1f);
+    
+    //glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 100.0f, 0.1f);
+    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
     proj[1][1] *= -1.0f;
     proj[0][0] *= -1.0f;
+    
     _sceneData.view = view;
     _sceneData.proj = proj;
     _sceneData.viewProj = proj * view;
@@ -246,10 +232,9 @@ void TexturesTestDelegate::initScene()
     _sceneData.sunlightDirection = glm::vec4{5.0, 5.0, 0.0, 1.0};
 }
 
-void TexturesTestDelegate::initMesh()
+void GeometryDelegate::initMesh()
 {
-    // Load material data
-    const std::string imagePath = vkme::PlatformTools::assetPath() + "taza_albedo.png";
+    const std::string imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
     _textureImage = std::unique_ptr<vkme::core::Image>(
         vkme::core::Image::loadImage(_vulkanData, imagePath)
     );
@@ -265,14 +250,11 @@ void TexturesTestDelegate::initMesh()
         vkDestroySampler(dev, _imageSampler, nullptr);
     });
     
-    
-
-    // Initialize the material descriptor set allocator
     _materialDescriptorSetAllocator = std::unique_ptr<vkme::core::DescriptorSetAllocator>(
         new vkme::core::DescriptorSetAllocator()
     );
     _materialDescriptorSetAllocator->init(_vulkanData);
-    // Configure the descriptor set types that will hold out material
+    
     _materialDescriptorSetAllocator->initPool(1000, {
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 }
     });
@@ -281,26 +263,14 @@ void TexturesTestDelegate::initMesh()
         _materialDescriptorSetAllocator->destroy();
     });
     
+    _models = {
+        vkme::geo::Sphere::createUvSphere(_vulkanData, 1.5f)
+    };
     
-    std::string assetsPath = vkme::PlatformTools::assetPath() + "taza.obj";
-    
-    _models = vkme::geo::Model::loadObj(_vulkanData, assetsPath);
-    
-    // Allocate model material descriptor sets and initialize the descriptor set
-    // data. The model contains an array to store one descriptor set for each surface,
-    // you can use this descriptor set to setup the material data that you need to
-    // pass to the shaders
     for (auto m : _models)
     {
-        // If you call this function, you are enabling the per-surface descriptor set
         m->allocateMaterialDescriptorSets(_materialDescriptorSetAllocator.get(), _imageDescriptorLayout);
         
-        // Update model material descriptor set. We are using the same image for all the surfaces
-        // This function must to be executed every time we need to modify something in the
-        // material properties with the descriptor set (images, uniform buffers, etc)
-        // We are using the texture and sampler intialized in initScene function, and we
-        // are using the same textore for every surface in the model.
-        // This function does nothing if you don't previously allocate the material descriptor sets
         m->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
             ds->updateImage(
                 0,
@@ -309,19 +279,8 @@ void TexturesTestDelegate::initMesh()
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 _imageSampler
             );
-            
-            // If the descriptor set contains more than one binding
-            // ds->beginUpdate();
-            // ds->addImage(0, , ,  )
-            // ds->addBuffer(1, , , , )
-            // ds->addBuffer(2, , , , )
-            // ds->addImage(3, , ,  )
-            // ...
-            // ds->endUpdate();
         });
     }
-    
-
     
     _vulkanData->cleanupManager().push([&](VkDevice) {
         for (auto m : _models) {
@@ -330,12 +289,13 @@ void TexturesTestDelegate::initMesh()
     });
 }
 
-void TexturesTestDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame)
+void GeometryDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
-    // Clear image
     VkClearColorValue clearValue;
-    float flash = std::abs(std::sin(currentFrame / 120.0f));
-    clearValue = { { 0.0f, 0.0f, flash, 1.0f } };
+    float r = std::abs(std::sin(currentFrame / 90.0f)) * 0.5;
+    float g = std::abs(std::sin(currentFrame / 180.0f)) * 0.5;
+    float b = std::abs(std::sin(currentFrame / 120.0f)) * 0.5;
+    clearValue = { { r, g, b, 1.0f } };
     auto clearRange = vkme::core::Image::subresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
     vkCmdClearColorImage(
         cmd,
@@ -343,10 +303,9 @@ void TexturesTestDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentF
         VK_IMAGE_LAYOUT_GENERAL,
         &clearValue, 1, &clearRange
     );
-
 }
 
-void TexturesTestDelegate::drawGeometry(
+void GeometryDelegate::drawGeometry(
     VkCommandBuffer cmd,
     VkImageView currentImage,
     VkExtent2D imageExtent,
@@ -354,13 +313,6 @@ void TexturesTestDelegate::drawGeometry(
     uint32_t currentFrame,
     vkme::core::FrameResources& frameResources
 ) {
-
-  // Begin update code: code executed for each scene object, before the rendering code
-    // This is an example on how to pass temporary data to the shader, allocating
-    // descriptor sets and buffers only for one frame. Here we are passing the
-    // scene light data and the view and projection matrixes, is not the best
-    // example, because this information is not temporary, but its a valid example
-    // on how to do it.
     auto sceneDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
         _vulkanData,
         sizeof(SceneData),
@@ -368,19 +320,14 @@ void TexturesTestDelegate::drawGeometry(
         VMA_MEMORY_USAGE_CPU_TO_GPU
     );
     
-    // Add the sceneDataBuffer to the cleanup manager of the frame resources.
-    // This data will be destroyed after the frame rendering
     frameResources.cleanupManager.push([&, sceneDataBuffer](VkDevice) {
         sceneDataBuffer->cleanup();
         delete sceneDataBuffer;
     });
     
-    // Write the buffer data
     SceneData* sceneDataPtr = reinterpret_cast<SceneData*>(sceneDataBuffer->allocatedData());
     *sceneDataPtr = _sceneData;
     
-    // Create the descriptor set. All the descriptor sets created with the frame
-    // resources descriptor set allocator will be cleaned after the frame render
     auto sceneDS = std::unique_ptr<vkme::core::DescriptorSet>(
         frameResources.descriptorAllocator->allocate(_sceneDataDescriptorLayout)
     );
@@ -392,7 +339,6 @@ void TexturesTestDelegate::drawGeometry(
         0
     );
     
-    // Update loop:
     for (auto& m : _models) {
         glm::mat4 modelMatrix{ 1.0 };
         if (_rotateAxis == 1)
@@ -409,41 +355,23 @@ void TexturesTestDelegate::drawGeometry(
         }
         m->setModelMatrix(modelMatrix);
     }
-  // End update code
-  
-  // Begin rendering code: code executed after all scene elements have been updated
-    
+
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
-    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView());
+    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _transparentMaterial ? _transparentPipeline : _pipeline );
     
-    VkViewport viewport = {};
-    viewport.x = 0; viewport.y = 0;
-    viewport.width = imageExtent.width; viewport.height = imageExtent.height;
-    viewport.minDepth = 0.0f; viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(cmd, 0, 1, &viewport);
-    
-    VkRect2D scissor = {};
-    scissor.offset.x = 0;
-    scissor.offset.y = 0;
-    scissor.extent.width = imageExtent.width;
-    scissor.extent.height = imageExtent.height;
-    vkCmdSetScissor(cmd, 0, 1, &scissor);
+    cmdSetDefaultViewportAndScissor(cmd, imageExtent);
     
     for (auto m : _models)
     {
-        // If you are using more descriptor sets in your shader, you can pass them here.
-        // If you are also using the per-surface material descriptor set it will be
-        // added at the end of the ds array before binding it.
         vkme::core::DescriptorSet* ds[] = { sceneDS.get() };
         m->draw(cmd, _pipelineLayout, ds, 1);
     }
     
     
     vkme::core::cmdEndRendering(cmd);
-  // End rendering code
 }

@@ -10,6 +10,8 @@
 #include <TestModelDelegate.hpp>
 #include <VertexBuffersDelegate.hpp>
 #include <TexturesTestDelegate.hpp>
+#include <GeometryDelegate.hpp>
+#include <SkySphereDelegate.hpp>
 
 int main(int argc, char** argv) {
     vkme::MainLoop app;
@@ -27,7 +29,9 @@ int main(int argc, char** argv) {
     //auto delegate = std::shared_ptr<ColorTriangleDelegate>(new ColorTriangleDelegate());
     //auto delegate = std::shared_ptr<MeshBuffersDelegate>(new MeshBuffersDelegate());
     //auto delegate = std::shared_ptr<TestModelDelegate>(new TestModelDelegate());
-    auto delegate = std::shared_ptr<TexturesTestDelegate>(new TexturesTestDelegate());
+    //auto delegate = std::shared_ptr<TexturesTestDelegate>(new TexturesTestDelegate());
+    //auto delegate = std::shared_ptr<GeometryDelegate>(new GeometryDelegate());
+    auto delegate = std::shared_ptr<SkySphereDelegate>(new SkySphereDelegate());
     app.setDrawLoopDelegate(delegate);
     app.setUIDelegate(delegate);
     

@@ -54,6 +54,19 @@
 		ED4F37AE2C970F04009B120B /* libvulkan.1.3.290.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
 		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
+		ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */; };
+		ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE22CA9338A00B0EEFB /* Sphere.cpp */; };
+		ED972BE82CA9496900B0EEFB /* tiny_obj_implementation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */; };
+		ED972BED2CA94EB700B0EEFB /* simple_cube.obj in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */; };
+		ED972BEE2CA94EBA00B0EEFB /* simple_cube.mtl in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */; };
+		ED972BF02CA95C5600B0EEFB /* country_field_sun.jpg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */; };
+		ED972BF62CA9949600B0EEFB /* taza.obj in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF12CA9948E00B0EEFB /* taza.obj */; };
+		ED972BF72CA9949600B0EEFB /* taza_albedo.png in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF22CA9948E00B0EEFB /* taza_albedo.png */; };
+		ED972BF82CA9949600B0EEFB /* taza_metallic.png in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF32CA9948E00B0EEFB /* taza_metallic.png */; };
+		ED972BF92CA9949600B0EEFB /* taza_normal.png in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF42CA9948E00B0EEFB /* taza_normal.png */; };
+		ED972BFA2CA9949600B0EEFB /* taza_roughness.png in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF52CA9948E00B0EEFB /* taza_roughness.png */; };
+		ED972BFD2CA9AF5100B0EEFB /* Modifiers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */; };
+		ED972C002CA9C5AB00B0EEFB /* SkySphereDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */; };
 		EDA0DC422CA3031C00845B8E /* TexturesTestDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
@@ -99,11 +112,19 @@
 			dstPath = assets;
 			dstSubfolderSpec = 7;
 			files = (
+				ED972BF62CA9949600B0EEFB /* taza.obj in Copy Assets */,
+				ED972BF72CA9949600B0EEFB /* taza_albedo.png in Copy Assets */,
+				ED972BF82CA9949600B0EEFB /* taza_metallic.png in Copy Assets */,
+				ED972BF92CA9949600B0EEFB /* taza_normal.png in Copy Assets */,
+				ED972BFA2CA9949600B0EEFB /* taza_roughness.png in Copy Assets */,
+				ED972BF02CA95C5600B0EEFB /* country_field_sun.jpg in Copy Assets */,
 				ED38FC742CA5D1A800275782 /* basicmesh.glb in Copy Assets */,
 				ED38FC752CA5D1A800275782 /* lamp_baseColor.jpeg in Copy Assets */,
 				ED38FC762CA5D1A800275782 /* lamp_normal.jpeg in Copy Assets */,
 				ED38FC772CA5D1A800275782 /* lamp_occlusionRoughnessMetallic.jpeg in Copy Assets */,
 				ED38FC782CA5D1A800275782 /* lamp2.glb in Copy Assets */,
+				ED972BEE2CA94EBA00B0EEFB /* simple_cube.mtl in Copy Assets */,
+				ED972BED2CA94EB700B0EEFB /* simple_cube.obj in Copy Assets */,
 			);
 			name = "Copy Assets";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,6 +215,24 @@
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
 		ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PushConstantsComputeShaderDelegate.cpp; sourceTree = "<group>"; };
 		ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PushConstantsComputeShaderDelegate.hpp; sourceTree = "<group>"; };
+		ED972BDF2CA930C900B0EEFB /* GeometryDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeometryDelegate.hpp; sourceTree = "<group>"; };
+		ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryDelegate.cpp; sourceTree = "<group>"; };
+		ED972BE22CA9338A00B0EEFB /* Sphere.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sphere.cpp; sourceTree = "<group>"; };
+		ED972BE42CA9339200B0EEFB /* Sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sphere.hpp; sourceTree = "<group>"; };
+		ED972BE52CA9491900B0EEFB /* tiny_obj_loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
+		ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tiny_obj_implementation.cpp; sourceTree = "<group>"; };
+		ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = simple_cube.mtl; sourceTree = "<group>"; };
+		ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = simple_cube.obj; sourceTree = "<group>"; };
+		ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = country_field_sun.jpg; sourceTree = "<group>"; };
+		ED972BF12CA9948E00B0EEFB /* taza.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = taza.obj; sourceTree = "<group>"; };
+		ED972BF22CA9948E00B0EEFB /* taza_albedo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = taza_albedo.png; sourceTree = "<group>"; };
+		ED972BF32CA9948E00B0EEFB /* taza_metallic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = taza_metallic.png; sourceTree = "<group>"; };
+		ED972BF42CA9948E00B0EEFB /* taza_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = taza_normal.png; sourceTree = "<group>"; };
+		ED972BF52CA9948E00B0EEFB /* taza_roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = taza_roughness.png; sourceTree = "<group>"; };
+		ED972BFB2CA9AF4700B0EEFB /* Modifiers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Modifiers.hpp; sourceTree = "<group>"; };
+		ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Modifiers.cpp; sourceTree = "<group>"; };
+		ED972BFE2CA9C5A100B0EEFB /* SkySphereDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SkySphereDelegate.hpp; sourceTree = "<group>"; };
+		ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SkySphereDelegate.cpp; sourceTree = "<group>"; };
 		EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturesTestDelegate.cpp; sourceTree = "<group>"; };
 		EDA0DC432CA3032600845B8E /* TexturesTestDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturesTestDelegate.hpp; sourceTree = "<group>"; };
 		EDA2144C2C9C888E009161FA /* UserInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UserInterface.hpp; sourceTree = "<group>"; };
@@ -261,6 +300,14 @@
 		ED38FC732CA5D16E00275782 /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				ED972BF12CA9948E00B0EEFB /* taza.obj */,
+				ED972BF22CA9948E00B0EEFB /* taza_albedo.png */,
+				ED972BF32CA9948E00B0EEFB /* taza_metallic.png */,
+				ED972BF42CA9948E00B0EEFB /* taza_normal.png */,
+				ED972BF52CA9948E00B0EEFB /* taza_roughness.png */,
+				ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */,
+				ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */,
+				ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */,
 				ED38FC6E2CA5D16E00275782 /* basicmesh.glb */,
 				ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */,
 				ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */,
@@ -346,10 +393,12 @@
 				ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */,
 				EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */,
 				ED330A4C2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp */,
+				ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */,
 				ED4F37622C970C87009B120B /* main.cpp */,
 				EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
 				EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */,
+				ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */,
 				EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */,
 				EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */,
 				EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */,
@@ -365,9 +414,11 @@
 				ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */,
 				EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */,
 				ED330A4E2C9B130300315207 /* ComputeShaderBackgroundDelegate.hpp */,
+				ED972BDF2CA930C900B0EEFB /* GeometryDelegate.hpp */,
 				EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */,
+				ED972BFE2CA9C5A100B0EEFB /* SkySphereDelegate.hpp */,
 				EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */,
 				EDA0DC432CA3032600845B8E /* TexturesTestDelegate.hpp */,
 				EDEC55F92CA1B15D0051F3B3 /* VertexBuffersDelegate.hpp */,
@@ -491,6 +542,7 @@
 				ED4F378D2C970E37009B120B /* simdjson */,
 				ED4F378F2C970E37009B120B /* stb_image */,
 				ED4F37942C970E37009B120B /* vk-bootstrap */,
+				ED972BE62CA9491900B0EEFB /* tinyobj */,
 			);
 			name = "third-party";
 			path = "../third-party";
@@ -561,11 +613,21 @@
 			path = vkme;
 			sourceTree = "<group>";
 		};
+		ED972BE62CA9491900B0EEFB /* tinyobj */ = {
+			isa = PBXGroup;
+			children = (
+				ED972BE52CA9491900B0EEFB /* tiny_obj_loader.h */,
+			);
+			path = tinyobj;
+			sourceTree = "<group>";
+		};
 		EDC359EB2C9ED48C00F76C78 /* geo */ = {
 			isa = PBXGroup;
 			children = (
 				EDC359EA2C9ED48C00F76C78 /* mesh_data.hpp */,
 				EDE168172CA05928003E4736 /* Model.hpp */,
+				ED972BFB2CA9AF4700B0EEFB /* Modifiers.hpp */,
+				ED972BE42CA9339200B0EEFB /* Sphere.hpp */,
 			);
 			path = geo;
 			sourceTree = "<group>";
@@ -575,6 +637,9 @@
 			children = (
 				EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */,
 				EDE168182CA05930003E4736 /* Model.cpp */,
+				ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */,
+				ED972BE22CA9338A00B0EEFB /* Sphere.cpp */,
+				ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */,
 			);
 			path = geo;
 			sourceTree = "<group>";
@@ -703,6 +768,7 @@
 				ED4F379B2C970E37009B120B /* imgui_impl_vulkan.cpp in Sources */,
 				ED32220A2C99B0EC00F27ADA /* vk_mem_alloc.cpp in Sources */,
 				ED4F37A22C970E37009B120B /* VkBootstrap.cpp in Sources */,
+				ED972BFD2CA9AF5100B0EEFB /* Modifiers.cpp in Sources */,
 				EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */,
 				ED4F379D2C970E37009B120B /* imgui_widgets.cpp in Sources */,
 				ED4F37A02C970E37009B120B /* simdjson.cpp in Sources */,
@@ -711,6 +777,7 @@
 				EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */,
 				EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */,
 				EDE168192CA05930003E4736 /* Model.cpp in Sources */,
+				ED972C002CA9C5AB00B0EEFB /* SkySphereDelegate.cpp in Sources */,
 				ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */,
 				ED3911CE2C9855EC00B07513 /* FrameResources.cpp in Sources */,
 				EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */,
@@ -720,11 +787,14 @@
 				EDC359E52C9ECD7600F76C78 /* Buffer.cpp in Sources */,
 				ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */,
 				ED4F379A2C970E37009B120B /* imgui_impl_sdl2.cpp in Sources */,
+				ED972BE82CA9496900B0EEFB /* tiny_obj_implementation.cpp in Sources */,
 				ED3911D52C98609400B07513 /* Info.cpp in Sources */,
 				ED330A4B2C9B03DF00315207 /* DescriptorSetAllocator.cpp in Sources */,
 				EDC359EE2C9EE20100F76C78 /* mesh_data.cpp in Sources */,
 				ED4F379E2C970E37009B120B /* imgui.cpp in Sources */,
 				ED4F379C2C970E37009B120B /* imgui_tables.cpp in Sources */,
+				ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */,
+				ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */,
 				ED39070C2CA5C982003F51B2 /* stb_image.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
@@ -885,6 +955,7 @@
 					"$(PROJECT_DIR)/../third-party/stb_image",
 					"$(PROJECT_DIR)/../include",
 					"$(PROJECT_DIR)/../third-party/vk-bootstrap/src",
+					"$(PROJECT_DIR)/../third-party/tinyobj",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
@@ -926,6 +997,7 @@
 					"$(PROJECT_DIR)/../third-party/stb_image",
 					"$(PROJECT_DIR)/../include",
 					"$(PROJECT_DIR)/../third-party/vk-bootstrap/src",
+					"$(PROJECT_DIR)/../third-party/tinyobj",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;

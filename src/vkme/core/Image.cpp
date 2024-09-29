@@ -33,7 +33,7 @@ void Image::cmdTransitionImage(
 
     if (aspectMask == 0) {
         aspectMask = newLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL ?
-            VK_IMAGE_ASPECT_DEPTH_BIT :
+            VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT :
             VK_IMAGE_ASPECT_COLOR_BIT;
     }
     imageBarrier.subresourceRange = Image::subresourceRange(aspectMask);

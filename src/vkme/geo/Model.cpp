@@ -13,10 +13,15 @@
 #include <fastgltf/parser.hpp>
 #include <fastgltf/tools.hpp>
 
+#include <tiny_obj_loader.h>
+
+#include <fstream>
+
+
 namespace vkme {
 namespace geo {
 
-std::vector<std::shared_ptr<Model>> Model::loadGltf(VulkanData* vulkanData, const std::filesystem::path& filePath)
+std::vector<std::shared_ptr<Model>> Model::loadGltf(VulkanData* vulkanData, const std::filesystem::path& filePath, bool overrideColors)
 {
     std::cout << "Loading GLTF model file " << filePath << std::endl;
     
@@ -121,8 +126,7 @@ std::vector<std::shared_ptr<Model>> Model::loadGltf(VulkanData* vulkanData, cons
         }
 
         // display the vertex normals
-        constexpr bool OverrideColors = false;
-        if (OverrideColors) {
+        if (overrideColors) {
             for (Vertex& vtx : vertices) {
                 vtx.setColor(glm::vec4(vtx.normal(), 1.f));
             }
@@ -135,6 +139,102 @@ std::vector<std::shared_ptr<Model>> Model::loadGltf(VulkanData* vulkanData, cons
     return meshes;
 }
 
+std::vector<std::shared_ptr<Model>> Model::loadObj(
+    VulkanData* vulkanData,
+    const std::filesystem::path& filePath,
+    const std::vector<std::shared_ptr<Modifier>>& modifiers
+) {
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        throw std::runtime_error(std::string("Could not open OBJ model file: ") + filePath.c_str());
+    }
+    
+    return Model::loadObj(vulkanData, file, filePath.filename(), modifiers);
+}
+
+std::vector<std::shared_ptr<Model>> Model::loadObj(
+    VulkanData* vulkanData,
+    std::istream& inputStream,
+    const std::string& name,
+    const std::vector<std::shared_ptr<Modifier>>& modifiers
+) {
+    std::vector<std::shared_ptr<Model>> result;
+    
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    
+    std::string warn;
+    std::string err;
+
+    tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, &inputStream);
+    if (!warn.empty())
+    {
+        std::cout << "WARN: " << warn << std::endl;
+    }
+    
+    if (!err.empty())
+    {
+        throw std::runtime_error(std::string("Error loading obj file: ") + err);
+    }
+    
+    for (size_t s = 0; s < shapes.size(); ++s)
+    {
+		size_t index_offset = 0;
+        std::vector<Vertex> vertexBufferData;
+        std::vector<uint32_t> indices;
+		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        {
+            //hardcode loading to triangles
+			int fv = 3;
+
+			// Loop over vertices in the face.
+			for (size_t v = 0; v < fv; v++) {
+				// access to vertex
+				tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+
+                // vertex position
+				tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index];
+				tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
+				tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
+                // vertex normal
+            	tinyobj::real_t nx = attrib.normals[3 * idx.normal_index];
+				tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
+				tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
+                // vertex uv
+                tinyobj::real_t s = attrib.texcoords[2 * idx.texcoord_index];
+                tinyobj::real_t t = attrib.texcoords[2 * idx.texcoord_index + 1];
+
+                //copy it into our vertex
+				Vertex newVert(
+                    { vx, vy, vz },
+                    { nx, ny, nz },
+                    { s, 1.0 - t },
+                    { 1.0f, 1.0f, 1.0f, 1.0f }
+                );
+
+                vertexBufferData.push_back(newVert);
+                indices.push_back(uint32_t(indices.size()));
+			}
+			index_offset += fv;
+		}
+        GeoSurface surface = {};
+        surface.startIndex = 0;
+        surface.indexCount = uint32_t(indices.size());
+        for (auto& mod : modifiers)
+        {
+            mod->apply(indices, vertexBufferData);
+        }
+        MeshBuffers * meshBuffer = MeshBuffers::uploadMesh(vulkanData, indices, vertexBufferData);
+        result.push_back(std::shared_ptr<Model>(
+            new Model(name, { surface }, meshBuffer)
+        ));
+	}
+    
+    return result;
+}
+
 void Model::cleanup()
 {
     _meshBuffers->cleanup();
@@ -142,6 +242,7 @@ void Model::cleanup()
 
 void Model::allocateMaterialDescriptorSets(core::DescriptorSetAllocator* allocator, VkDescriptorSetLayout descriptorLayout)
 {
+    _useMaterialDescriptorSets = true;
     _materialDescriptorSets.resize(numSurfaces());
     for (auto& ds : _materialDescriptorSets)
     {
@@ -151,13 +252,18 @@ void Model::allocateMaterialDescriptorSets(core::DescriptorSetAllocator* allocat
 
 void Model::updateDescriptorSets(std::function<void(core::DescriptorSet*)>&& updateFunc)
 {
+    if (!_useMaterialDescriptorSets)
+    {
+        return;
+    }
+
     for (auto index = 0; index < numSurfaces(); ++index)
     {
         updateFunc(_materialDescriptorSets[index].get());
     }
 }
 
-void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, std::function<void(core::DescriptorSet*)>&& updateDsFunc)
+void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::DescriptorSet* descriptorSets[], uint32_t numDescriptorSets)
 {
     vkme::geo::MeshPushConstants pushConstants;
     pushConstants.modelMatrix = modelMatrix();
@@ -173,7 +279,31 @@ void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, std::func
     auto i = 0;
     for (auto s : surfaces())
     {
-        updateDsFunc(_materialDescriptorSets[i].get());
+        uint32_t descriptorSetCount = _useMaterialDescriptorSets ? 1 + numDescriptorSets : numDescriptorSets;
+        if (descriptorSetCount > 0)
+        {
+            std::vector<VkDescriptorSet> sets;
+            sets.resize(descriptorSetCount);
+            for (auto j = 0; j < numDescriptorSets; ++j)
+            {
+                sets[j] = descriptorSets[j]->descriptorSet();
+            }
+
+            if (_useMaterialDescriptorSets)
+            {
+                sets[numDescriptorSets] = _materialDescriptorSets[i]->descriptorSet();
+            }
+
+            vkCmdBindDescriptorSets(
+                cmd,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                pipelineLayout, 0,
+                descriptorSetCount,
+                sets.data(),
+                0, nullptr
+            );
+        }
+        
         vkCmdDrawIndexed(cmd, s.indexCount, 1, s.startIndex, 0, 0);
         ++i;
     }

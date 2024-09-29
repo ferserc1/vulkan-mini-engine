@@ -115,6 +115,7 @@ void GraphicsPipeline::enableDepthtest(bool depthWriteEnable, VkCompareOp op) {
     depthStencil.stencilTestEnable = VK_FALSE;
     depthStencil.front = {};
     depthStencil.back = {};
+    depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.minDepthBounds = 0.0f;
     depthStencil.maxDepthBounds = 1.0f;
 }

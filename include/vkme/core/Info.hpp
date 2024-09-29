@@ -68,7 +68,7 @@ public:
         VkImageLayout layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     );
 
-    static VkRenderingAttachmentInfo depthAttachmentInfo(VkImageView view, VkImageLayout layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    static VkRenderingAttachmentInfo depthAttachmentInfo(VkImageView view, float depthValue = 0.0f, VkImageLayout layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
     static VkRenderingInfo renderingInfo(
         VkExtent2D renderExtent,

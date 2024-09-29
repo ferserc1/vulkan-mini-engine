@@ -158,7 +158,7 @@ void TestModelDelegate::initMesh()
 {
     std::string assetsPath = vkme::PlatformTools::assetPath() + "basicmesh.glb";
     
-    _models = vkme::geo::Model::loadGltf(_vulkanData, assetsPath);
+    _models = vkme::geo::Model::loadGltf(_vulkanData, assetsPath, true);
     
     _vulkanData->cleanupManager().push([&](VkDevice) {
         for (auto m : _models) {
@@ -191,7 +191,7 @@ void TestModelDelegate::drawGeometry(
     uint32_t currentFrame
 ) {
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
-    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
+    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView());
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
