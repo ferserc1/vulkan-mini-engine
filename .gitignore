@@ -1,2 +1,11 @@
 Cargo.lock
 target
+.vscode
+include
+resources
+shaders
+src
+third-party
+xcode
+.DS_Store
+assets
