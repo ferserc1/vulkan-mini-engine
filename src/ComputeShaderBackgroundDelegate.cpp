@@ -115,7 +115,7 @@ void ComputeShaderBackgroundDelegate::drawBackground(VkCommandBuffer cmd, uint32
         nullptr
     );
     
-    vkCmdDispatch(cmd, std::ceil(imageExtent.width / 16.0), std::ceil(imageExtent.height / 16.0), 1);
+    vkCmdDispatch(cmd, uint32_t(std::ceil(imageExtent.width / 16.0)), uint32_t(std::ceil(imageExtent.height / 16.0)), 1);
 }
 
 

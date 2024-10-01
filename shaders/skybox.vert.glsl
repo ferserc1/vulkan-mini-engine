@@ -23,14 +23,12 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer {
 
 layout(push_constant) uniform constants {
     mat4 worldMatrix;
-    mat4 normalMatrix;
     VertexBuffer vertexBuffer;
 } PushConstants;
 
 void main()
 {
     Vertex vertex = PushConstants.vertexBuffer.vertices[gl_VertexIndex];
-
     mat4 viewMatrix = mat4(mat3(sceneData.viewMatrix));
     mat4 worldMatrix = mat4(mat3(PushConstants.worldMatrix));
     gl_Position = sceneData.projectionMatrix * viewMatrix * worldMatrix * vec4(vertex.position, 1.0);

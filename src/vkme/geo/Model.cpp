@@ -147,10 +147,10 @@ std::vector<std::shared_ptr<Model>> Model::loadObj(
     std::ifstream file(filePath);
     if (!file.is_open())
     {
-        throw std::runtime_error(std::string("Could not open OBJ model file: ") + filePath.c_str());
+        throw std::runtime_error(std::string("Could not open OBJ model file: ") + filePath.string());
     }
     
-    return Model::loadObj(vulkanData, file, filePath.filename(), modifiers);
+    return Model::loadObj(vulkanData, file, filePath.filename().string(), modifiers);
 }
 
 std::vector<std::shared_ptr<Model>> Model::loadObj(
@@ -257,7 +257,7 @@ void Model::updateDescriptorSets(std::function<void(core::DescriptorSet*)>&& upd
         return;
     }
 
-    for (auto index = 0; index < numSurfaces(); ++index)
+    for (uint32_t index = 0; index < numSurfaces(); ++index)
     {
         updateFunc(_materialDescriptorSets[index].get());
     }
@@ -267,11 +267,10 @@ void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::Des
 {
     vkme::geo::MeshPushConstants pushConstants;
     pushConstants.modelMatrix = modelMatrix();
-    pushConstants.normalMatrix = glm::transpose(glm::inverse(modelMatrix()));
-    pushConstants.normalMatrix[0][3] = 0.0f;
-    pushConstants.normalMatrix[1][3] = 0.0f;
-    pushConstants.normalMatrix[2][3] = 0.0f;
-    pushConstants.normalMatrix[3][3] = 1.0f;
+
+    // TODO: Do not use push constants
+    //pushConstants.normalMatrix = glm::mat3(glm::transpose(glm::inverse(modelMatrix())));
+    
     pushConstants.vertexBufferAddress = meshBuffers()->vertexBufferAddress;
     vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(vkme::geo::MeshPushConstants), &pushConstants);
     vkCmdBindIndexBuffer(cmd, meshBuffers()->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
@@ -284,7 +283,7 @@ void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::Des
         {
             std::vector<VkDescriptorSet> sets;
             sets.resize(descriptorSetCount);
-            for (auto j = 0; j < numDescriptorSets; ++j)
+            for (uint32_t j = 0; j < numDescriptorSets; ++j)
             {
                 sets[j] = descriptorSets[j]->descriptorSet();
             }

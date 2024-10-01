@@ -8,9 +8,6 @@
 #include <vkme/UserInterface.hpp>
 #include <memory>
 
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-
 
 /*
     This example shows how to use push constants in a compute shader to draw a gradient background

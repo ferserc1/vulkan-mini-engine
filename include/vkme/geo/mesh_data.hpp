@@ -53,10 +53,10 @@ public:
 
 };
 
+// This is a very bad idea. I recomend using a uniform buffer instead.
 struct MeshPushConstants
 {
     glm::mat4 modelMatrix;
-    glm::mat4 normalMatrix;
     VkDeviceAddress vertexBufferAddress;
 };
 

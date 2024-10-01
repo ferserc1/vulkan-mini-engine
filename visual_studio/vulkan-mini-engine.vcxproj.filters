@@ -186,6 +186,27 @@
     <ClCompile Include="..\src\VertexBuffersDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SkySphereDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\geo\Modifiers.cpp">
+      <Filter>Source Files\vkme\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\geo\Sphere.cpp">
+      <Filter>Source Files\vkme\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\geo\tiny_obj_implementation.cpp">
+      <Filter>Source Files\vkme\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\core\stb_image.cpp">
+      <Filter>Header Files\vkme\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GeometryDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TexturesTestDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -330,6 +351,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MeshBuffersDelegate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SkySphereDelegate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\geo\Modifiers.hpp">
+      <Filter>Header Files\vkme\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\geo\Sphere.hpp">
+      <Filter>Header Files\vkme\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GeometryDelegate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\TexturesTestDelegate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

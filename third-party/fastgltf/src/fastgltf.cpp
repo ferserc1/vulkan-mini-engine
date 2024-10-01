@@ -27,6 +27,11 @@
 // MODIFIED: El fichero genera bastantes warnings, aquí los desactivo para que no
 // molesten en el resto del proyecto.
 
+// También está el problema del warning de deprecation de u8path en Visual Studio, que se desactiva aquí:
+#ifdef _WIN32
+#define _SILENCE_CXX20_U8PATH_DEPRECATION_WARNING 1
+#endif
+
 #ifdef __APPLE__
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma clang diagnostic ignored "-Wunused-variable"

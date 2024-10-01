@@ -73,7 +73,7 @@ void DrawLoop::acquireAndPresent()
     VK_ASSERT(vkWaitForFences(dev, 1, &frameFence, true, 10000000000));
     VK_ASSERT(vkResetFences(dev, 1, &frameFence));
     
-    frameRes.flushFrameData();
+      frameRes.flushFrameData();
     
     uint32_t swapchainImageIndex;
     auto acquireResult = core::acquireNextImage(dev, swapchain, 10000000000, swapchainSemaphore, nullptr, &swapchainImageIndex);

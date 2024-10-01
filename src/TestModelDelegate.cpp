@@ -199,8 +199,8 @@ void TestModelDelegate::drawGeometry(
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
     
     VkViewport viewport = {};
-    viewport.x = 0; viewport.y = 0;
-    viewport.width = imageExtent.width; viewport.height = imageExtent.height;
+    viewport.x = 0.0f; viewport.y = 0.0f;
+    viewport.width = float(imageExtent.width); viewport.height = float(imageExtent.height);
     viewport.minDepth = 0.0f; viewport.maxDepth = 1.0f;
     vkCmdSetViewport(cmd, 0, 1, &viewport);
     

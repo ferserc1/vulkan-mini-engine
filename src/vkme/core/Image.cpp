@@ -16,11 +16,11 @@ void Image::cmdTransitionImage(
     VkImage               image,
     VkImageLayout         oldLayout,
     VkImageLayout         newLayout,
+    VkImageAspectFlags    aspectMask,
     VkPipelineStageFlags2 srcStageMask,
     VkAccessFlags2        srcAccessMask,
     VkPipelineStageFlags2 dstStageMask,
-    VkAccessFlags2        dstAccessMask,
-    VkImageAspectFlags    aspectMask
+    VkAccessFlags2        dstAccessMask
 ) {
     VkImageMemoryBarrier2 imageBarrier = {};
     imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
@@ -33,7 +33,7 @@ void Image::cmdTransitionImage(
 
     if (aspectMask == 0) {
         aspectMask = newLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL ?
-            VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT :
+            VK_IMAGE_ASPECT_DEPTH_BIT :
             VK_IMAGE_ASPECT_COLOR_BIT;
     }
     imageBarrier.subresourceRange = Image::subresourceRange(aspectMask);
@@ -164,7 +164,7 @@ Image* Image::createAllocatedImage(
         vulkanData,
         imageFormat,
         extent,
-        usage,
+        usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
         aspectFlags
     );
     

@@ -132,7 +132,7 @@ void PushConstantsComputeShaderDelegate::drawBackground(VkCommandBuffer cmd, uin
     
     vkCmdPushConstants(cmd, layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(ComputePushConstants), &pc);
     
-    vkCmdDispatch(cmd, std::ceil(imageExtent.width / 16.0), std::ceil(imageExtent.height / 16.0), 1);
+    vkCmdDispatch(cmd, uint32_t(std::ceil(imageExtent.width / 16.0)), uint32_t(std::ceil(imageExtent.height / 16.0)), 1);
 }
 
 void PushConstantsComputeShaderDelegate::initDescriptors()

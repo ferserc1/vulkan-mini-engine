@@ -28,15 +28,15 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer {
 
 layout(push_constant) uniform constants {
     mat4 worldMatrix;
-    mat4 normalMatrix;
     VertexBuffer vertexBuffer;
 } PushConstants;
 
 void main() {
     Vertex vertex = PushConstants.vertexBuffer.vertices[gl_VertexIndex];
+    mat3 normalMatrix = mat3(transpose(inverse(PushConstants.worldMatrix)));
 
     gl_Position = sceneData.viewProjectionMatrix * PushConstants.worldMatrix * vec4(vertex.position, 1.0);
     outColor = vertex.color.xyz;
     outUV = vec2(vertex.uvX, vertex.uvY);
-    outNormal = (PushConstants.normalMatrix * vec4(vertex.normal, 1.0)).xyz;
+    outNormal = (mat4(normalMatrix) * vec4(vertex.normal, 1.0)).xyz;
 }

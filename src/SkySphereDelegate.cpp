@@ -91,7 +91,8 @@ VkImageLayout SkySphereDelegate::draw(
         cmd,
         depthImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_GENERAL
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_ASPECT_DEPTH_BIT
     );
     
     drawBackground(cmd, currentFrame, depthImage);
@@ -229,7 +230,10 @@ void SkySphereDelegate::initPipeline()
     
     _vulkanData->cleanupManager().push([&](VkDevice dev) {
         vkDestroyPipeline(dev, _pipeline, nullptr);
+        vkDestroyPipeline(dev, _transparentPipeline, nullptr);
         vkDestroyPipelineLayout(dev, _pipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _sceneDataDescriptorLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _imageDescriptorLayout, nullptr);
     });
     
 }
@@ -330,9 +334,9 @@ void SkySphereDelegate::initMesh()
 void SkySphereDelegate::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, const vkme::core::Image* depthImage)
 {
     VkClearColorValue clearValue;
-    float r = std::abs(std::sin(currentFrame / 90.0f)) * 0.5;
-    float g = std::abs(std::sin(currentFrame / 180.0f)) * 0.5;
-    float b = std::abs(std::sin(currentFrame / 120.0f)) * 0.5;
+    float r = std::abs(std::sin(currentFrame / 90.0f)) * 0.5f;
+    float g = std::abs(std::sin(currentFrame / 180.0f)) * 0.5f;
+    float b = std::abs(std::sin(currentFrame / 120.0f)) * 0.5f;
     clearValue = { { r, g, b, 1.0f } };
     auto clearRange = vkme::core::Image::subresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
     vkCmdClearColorImage(

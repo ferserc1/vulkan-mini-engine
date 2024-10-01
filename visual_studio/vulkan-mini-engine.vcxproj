@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image;$(SolutionDir)..\third-party\tinyobj</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image</IncludePath>
+    <IncludePath>$(VULKAN_SDK)\include;$(SolutionDir)..\include;$(VULKAN_SDK)\include\SDL2;$(SolutionDir)..\third-party\simdjson;$(SolutionDir)..\third-party\fastgltf\include;$(SolutionDir)..\third-party\vk-bootstrap\src;$(VULKAN_SDK)\include\vma;$(SolutionDir)..\third-party\imgui;$(SolutionDir)..\third-party\stb_image;$(SolutionDir)..\third-party\tinyobj</IncludePath>
     <LibraryPath>$(VULKAN_SDK)\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\</OutDir>
   </PropertyGroup>
@@ -115,7 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -141,7 +141,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -164,11 +164,14 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\ClearBackgroundDrawDelegate.cpp" />
     <ClCompile Include="..\src\ColorTriangleDelegate.cpp" />
     <ClCompile Include="..\src\ComputeShaderBackgroundDelegate.cpp" />
+    <ClCompile Include="..\src\GeometryDelegate.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MeshBuffersDelegate.cpp" />
     <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
     <ClCompile Include="..\src\SimpleTriangle.cpp" />
+    <ClCompile Include="..\src\SkySphereDelegate.cpp" />
     <ClCompile Include="..\src\TestModelDelegate.cpp" />
+    <ClCompile Include="..\src\TexturesTestDelegate.cpp" />
     <ClCompile Include="..\src\VertexBuffersDelegate.cpp" />
     <ClCompile Include="..\src\vkme\core\Buffer.cpp" />
     <ClCompile Include="..\src\vkme\core\Command.cpp" />
@@ -178,6 +181,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\vkme\core\FrameResources.cpp" />
     <ClCompile Include="..\src\vkme\core\Image.cpp" />
     <ClCompile Include="..\src\vkme\core\Info.cpp" />
+    <ClCompile Include="..\src\vkme\core\stb_image.cpp" />
     <ClCompile Include="..\src\vkme\core\Swapchain.cpp" />
     <ClCompile Include="..\src\vkme\core\vk_mem_alloc.cpp" />
     <ClCompile Include="..\src\vkme\DrawLoop.cpp" />
@@ -187,6 +191,9 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp" />
     <ClCompile Include="..\src\vkme\geo\mesh_data.cpp" />
     <ClCompile Include="..\src\vkme\geo\Model.cpp" />
+    <ClCompile Include="..\src\vkme\geo\Modifiers.cpp" />
+    <ClCompile Include="..\src\vkme\geo\Sphere.cpp" />
+    <ClCompile Include="..\src\vkme\geo\tiny_obj_implementation.cpp" />
     <ClCompile Include="..\src\vkme\MainLoop.cpp" />
     <ClCompile Include="..\src\vkme\PlatformTools.cpp" />
     <ClCompile Include="..\src\vkme\UserInterface.cpp" />
@@ -207,10 +214,13 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\ClearBackgroundDrawDelegate.hpp" />
     <ClInclude Include="..\include\ColorTriangleDelegate.hpp" />
     <ClInclude Include="..\include\ComputeShaderBackgroundDelegate.hpp" />
+    <ClInclude Include="..\include\GeometryDelegate.hpp" />
     <ClInclude Include="..\include\MeshBuffersDelegate.hpp" />
     <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
     <ClInclude Include="..\include\SimpleTriangle.hpp" />
+    <ClInclude Include="..\include\SkySphereDelegate.hpp" />
     <ClInclude Include="..\include\TestModelDelegate.hpp" />
+    <ClInclude Include="..\include\TexturesTestDelegate.hpp" />
     <ClInclude Include="..\include\VertexBuffersDelegate.hpp" />
     <ClInclude Include="..\include\vkme\core\Buffer.hpp" />
     <ClInclude Include="..\include\vkme\core\CleanupManager.hpp" />
@@ -230,6 +240,8 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp" />
     <ClInclude Include="..\include\vkme\geo\mesh_data.hpp" />
     <ClInclude Include="..\include\vkme\geo\Model.hpp" />
+    <ClInclude Include="..\include\vkme\geo\Modifiers.hpp" />
+    <ClInclude Include="..\include\vkme\geo\Sphere.hpp" />
     <ClInclude Include="..\include\vkme\MainLoop.hpp" />
     <ClInclude Include="..\include\vkme\PlatformTools.hpp" />
     <ClInclude Include="..\include\vkme\UserInterface.hpp" />

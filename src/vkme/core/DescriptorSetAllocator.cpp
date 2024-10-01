@@ -23,7 +23,7 @@ void DescriptorSetAllocator::initPool(
     }
     
     VkDescriptorPool newPool = createPool(maxSets);
-    _setsPerPool = std::round(float(maxSets) * 1.5f);
+    _setsPerPool = uint32_t(std::round(float(maxSets) * 1.5f));
     _readyPools.push_back(newPool);
 }
 
@@ -39,7 +39,7 @@ VkDescriptorPool DescriptorSetAllocator::getPool()
     {
         newPool = createPool(_setsPerPool);
         
-        _setsPerPool = std::round(float(_setsPerPool) * 1.5f);
+        _setsPerPool = uint32_t(std::round(float(_setsPerPool) * 1.5f));
         if (_setsPerPool > 4096) {
             _setsPerPool = 4096;
         }
