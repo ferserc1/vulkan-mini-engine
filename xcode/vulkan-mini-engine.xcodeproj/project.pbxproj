@@ -67,6 +67,7 @@
 		ED972BFA2CA9949600B0EEFB /* taza_roughness.png in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF52CA9948E00B0EEFB /* taza_roughness.png */; };
 		ED972BFD2CA9AF5100B0EEFB /* Modifiers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */; };
 		ED972C002CA9C5AB00B0EEFB /* SkySphereDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */; };
+		ED9BC55D2CB80736008D3846 /* RenderToTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED9BC55C2CB80736008D3846 /* RenderToTexture.cpp */; };
 		EDA0DC422CA3031C00845B8E /* TexturesTestDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
@@ -233,6 +234,8 @@
 		ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Modifiers.cpp; sourceTree = "<group>"; };
 		ED972BFE2CA9C5A100B0EEFB /* SkySphereDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SkySphereDelegate.hpp; sourceTree = "<group>"; };
 		ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SkySphereDelegate.cpp; sourceTree = "<group>"; };
+		ED9BC55C2CB80736008D3846 /* RenderToTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderToTexture.cpp; sourceTree = "<group>"; };
+		ED9BC55E2CB80740008D3846 /* RenderToTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RenderToTexture.hpp; sourceTree = "<group>"; };
 		EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturesTestDelegate.cpp; sourceTree = "<group>"; };
 		EDA0DC432CA3032600845B8E /* TexturesTestDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturesTestDelegate.hpp; sourceTree = "<group>"; };
 		EDA2144C2C9C888E009161FA /* UserInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UserInterface.hpp; sourceTree = "<group>"; };
@@ -397,6 +400,7 @@
 				ED4F37622C970C87009B120B /* main.cpp */,
 				EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
+				ED9BC55C2CB80736008D3846 /* RenderToTexture.cpp */,
 				EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */,
 				ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */,
 				EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */,
@@ -417,6 +421,7 @@
 				ED972BDF2CA930C900B0EEFB /* GeometryDelegate.hpp */,
 				EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
+				ED9BC55E2CB80740008D3846 /* RenderToTexture.hpp */,
 				EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */,
 				ED972BFE2CA9C5A100B0EEFB /* SkySphereDelegate.hpp */,
 				EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */,
@@ -796,6 +801,7 @@
 				ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */,
 				ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */,
 				ED39070C2CA5C982003F51B2 /* stb_image.cpp in Sources */,
+				ED9BC55D2CB80736008D3846 /* RenderToTexture.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
 				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,
