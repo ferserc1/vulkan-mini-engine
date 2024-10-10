@@ -53,6 +53,7 @@
 		ED4F37AD2C970F02009B120B /* libSDL2-2.0.0.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37AE2C970F04009B120B /* libvulkan.1.3.290.dylib in Copy Libraries */ = {isa = PBXBuildFile; fileRef = ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
+		ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED85B4192CB85F230020C26F /* Cube.cpp */; };
 		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
 		ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */; };
 		ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE22CA9338A00B0EEFB /* Sphere.cpp */; };
@@ -214,6 +215,8 @@
 		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<group>"; };
 		ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
+		ED85B4182CB85F140020C26F /* Cube.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Cube.hpp; sourceTree = "<group>"; };
+		ED85B4192CB85F230020C26F /* Cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Cube.cpp; sourceTree = "<group>"; };
 		ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PushConstantsComputeShaderDelegate.cpp; sourceTree = "<group>"; };
 		ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PushConstantsComputeShaderDelegate.hpp; sourceTree = "<group>"; };
 		ED972BDF2CA930C900B0EEFB /* GeometryDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeometryDelegate.hpp; sourceTree = "<group>"; };
@@ -629,6 +632,7 @@
 		EDC359EB2C9ED48C00F76C78 /* geo */ = {
 			isa = PBXGroup;
 			children = (
+				ED85B4182CB85F140020C26F /* Cube.hpp */,
 				EDC359EA2C9ED48C00F76C78 /* mesh_data.hpp */,
 				EDE168172CA05928003E4736 /* Model.hpp */,
 				ED972BFB2CA9AF4700B0EEFB /* Modifiers.hpp */,
@@ -640,6 +644,7 @@
 		EDC359ED2C9EE20100F76C78 /* geo */ = {
 			isa = PBXGroup;
 			children = (
+				ED85B4192CB85F230020C26F /* Cube.cpp */,
 				EDC359EC2C9EE20100F76C78 /* mesh_data.cpp */,
 				EDE168182CA05930003E4736 /* Model.cpp */,
 				ED972BFC2CA9AF5100B0EEFB /* Modifiers.cpp */,
@@ -811,6 +816,7 @@
 				ED4F37992C970E37009B120B /* imgui_draw.cpp in Sources */,
 				EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */,
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
+				ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */,
 				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */,
 				ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */,

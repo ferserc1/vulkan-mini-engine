@@ -1,5 +1,6 @@
 
 #include <vkme/geo/Cube.hpp>
+#include <sstream>
 
 namespace vkme::geo {
 
