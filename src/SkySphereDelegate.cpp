@@ -288,8 +288,8 @@ void SkySphereDelegate::initMesh()
     
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_NEAREST;
-    samplerInfo.minFilter = VK_FILTER_NEAREST;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
     vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &_imageSampler);
     
     _vulkanData->cleanupManager().push([&](VkDevice dev) {

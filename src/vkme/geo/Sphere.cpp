@@ -6,7 +6,7 @@
 namespace vkme {
 namespace geo {
 
-const char * objData = R""""(
+const char * sphere_objData = R""""(
 o Sphere
 v 0.000000 0.951057 -0.309017
 v 0.000000 0.809017 -0.587785
@@ -810,7 +810,7 @@ f 174/202/174 173/201/181 180/208/15 3/3/2
 
 std::shared_ptr<Model> Sphere::createUvSphere(VulkanData* vulkanData, float radius, const std::string& name, const std::vector<std::shared_ptr<Modifier>>& mods)
 {
-    std::stringstream objStream(objData);
+    std::stringstream objStream(sphere_objData);
     
     std::vector<std::shared_ptr<Modifier>> modifiers(mods.begin(), mods.end());
     if (radius != 1.0f)
