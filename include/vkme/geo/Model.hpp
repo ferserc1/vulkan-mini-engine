@@ -56,7 +56,7 @@ public:
     void allocateMaterialDescriptorSets(core::DescriptorSetAllocator* allocator, VkDescriptorSetLayout descriptorLayout);
     void updateDescriptorSets(std::function<void(core::DescriptorSet*)>&& updateFunc);
 
-    void draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::DescriptorSet* descriptorSets[] = nullptr, uint32_t numDescriptorSets = 0);
+    void draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::DescriptorSet* descriptorSets[] = nullptr, uint32_t numDescriptorSets = 0, int32_t pushConstantIndex = 0);
 
 protected:
     std::string _name;

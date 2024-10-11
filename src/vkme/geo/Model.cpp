@@ -263,10 +263,11 @@ void Model::updateDescriptorSets(std::function<void(core::DescriptorSet*)>&& upd
     }
 }
 
-void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::DescriptorSet* descriptorSets[], uint32_t numDescriptorSets)
+void Model::draw(VkCommandBuffer cmd, VkPipelineLayout pipelineLayout, core::DescriptorSet* descriptorSets[], uint32_t numDescriptorSets, int32_t pushConstantIndex)
 {
     vkme::geo::MeshPushConstants pushConstants;
     pushConstants.modelMatrix = modelMatrix();
+	pushConstants.index = pushConstantIndex;
 
     // TODO: Do not use push constants
     //pushConstants.normalMatrix = glm::mat3(glm::transpose(glm::inverse(modelMatrix())));

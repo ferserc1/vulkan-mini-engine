@@ -21,7 +21,7 @@ public:
     void setCullMode(VkCullModeFlags cullMode, VkFrontFace frontFace);
 
     void disableMultisample();
-    void setColorAttachmentFormat(VkFormat format);
+    void setColorAttachmentFormat(VkFormat format, uint32_t viewMask = 0);
     void setDepthFormat(VkFormat format);
     void disableDepthtest();
     void enableDepthtest(bool depthWriteEnable, VkCompareOp op);

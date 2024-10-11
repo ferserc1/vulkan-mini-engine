@@ -104,7 +104,8 @@ Image* Image::createAllocatedImage(
     VkFormat format,
     VkExtent2D extent,
     VkImageUsageFlags usage,
-    VkImageAspectFlags aspectFlags
+    VkImageAspectFlags aspectFlags,
+    uint32_t arrayLayers
 )
 {
     auto result = new Image();
@@ -115,8 +116,14 @@ Image* Image::createAllocatedImage(
     auto imgInfo = Info::imageCreateInfo(
         result->_format,
         usage,
-        result->_extent
+        result->_extent,
+        arrayLayers
     );
+
+    if (arrayLayers == 6)
+    {
+        imgInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    }
     
     VmaAllocationCreateInfo allocInfo = {};
     allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -133,6 +140,11 @@ Image* Image::createAllocatedImage(
     );
     
     auto imgViewInfo = Info::imageViewCreateInfo(format, result->_image, aspectFlags);
+    if (arrayLayers == 6)
+    {
+        imgViewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+        imgViewInfo.subresourceRange.layerCount = 6;
+    }
     VK_ASSERT(vkCreateImageView(vulkanData->device(), &imgViewInfo, nullptr, &result->_imageView));
     
     return result;

@@ -82,11 +82,12 @@ void GraphicsPipeline::disableMultisample()
     multisampling.alphaToOneEnable = VK_FALSE;
 }
 
-void GraphicsPipeline::setColorAttachmentFormat(VkFormat format)
+void GraphicsPipeline::setColorAttachmentFormat(VkFormat format, uint32_t viewMask)
 {
     _colorAttachmentformat = format;
     _renderInfo.colorAttachmentCount = 1;
     _renderInfo.pColorAttachmentFormats = &_colorAttachmentformat;
+    _renderInfo.viewMask = viewMask;
 }
 
 void GraphicsPipeline::setDepthFormat(VkFormat format)

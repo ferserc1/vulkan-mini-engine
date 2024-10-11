@@ -53,7 +53,8 @@ public:
     static VkImageCreateInfo imageCreateInfo(
         VkFormat format,
         VkImageUsageFlags usageFlags,
-        VkExtent3D extent
+        VkExtent3D extent,
+        uint32_t arrayLayers = 1
     );
 
     static VkImageViewCreateInfo imageViewCreateInfo(

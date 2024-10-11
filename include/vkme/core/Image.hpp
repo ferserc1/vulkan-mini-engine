@@ -55,7 +55,8 @@ public:
         VkFormat format,
         VkExtent2D extent,
         VkImageUsageFlags usage,
-        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+        uint32_t arrayLayers = 1
     );
     
     static Image* createAllocatedImage(

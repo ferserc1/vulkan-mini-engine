@@ -2,12 +2,16 @@
 #extension GL_EXT_buffer_reference : require
 
 layout(set = 0, binding = 0) uniform SceneData {
-    mat4 viewMatrix;
+    mat4 viewMatrix[6];
     mat4 projectionMatrix;
-    mat4 viewProjectionMatrix;
+    vec4 ambientColor;
+    vec4 sunlightDirection;
+    vec4 sunlightColor;
 } sceneData;
 
-layout(location = 0) out vec2 outUV;
+layout(location = 0) out vec3 outNormal;
+layout(location = 1) out vec3 outColor;
+layout(location = 2) out vec2 outUV;
 
 struct Vertex {
     vec3 position;
@@ -27,11 +31,12 @@ layout(push_constant) uniform constants {
     int index;
 } PushConstants;
 
-void main()
-{
+void main() {
     Vertex vertex = PushConstants.vertexBuffer.vertices[gl_VertexIndex];
-    mat4 viewMatrix = mat4(mat3(sceneData.viewMatrix));
-    mat4 worldMatrix = mat4(mat3(PushConstants.worldMatrix));
-    gl_Position = sceneData.projectionMatrix * viewMatrix * worldMatrix * vec4(vertex.position, 1.0);
+    mat3 normalMatrix = mat3(transpose(inverse(PushConstants.worldMatrix)));
+
+    gl_Position = sceneData.projectionMatrix * sceneData.viewMatrix[PushConstants.index] * PushConstants.worldMatrix * vec4(vertex.position, 1.0);
+    outColor = vertex.color.xyz;
     outUV = vec2(vertex.uvX, vertex.uvY);
+    outNormal = (mat4(normalMatrix) * vec4(vertex.normal, 1.0)).xyz;
 }

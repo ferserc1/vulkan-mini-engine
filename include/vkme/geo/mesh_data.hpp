@@ -58,6 +58,7 @@ struct MeshPushConstants
 {
     glm::mat4 modelMatrix;
     VkDeviceAddress vertexBufferAddress;
+    int32_t index;
 };
 
 }

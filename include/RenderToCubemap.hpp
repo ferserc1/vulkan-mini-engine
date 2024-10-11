@@ -9,9 +9,8 @@
 
 struct SceneDataCubemap
 {
-    glm::mat4 view;
+    glm::mat4 view[6];
     glm::mat4 proj;
-    glm::mat4 viewProj;
     glm::vec4 ambientColor;
     glm::vec4 sunlightDirection;
     glm::vec4 sunlightColor;
@@ -32,7 +31,7 @@ struct SceneCubemap {
     VkDescriptorSetLayout imageDescriptorLayout;
     VkSampler imageSampler;
     
-    void initPipeline(vkme::VulkanData*);
+    void initPipeline(vkme::VulkanData*, uint32_t viewLayers = 0);
     void initScene(vkme::VulkanData*, vkme::core::DescriptorSetAllocator * dsAllocator, const glm::mat4& proj);
 };
 
@@ -57,6 +56,7 @@ protected:
     
     std::shared_ptr<vkme::core::Image> _drawImage;
     std::shared_ptr<vkme::core::Image> _rttImage;
+    std::vector<VkImageView> _rttImageViews;
 	std::shared_ptr<vkme::core::Image> _rttDepthImage;
     
     SceneCubemap _scene1;
@@ -81,6 +81,7 @@ protected:
         const vkme::core::Image* depthImage,
         uint32_t currentFrame,
         vkme::core::FrameResources& frameResources,
-        SceneCubemap& scene
+        SceneCubemap& scene,
+        uint32_t layerCount = 1
     );
 };
