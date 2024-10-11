@@ -65,7 +65,6 @@ void Scene::initScene(vkme::VulkanData* vulkanData, vkme::core::DescriptorSetAll
     );
     
     // Update scene data buffer
-    auto viewportExtent = vulkanData->swapchain().extent();
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 2.0f));
     
     sceneData.view = view;
@@ -172,7 +171,7 @@ void RenderToTexture::swapchainResized(VkExtent2D newExtent)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 0.1f, 10.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 10.0f);
     proj[1][1] *= -1.0f;
     proj[0][0] *= -1.0f;
     _scene1.sceneData.proj = proj;
@@ -189,6 +188,9 @@ void RenderToTexture::swapchainResized(VkExtent2D newExtent)
         0
     );
 
+    proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 0.1f, 10.0f);
+    proj[1][1] *= -1.0f;
+    proj[0][0] *= -1.0f;
     _scene2.sceneData.proj = proj;
     _scene2.sceneData.viewProj = proj * _scene2.sceneData.view;
 
@@ -275,7 +277,8 @@ VkImageLayout RenderToTexture::draw(
         VK_IMAGE_ASPECT_DEPTH_BIT
     );
 
-    drawBackground(cmd, currentFrame, _rttImage.get());
+    // We pass 120 more frames because the background colour is calculated from there, so we have a different background colour for each render pass.
+    drawBackground(cmd, currentFrame + 120, _rttImage.get());
 
     core::Image::cmdTransitionImage(
         cmd,
