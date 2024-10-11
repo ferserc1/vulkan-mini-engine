@@ -213,6 +213,9 @@
     <ClCompile Include="..\src\vkme\geo\Cube.cpp">
       <Filter>Source Files\vkme\geo</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\RenderToCubemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -379,6 +382,9 @@
     </ClInclude>
     <ClInclude Include="..\include\vkme\geo\Cube.hpp">
       <Filter>Header Files\vkme\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RenderToCubemap.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

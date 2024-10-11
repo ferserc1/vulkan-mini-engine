@@ -168,6 +168,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MeshBuffersDelegate.cpp" />
     <ClCompile Include="..\src\PushConstantsComputeShaderDelegate.cpp" />
+    <ClCompile Include="..\src\RenderToCubemap.cpp" />
     <ClCompile Include="..\src\RenderToTexture.cpp" />
     <ClCompile Include="..\src\SimpleTriangle.cpp" />
     <ClCompile Include="..\src\SkySphereDelegate.cpp" />
@@ -219,6 +220,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\GeometryDelegate.hpp" />
     <ClInclude Include="..\include\MeshBuffersDelegate.hpp" />
     <ClInclude Include="..\include\PushConstantsComputeShaderDelegate.hpp" />
+    <ClInclude Include="..\include\RenderToCubemap.hpp" />
     <ClInclude Include="..\include\RenderToTexture.hpp" />
     <ClInclude Include="..\include\SimpleTriangle.hpp" />
     <ClInclude Include="..\include\SkySphereDelegate.hpp" />
