@@ -80,6 +80,7 @@
 		EDE168192CA05930003E4736 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE168182CA05930003E4736 /* Model.cpp */; };
 		EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */; };
 		EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */; };
+		EDEF1EB12CB93654001A653B /* RenderToCubemap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEF1EB02CB93654001A653B /* RenderToCubemap.cpp */; };
 		EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */; };
 /* End PBXBuildFile section */
 
@@ -262,6 +263,8 @@
 		EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestModelDelegate.hpp; sourceTree = "<group>"; };
 		EDEC55F92CA1B15D0051F3B3 /* VertexBuffersDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexBuffersDelegate.hpp; sourceTree = "<group>"; };
 		EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VertexBuffersDelegate.cpp; sourceTree = "<group>"; };
+		EDEF1EB02CB93654001A653B /* RenderToCubemap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderToCubemap.cpp; sourceTree = "<group>"; };
+		EDEF1EB22CB9366A001A653B /* RenderToCubemap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RenderToCubemap.hpp; sourceTree = "<group>"; };
 		EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleTriangle.cpp; sourceTree = "<group>"; };
 		EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleTriangle.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -404,6 +407,7 @@
 				EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */,
 				ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */,
 				ED9BC55C2CB80736008D3846 /* RenderToTexture.cpp */,
+				EDEF1EB02CB93654001A653B /* RenderToCubemap.cpp */,
 				EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */,
 				ED972BFF2CA9C5AB00B0EEFB /* SkySphereDelegate.cpp */,
 				EDE1681A2CA0631A003E4736 /* TestModelDelegate.cpp */,
@@ -425,6 +429,7 @@
 				EDC359E72C9ED05B00F76C78 /* MeshBuffersDelegate.hpp */,
 				ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */,
 				ED9BC55E2CB80740008D3846 /* RenderToTexture.hpp */,
+				EDEF1EB22CB9366A001A653B /* RenderToCubemap.hpp */,
 				EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */,
 				ED972BFE2CA9C5A100B0EEFB /* SkySphereDelegate.hpp */,
 				EDE1681C2CA06323003E4736 /* TestModelDelegate.hpp */,
@@ -807,6 +812,7 @@
 				ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */,
 				ED39070C2CA5C982003F51B2 /* stb_image.cpp in Sources */,
 				ED9BC55D2CB80736008D3846 /* RenderToTexture.cpp in Sources */,
+				EDEF1EB12CB93654001A653B /* RenderToCubemap.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
 				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,

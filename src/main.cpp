@@ -13,6 +13,7 @@
 #include <GeometryDelegate.hpp>
 #include <SkySphereDelegate.hpp>
 #include <RenderToTexture.hpp>
+#include <RenderToCubemap.hpp>
 
 int main(int argc, char** argv) {
     vkme::MainLoop app;
@@ -33,7 +34,8 @@ int main(int argc, char** argv) {
     //auto delegate = std::shared_ptr<TexturesTestDelegate>(new TexturesTestDelegate());
     //auto delegate = std::shared_ptr<GeometryDelegate>(new GeometryDelegate());
     //auto delegate = std::shared_ptr<SkySphereDelegate>(new SkySphereDelegate());
-    auto delegate = std::shared_ptr<RenderToTexture>(new RenderToTexture());
+    //auto delegate = std::shared_ptr<RenderToTexture>(new RenderToTexture());
+    auto delegate = std::shared_ptr<RenderToCubemap>(new RenderToCubemap());
     app.setDrawLoopDelegate(delegate);
     app.setUIDelegate(delegate);
     
