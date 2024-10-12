@@ -30,6 +30,7 @@ struct CubeMapRenderer {
 
 	std::shared_ptr<vkme::core::Image> skyImage;
 	VkDescriptorSetLayout skyImageDescriptorSetLayout;
+    std::unique_ptr<vkme::core::DescriptorSet> skyImageDescriptorSet;
 	VkSampler skyImageSampler;
 
 	void initImages(vkme::VulkanData*);

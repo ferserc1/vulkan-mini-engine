@@ -3,10 +3,12 @@
 #include <vkme/core/Info.hpp>
 #include <vkme/factory/DescriptorSetLayout.hpp>
 #include <vkme/factory/Sampler.hpp>
+#include <vkme/geo/Model.hpp>
 #include <vkme/geo/Sphere.hpp>
 #include <vkme/geo/Cube.hpp>
 #include <vkme/geo/Modifiers.hpp>
 #include <numbers>
+#include <array>
 
 #include <vkme/PlatformTools.hpp>
 
@@ -161,17 +163,17 @@ void CubeMapRenderer::initScene(vkme::VulkanData* vulkanData, vkme::core::Descri
 		}
 	);
 
-	sphere->allocateMaterialDescriptorSets(dsAllocator, skyImageDescriptorSetLayout);
-	sphere->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
-		ds->updateImage(
-			0,
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			skyImage->imageView(),
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-			skyImageSampler
-		);
-	});
-
+    skyImageDescriptorSet = std::unique_ptr<vkme::core::DescriptorSet>(
+        dsAllocator->allocate(skyImageDescriptorSetLayout)
+    );
+    skyImageDescriptorSet->updateImage(
+        0,
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        skyImage->imageView(),
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        skyImageSampler
+    );
+	
 	vulkanData->cleanupManager().push([&](VkDevice) {
 		sphere->cleanup();
 	});
@@ -213,41 +215,48 @@ void CubeMapRenderer::draw(VkCommandBuffer cmd, uint32_t currentFrame)
 
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
-		cmdSetDefaultViewportAndScissor(cmd, cubeMapImage->extent2D());
+        auto viewportExtent = cubeMapImage->extent2D();
+        VkViewport viewport = {};
+        viewport.x = 0; viewport.y = 0;
+        viewport.width = float(viewportExtent.width);
+        viewport.height = float(viewportExtent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(cmd, 0, 1, &viewport);
 
-		vkCmdBindDescriptorSets(
-			cmd,
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipelineLayout,
-			0,
-			1,
-			&projectionDataDescriptorSet->descriptorSet(),
-			0,
-			nullptr
-		);
+        VkRect2D scissor = {};
+        scissor.offset = { 0, 0 };
+        scissor.extent = viewportExtent;
+        vkCmdSetScissor(cmd, 0, 1, &scissor);
+       
+        // Draw the sky sphere
+        auto meshBuffers = sphere->meshBuffers();
+        SkySpherePushConstant pushConstants;
+        pushConstants.currentFace = i;
+        pushConstants.vertexBufferAddress = meshBuffers->vertexBufferAddress;
 
-		vkCmdBindDescriptorSets(
-			cmd,
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipelineLayout,
-			1,
-			1,
-			&sphere->materialDescriptorSet()->descriptorSet(),
-			0,
-			nullptr
-		);
+        vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SkySpherePushConstant), &pushConstants);
+        vkCmdBindIndexBuffer(cmd, meshBuffers->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
 
-		vkCmdPushConstants(
-			cmd,
-			pipelineLayout,
-			VK_SHADER_STAGE_VERTEX_BIT,
-			0,
-			sizeof(SkySpherePushConstant),
-			&i
-		);
+        // The sphere has only one surface
+        auto surface = sphere->surfaces()[0];
+       
+        std::array<VkDescriptorSet, 2> sets = {
+            projectionDataDescriptorSet->descriptorSet(),
+            skyImageDescriptorSet->descriptorSet()
+        };
 
-		sphere->draw(cmd);
+        vkCmdBindDescriptorSets(
+            cmd,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            pipelineLayout, 0,
+            uint32_t(sets.size()),
+            sets.data(),
+            0, nullptr
+        );
 
+        vkCmdDrawIndexed(cmd, surface.indexCount, 1, surface.startIndex, 0, 0);
+        
 		vkme::core::cmdEndRendering(cmd);
     }
 
