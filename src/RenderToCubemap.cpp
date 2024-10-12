@@ -416,6 +416,9 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
         _descriptorSetAllocator->clearDescriptors();
         _descriptorSetAllocator->destroy();
     });
+
+    _cubeMapRenderer.initPipeline(_vulkanData);
+    _cubeMapRenderer.initScene(_vulkanData, _descriptorSetAllocator.get());
     
     //initScenes();
     auto viewportExtent = _vulkanData->swapchain().extent();
@@ -496,12 +499,12 @@ VkImageLayout RenderToCubemap::draw(
 
 
     // Render first scene to the texture
-	core::Image::cmdTransitionImage(
-		cmd,
-		_rttImage->image(),
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_GENERAL
-	);
+	//core::Image::cmdTransitionImage(
+	//	cmd,
+	//	_rttImage->image(),
+	//	VK_IMAGE_LAYOUT_UNDEFINED,
+	//	VK_IMAGE_LAYOUT_GENERAL
+	//);
 
     //core::Image::cmdTransitionImage(
     //    cmd,
@@ -512,33 +515,34 @@ VkImageLayout RenderToCubemap::draw(
     //);
 
     // We pass 120 more frames because the background colour is calculated from there, so we have a different background colour for each render pass.
-    drawBackground(cmd, currentFrame + 120, _rttImage.get());
+    //drawBackground(cmd, currentFrame + 120, _rttImage.get());
 
-    core::Image::cmdTransitionImage(
-        cmd,
-        _rttDepthImage->image(),
-        VK_IMAGE_LAYOUT_GENERAL,
-        VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
-    );
+    //core::Image::cmdTransitionImage(
+    //    cmd,
+    //    _rttDepthImage->image(),
+    //    VK_IMAGE_LAYOUT_GENERAL,
+    //    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+    //);
 
-    core::Image::cmdTransitionImage(
-        cmd,
-        _rttImage->image(),
-        VK_IMAGE_LAYOUT_GENERAL,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    );
+    //core::Image::cmdTransitionImage(
+    //    cmd,
+    //    _rttImage->image(),
+    //    VK_IMAGE_LAYOUT_GENERAL,
+    //    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    //);
 
-    drawGeometry(cmd, _rttImage->imageView(), _rttImage->extent2D(), _rttDepthImage.get(), currentFrame, frameResources, _scene1, 6);
+    //drawGeometry(cmd, _rttImage->imageView(), _rttImage->extent2D(), _rttDepthImage.get(), currentFrame, frameResources, _scene1, 6);
 
-    core::Image::cmdTransitionImage(
-        cmd,
-        _rttImage->image(),
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-    );
+    //core::Image::cmdTransitionImage(
+    //    cmd,
+    //    _rttImage->image(),
+    //    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    //    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    //);
 
 
-    
+    _cubeMapRenderer.draw(cmd, currentFrame);
+
     // Transition draw image to render on it
     core::Image::cmdTransitionImage(
         cmd,
@@ -571,7 +575,7 @@ VkImageLayout RenderToCubemap::draw(
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     );
     
-    drawGeometry(cmd, _drawImage->imageView(), colorImage->extent2D(), depthImage, currentFrame, frameResources, _scene2);
+    drawGeometry(cmd, _drawImage->imageView(), colorImage->extent2D(), depthImage, currentFrame, frameResources, _scene);
     
     // Transition _drawImage and swapchain image to copy the first one to the second one
     core::Image::cmdTransitionImage(
@@ -659,62 +663,62 @@ void RenderToCubemap::drawUI()
 //	_scene2.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
 //}
 
-void RenderToCubemap::initMeshScene1(SceneCubemap& scene)
-{
-    const std::string imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
-    scene.textureImage = std::shared_ptr<vkme::core::Image>(
-        vkme::core::Image::loadImage(_vulkanData, imagePath)
-    );
-    
-    VkSamplerCreateInfo samplerInfo = {};
-    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_NEAREST;
-    samplerInfo.minFilter = VK_FILTER_NEAREST;
-    vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &scene.imageSampler);
-    
-    _vulkanData->cleanupManager().push([&](VkDevice dev) {
-        scene.textureImage->cleanup();
-        vkDestroySampler(dev, scene.imageSampler, nullptr);
-    });
-    
-    scene.models = {
-        vkme::geo::Sphere::createUvSphere(
-            _vulkanData,
-            6.0f,
-            "Sphere",
-            {
-                std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipFacesModifier()),
-				std::shared_ptr<vkme::geo::FlipNormalsModifier>(new vkme::geo::FlipNormalsModifier())
-            }
-        )
-    };
-    
-    for (auto m : scene.models)
-    {
-        m->allocateMaterialDescriptorSets(_descriptorSetAllocator.get(), scene.imageDescriptorLayout);
-        
-        m->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
-            ds->updateImage(
-                0,
-                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                scene.textureImage->imageView(),
-                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                scene.imageSampler
-            );
-        });
-    }
-    
-    _vulkanData->cleanupManager().push([&](VkDevice) {
-        for (auto m : scene.models) {
-            m->cleanup();
-        }
-    });
-}
+//void RenderToCubemap::initMeshScene1(SceneCubemap& scene)
+//{
+//    const std::string imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
+//    scene.textureImage = std::shared_ptr<vkme::core::Image>(
+//        vkme::core::Image::loadImage(_vulkanData, imagePath)
+//    );
+//    
+//    VkSamplerCreateInfo samplerInfo = {};
+//    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+//    samplerInfo.magFilter = VK_FILTER_NEAREST;
+//    samplerInfo.minFilter = VK_FILTER_NEAREST;
+//    vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &scene.imageSampler);
+//    
+//    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+//        scene.textureImage->cleanup();
+//        vkDestroySampler(dev, scene.imageSampler, nullptr);
+//    });
+//    
+//    scene.models = {
+//        vkme::geo::Sphere::createUvSphere(
+//            _vulkanData,
+//            6.0f,
+//            "Sphere",
+//            {
+//                std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipFacesModifier()),
+//				std::shared_ptr<vkme::geo::FlipNormalsModifier>(new vkme::geo::FlipNormalsModifier())
+//            }
+//        )
+//    };
+//    
+//    for (auto m : scene.models)
+//    {
+//        m->allocateMaterialDescriptorSets(_descriptorSetAllocator.get(), scene.imageDescriptorLayout);
+//        
+//        m->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
+//            ds->updateImage(
+//                0,
+//                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//                scene.textureImage->imageView(),
+//                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+//                scene.imageSampler
+//            );
+//        });
+//    }
+//    
+//    _vulkanData->cleanupManager().push([&](VkDevice) {
+//        for (auto m : scene.models) {
+//            m->cleanup();
+//        }
+//    });
+//}
 
-void RenderToCubemap::initMeshScene2(SceneCubemap& scene)
+void RenderToCubemap::initMeshScene(SceneCubemap& scene)
 {
-    scene.textureImage = std::shared_ptr<vkme::core::Image>(_rttImage);
-
+    //scene.textureImage = std::shared_ptr<vkme::core::Image>(_rttImage);
+    scene.textureImage = std::shared_ptr<vkme::core::Image>(_cubeMapRenderer.cubeMapImage);
 
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -783,52 +787,22 @@ void RenderToCubemap::drawGeometry(
     SceneCubemap& scene,
     uint32_t layerCount
 ) {
-    if (layerCount > 1)
+    auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
+    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
+    auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
+    vkme::core::cmdBeginRendering(cmd, &renderInfo);
+
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
+
+    cmdSetDefaultViewportAndScissor(cmd, imageExtent);
+
+    for (auto m : scene.models)
     {
-        // As I can't get VK_KHR_multiview to work, we simply do it by hand. We make six render passes, one for each face of the cube.
-
-        for (int i = 0; i < 6; ++i)
-        {
-			auto view = _rttImageViews[i];
-            auto colorAttachment = vkme::core::Info::attachmentInfo(view, nullptr);
-            auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, nullptr);
-            vkme::core::cmdBeginRendering(cmd, &renderInfo);
-
-            vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
-
-            cmdSetDefaultViewportAndScissor(cmd, imageExtent);
-
-            for (auto m : scene.models)
-            {
-                vkme::core::DescriptorSet* ds[] = {
-                    scene.sceneDataDescriptorSet.get()
-                };
-                // He añadido un parámetro entero en las push constants para indicar el índice de la cara a renderizar
-                m->draw(cmd, scene.pipelineLayout, ds, 1, i);
-            }
-            vkme::core::cmdEndRendering(cmd);
-        }
+        vkme::core::DescriptorSet* ds[] = {
+            scene.sceneDataDescriptorSet.get()
+        };
+        m->draw(cmd, scene.pipelineLayout, ds, 1);
     }
-    else {
-        auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
-        auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
-        auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
-        vkme::core::cmdBeginRendering(cmd, &renderInfo);
-
-
-        vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
-
-        cmdSetDefaultViewportAndScissor(cmd, imageExtent);
-
-        for (auto m : scene.models)
-        {
-            vkme::core::DescriptorSet* ds[] = {
-                scene.sceneDataDescriptorSet.get()
-            };
-            m->draw(cmd, scene.pipelineLayout, ds, 1);
-        }
-        vkme::core::cmdEndRendering(cmd);
-    }
-    
-    
+    vkme::core::cmdEndRendering(cmd);    
 }
