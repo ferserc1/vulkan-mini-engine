@@ -47,7 +47,7 @@ struct CubeMapRenderer {
 
 struct SceneDataCubemap
 {
-    glm::mat4 view[6];
+    glm::mat4 view;
     glm::mat4 proj;
     glm::vec4 ambientColor;
     glm::vec4 sunlightDirection;

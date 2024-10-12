@@ -58,7 +58,6 @@
 		ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */; };
 		ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE22CA9338A00B0EEFB /* Sphere.cpp */; };
 		ED972BE82CA9496900B0EEFB /* tiny_obj_implementation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */; };
-		ED972BED2CA94EB700B0EEFB /* simple_cube.obj in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */; };
 		ED972BEE2CA94EBA00B0EEFB /* simple_cube.mtl in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */; };
 		ED972BF02CA95C5600B0EEFB /* country_field_sun.jpg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */; };
 		ED972BF62CA9949600B0EEFB /* taza.obj in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED972BF12CA9948E00B0EEFB /* taza.obj */; };
@@ -82,6 +81,7 @@
 		EDEC55FB2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEC55FA2CA1B16C0051F3B3 /* VertexBuffersDelegate.cpp */; };
 		EDEF1EB12CB93654001A653B /* RenderToCubemap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEF1EB02CB93654001A653B /* RenderToCubemap.cpp */; };
 		EDF4F79F2CA18C1600239B4D /* SimpleTriangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */; };
+		EDFB9FD22CBAEDB100E8F7D2 /* Sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDFB9FD12CBAEDB100E8F7D2 /* Sampler.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -127,7 +127,6 @@
 				ED38FC772CA5D1A800275782 /* lamp_occlusionRoughnessMetallic.jpeg in Copy Assets */,
 				ED38FC782CA5D1A800275782 /* lamp2.glb in Copy Assets */,
 				ED972BEE2CA94EBA00B0EEFB /* simple_cube.mtl in Copy Assets */,
-				ED972BED2CA94EB700B0EEFB /* simple_cube.obj in Copy Assets */,
 			);
 			name = "Copy Assets";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,9 +210,9 @@
 		ED4F37902C970E37009B120B /* VkBootstrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VkBootstrap.cpp; sourceTree = "<group>"; };
 		ED4F37912C970E37009B120B /* VkBootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VkBootstrap.h; sourceTree = "<group>"; };
 		ED4F37922C970E37009B120B /* VkBootstrapDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VkBootstrapDispatch.h; sourceTree = "<group>"; };
-		ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../VulkanSDK/1.3.290.0/macOS/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
-		ED4F37A62C970EDB009B120B /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libMoltenVK.dylib; sourceTree = "<group>"; };
-		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = ../../../../../VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<group>"; };
+		ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "/Users/fernando/VulkanSDK/1.3.290.0/macOS/lib/libSDL2-2.0.0.dylib"; sourceTree = "<absolute>"; };
+		ED4F37A62C970EDB009B120B /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = /Users/fernando/VulkanSDK/1.3.290.0/macOS/lib/libMoltenVK.dylib; sourceTree = "<absolute>"; };
+		ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.3.290.dylib; path = /Users/fernando/VulkanSDK/1.3.290.0/macOS/lib/libvulkan.1.3.290.dylib; sourceTree = "<absolute>"; };
 		ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		ED5C0EE02C99AC2E009448AE /* CleanupManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CleanupManager.hpp; sourceTree = "<group>"; };
 		ED85B4182CB85F140020C26F /* Cube.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Cube.hpp; sourceTree = "<group>"; };
@@ -227,7 +226,6 @@
 		ED972BE52CA9491900B0EEFB /* tiny_obj_loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 		ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tiny_obj_implementation.cpp; sourceTree = "<group>"; };
 		ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = simple_cube.mtl; sourceTree = "<group>"; };
-		ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = simple_cube.obj; sourceTree = "<group>"; };
 		ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = country_field_sun.jpg; sourceTree = "<group>"; };
 		ED972BF12CA9948E00B0EEFB /* taza.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = taza.obj; sourceTree = "<group>"; };
 		ED972BF22CA9948E00B0EEFB /* taza_albedo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = taza_albedo.png; sourceTree = "<group>"; };
@@ -267,6 +265,8 @@
 		EDEF1EB22CB9366A001A653B /* RenderToCubemap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RenderToCubemap.hpp; sourceTree = "<group>"; };
 		EDF4F79E2CA18C1600239B4D /* SimpleTriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleTriangle.cpp; sourceTree = "<group>"; };
 		EDF4F7A02CA18C1C00239B4D /* SimpleTriangle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleTriangle.hpp; sourceTree = "<group>"; };
+		EDFB9FD02CBAED6100E8F7D2 /* Sampler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sampler.hpp; sourceTree = "<group>"; };
+		EDFB9FD12CBAEDB100E8F7D2 /* Sampler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sampler.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -290,6 +290,7 @@
 				ED330A5F2C9B2DDF00315207 /* ComputePipeline.hpp */,
 				ED330A442C9AC60300315207 /* DescriptorSetLayout.hpp */,
 				EDDE56242C9D943D00DC443D /* GraphicsPipeline.hpp */,
+				EDFB9FD02CBAED6100E8F7D2 /* Sampler.hpp */,
 				ED330A512C9B221700315207 /* ShaderModule.hpp */,
 			);
 			path = factory;
@@ -301,6 +302,7 @@
 				ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */,
 				ED330A462C9AC60B00315207 /* DescriptorSetLayout.cpp */,
 				EDDE56222C9D942C00DC443D /* GraphicsPipeline.cpp */,
+				EDFB9FD12CBAEDB100E8F7D2 /* Sampler.cpp */,
 				ED330A4F2C9B220C00315207 /* ShaderModule.cpp */,
 			);
 			path = factory;
@@ -316,7 +318,6 @@
 				ED972BF52CA9948E00B0EEFB /* taza_roughness.png */,
 				ED972BEF2CA95C5200B0EEFB /* country_field_sun.jpg */,
 				ED972BE92CA94CEC00B0EEFB /* simple_cube.mtl */,
-				ED972BEA2CA94CEC00B0EEFB /* simple_cube.obj */,
 				ED38FC6E2CA5D16E00275782 /* basicmesh.glb */,
 				ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */,
 				ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */,
@@ -566,8 +567,9 @@
 			children = (
 				ED4F37A42C970EB8009B120B /* lib */,
 			);
-			path = VulkanSDK;
-			sourceTree = "<group>";
+			name = VulkanSDK;
+			path = "/Users/fernando/desarrollo/vulkan-mini-engine/xcode/VulkanSDK";
+			sourceTree = "<absolute>";
 		};
 		ED4F37A42C970EB8009B120B /* lib */ = {
 			isa = PBXGroup;
@@ -576,8 +578,9 @@
 				ED4F37A52C970EDB009B120B /* libSDL2-2.0.0.dylib */,
 				ED4F37A72C970EDB009B120B /* libvulkan.1.3.290.dylib */,
 			);
-			path = lib;
-			sourceTree = "<group>";
+			name = lib;
+			path = /Users/fernando/VulkanSDK/1.3.290.0/macOS/lib;
+			sourceTree = "<absolute>";
 		};
 		ED4F37B02C970F4D009B120B /* macOS */ = {
 			isa = PBXGroup;
@@ -825,6 +828,7 @@
 				ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */,
 				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */,
+				EDFB9FD22CBAEDB100E8F7D2 /* Sampler.cpp in Sources */,
 				ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */,
 				ED4F37982C970E37009B120B /* imgui_demo.cpp in Sources */,
 				ED4F37962C970E37009B120B /* base64.cpp in Sources */,
