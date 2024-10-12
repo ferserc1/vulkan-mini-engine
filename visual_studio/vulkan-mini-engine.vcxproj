@@ -190,6 +190,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\vkme\factory\ComputePipeline.cpp" />
     <ClCompile Include="..\src\vkme\factory\DescriptorSetLayout.cpp" />
     <ClCompile Include="..\src\vkme\factory\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\src\vkme\factory\Sampler.cpp" />
     <ClCompile Include="..\src\vkme\factory\ShaderModule.cpp" />
     <ClCompile Include="..\src\vkme\geo\Cube.cpp" />
     <ClCompile Include="..\src\vkme\geo\mesh_data.cpp" />
@@ -242,6 +243,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\vkme\factory\ComputePipeline.hpp" />
     <ClInclude Include="..\include\vkme\factory\DescriptorSetLayout.hpp" />
     <ClInclude Include="..\include\vkme\factory\GraphicsPipeline.hpp" />
+    <ClInclude Include="..\include\vkme\factory\Sampler.hpp" />
     <ClInclude Include="..\include\vkme\factory\ShaderModule.hpp" />
     <ClInclude Include="..\include\vkme\geo\Cube.hpp" />
     <ClInclude Include="..\include\vkme\geo\mesh_data.hpp" />

@@ -2,6 +2,7 @@
 #include <vkme/factory/GraphicsPipeline.hpp>
 #include <vkme/core/Info.hpp>
 #include <vkme/factory/DescriptorSetLayout.hpp>
+#include <vkme/factory/Sampler.hpp>
 #include <vkme/geo/Sphere.hpp>
 #include <vkme/geo/Cube.hpp>
 #include <vkme/geo/Modifiers.hpp>
@@ -9,20 +10,261 @@
 
 #include <vkme/PlatformTools.hpp>
 
-void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData, uint32_t viewLayers)
+void CubeMapRenderer::initImages(vkme::VulkanData* vulkanData)
+{
+    // Cube map image
+    // This are the image views used to render the cubemap
+    cubeMapImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
+        vulkanData,
+        VK_FORMAT_R16G16B16A16_SFLOAT,
+        VkExtent2D(1024, 1024),
+        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+        VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+        VK_IMAGE_USAGE_SAMPLED_BIT,
+        VK_IMAGE_ASPECT_COLOR_BIT,
+        6   // 6 layers. When specify this parameter, the image is created as a cube map compatible image with 6 layers, and the image view is created as a cube map image view
+    ));
+
+    // Create image views for each face. We'll use these image views to render to the cube map image
+    cubeMapImageViews.resize(6);
+    auto viewInfo = vkme::core::Info::imageViewCreateInfo(
+        VK_FORMAT_R16G16B16A16_SFLOAT,
+        cubeMapImage->image(),
+        VK_IMAGE_ASPECT_COLOR_BIT
+    );
+    VkImageView imgView;
+    for (int i = 0; i < 6; ++i)
+    {
+        viewInfo.subresourceRange.baseArrayLayer = i;
+        vkCreateImageView(vulkanData->device(), &viewInfo, nullptr, &imgView);
+        cubeMapImageViews[i] = imgView;
+    }
+
+    vulkanData->cleanupManager().push([&](VkDevice dev) {
+        for (int i = 0; i < 6; ++i)
+        {
+            vkDestroyImageView(dev, cubeMapImageViews[i], nullptr);
+        }
+
+		cubeMapImage->cleanup();
+    });
+}
+
+void CubeMapRenderer::initPipeline(vkme::VulkanData* vulkanData)
+{
+    vkme::factory::GraphicsPipeline plFactory(vulkanData);
+
+	plFactory.addShader("cubemap_renderer.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+	plFactory.addShader("skybox.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    vkme::factory::DescriptorSetLayout dsFactory;
+
+	dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+	projectionDataDescriptorSetLayout = dsFactory.build(vulkanData->device(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	
+    dsFactory.clear();
+	dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+	skyImageDescriptorSetLayout = dsFactory.build(vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    VkPushConstantRange bufferRange = {};
+    bufferRange.offset = 0;
+    bufferRange.size = sizeof(SkySpherePushConstant);
+	bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+	auto layoutInfo = vkme::core::Info::pipelineLayoutInfo();
+	layoutInfo.pPushConstantRanges = &bufferRange;
+	layoutInfo.pushConstantRangeCount = 1;
+
+    VkDescriptorSetLayout layouts[] = {
+        projectionDataDescriptorSetLayout,
+        skyImageDescriptorSetLayout
+    };
+	layoutInfo.pSetLayouts = layouts;
+	layoutInfo.setLayoutCount = 2;
+
+	VK_ASSERT(vkCreatePipelineLayout(vulkanData->device(), &layoutInfo, nullptr, &pipelineLayout));
+
+    plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
+	plFactory.disableDepthtest();
+	plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	plFactory.setCullMode(true, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+
+	pipeline = plFactory.build(pipelineLayout);
+
+	vulkanData->cleanupManager().push([&](VkDevice dev) {
+		vkDestroyPipeline(dev, pipeline, nullptr);
+		vkDestroyPipelineLayout(dev, pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(dev, projectionDataDescriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(dev, skyImageDescriptorSetLayout, nullptr);
+	});
+}
+
+void CubeMapRenderer::initScene(vkme::VulkanData* vulkanData, vkme::core::DescriptorSetAllocator* dsAllocator)
+{
+    projectionDataDescriptorSet = std::unique_ptr<vkme::core::DescriptorSet>(
+        dsAllocator->allocate(projectionDataDescriptorSetLayout)
+    );
+
+	projectionData.view[0] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    projectionData.view[1] = glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    projectionData.view[2] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    projectionData.view[3] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    projectionData.view[4] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 0.0f,-1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    projectionData.view[5] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	projectionData.proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
+
+	projectionDataBuffer = std::unique_ptr<vkme::core::Buffer>(vkme::core::Buffer::createAllocatedBuffer(
+		vulkanData,
+		sizeof(ProjectionData),
+		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+		VMA_MEMORY_USAGE_CPU_TO_GPU
+	));
+
+	vulkanData->cleanupManager().push([&](VkDevice) {
+		projectionDataBuffer->cleanup();
+	});
+
+	ProjectionData* projectionDataPtr = reinterpret_cast<ProjectionData*>(projectionDataBuffer->allocatedData());
+	*projectionDataPtr = projectionData;
+
+	projectionDataDescriptorSet->updateBuffer(
+		0, // binding
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		projectionDataBuffer.get(),
+		sizeof(ProjectionData),
+		0
+	);
+
+	auto imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
+	skyImage = std::shared_ptr<vkme::core::Image>(
+        vkme::core::Image::loadImage(vulkanData, imagePath)
+    );
+
+	vkme::factory::Sampler samplerFactory(vulkanData);
+	skyImageSampler = samplerFactory.build(
+		VK_FILTER_LINEAR,
+		VK_FILTER_LINEAR
+    );
+
+	vulkanData->cleanupManager().push([&](VkDevice dev) {
+		skyImage->cleanup();
+		vkDestroySampler(dev, skyImageSampler, nullptr);
+	});
+
+	sphere = vkme::geo::Sphere::createUvSphere(
+		vulkanData,
+		10.0f,
+		"Sphere",
+		 {
+			std::shared_ptr<vkme::geo::FlipFacesModifier>(new vkme::geo::FlipFacesModifier())
+		}
+	);
+
+	sphere->allocateMaterialDescriptorSets(dsAllocator, skyImageDescriptorSetLayout);
+	sphere->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
+		ds->updateImage(
+			0,
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			skyImage->imageView(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			skyImageSampler
+		);
+	});
+
+	vulkanData->cleanupManager().push([&](VkDevice) {
+		sphere->cleanup();
+	});
+}
+
+void CubeMapRenderer::draw(VkCommandBuffer cmd, uint32_t currentFrame)
+{
+    vkme::core::Image::cmdTransitionImage(
+        cmd,
+        cubeMapImage->image(),
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_GENERAL
+    );
+
+    VkClearColorValue clearValue;
+    clearValue = { { 0.5, 0.5, 0.5, 1.0f } };
+    auto clearRange = vkme::core::Image::subresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
+    vkCmdClearColorImage(
+        cmd,
+        cubeMapImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        &clearValue, 1, &clearRange
+    );
+
+    vkme::core::Image::cmdTransitionImage(
+        cmd,
+        cubeMapImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    );
+
+    // Draw geometry
+    for (auto i = 0; i < 6; ++i) {
+		// Draw each face of the cube map in a separate render pass
+		auto view = cubeMapImageViews[i];
+		auto colorAttachment = vkme::core::Info::attachmentInfo(view, nullptr);
+		auto renderInfo = vkme::core::Info::renderingInfo(cubeMapImage->extent2D(), &colorAttachment, nullptr);
+		vkme::core::cmdBeginRendering(cmd, &renderInfo);
+
+		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+
+		cmdSetDefaultViewportAndScissor(cmd, cubeMapImage->extent2D());
+
+		vkCmdBindDescriptorSets(
+			cmd,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipelineLayout,
+			0,
+			1,
+			&projectionDataDescriptorSet->descriptorSet(),
+			0,
+			nullptr
+		);
+
+		vkCmdBindDescriptorSets(
+			cmd,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipelineLayout,
+			1,
+			1,
+			&sphere->materialDescriptorSet()->descriptorSet(),
+			0,
+			nullptr
+		);
+
+		vkCmdPushConstants(
+			cmd,
+			pipelineLayout,
+			VK_SHADER_STAGE_VERTEX_BIT,
+			0,
+			sizeof(SkySpherePushConstant),
+			&i
+		);
+
+		sphere->draw(cmd);
+
+		vkme::core::cmdEndRendering(cmd);
+    }
+
+	vkme::core::Image::cmdTransitionImage(
+		cmd,
+		cubeMapImage->image(),
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	);
+}
+
+void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData)
 {
     vkme::factory::GraphicsPipeline plFactory(vulkanData);
     
-    if (viewLayers == 6)
-    {
-        plFactory.addShader("cubemap_test.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-        plFactory.addShader("cubemap_test.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-    }
-    else {
-        plFactory.addShader("cubemap_consumer_test.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-        plFactory.addShader("cubemap_consumer_test.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-    }
-   
+    plFactory.addShader("cubemap_consumer_test.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+    plFactory.addShader("cubemap_consumer_test.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
     
     vkme::factory::DescriptorSetLayout dsFactory;
     
@@ -52,14 +294,7 @@ void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData, uint32_t viewLayer
     
     plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
     plFactory.setDepthFormat(vulkanData->swapchain().depthImageFormat());
-    if (viewLayers == 0)
-    {
-        plFactory.enableDepthtest(true, VK_COMPARE_OP_LESS);
-    }
-    else
-    {
-        plFactory.disableDepthtest();
-    }
+    plFactory.enableDepthtest(true, VK_COMPARE_OP_LESS);
     plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     plFactory.setCullMode(true, VK_FRONT_FACE_CLOCKWISE);
     
@@ -133,47 +368,26 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
     ));
 
 	// The first image will be rendered into this image
-    _rttImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
-        vulkanData,
-        VK_FORMAT_R16G16B16A16_SFLOAT,
-        VkExtent2D(1024, 1024),
-        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
-            VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-            VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_IMAGE_ASPECT_COLOR_BIT,
-        6
-    ));
+    //_rttImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
+    //    vulkanData,
+    //    VK_FORMAT_R16G16B16A16_SFLOAT,
+    //    VkExtent2D(1024, 1024),
+    //    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+    //        VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+    //        VK_IMAGE_USAGE_SAMPLED_BIT,
+    //    VK_IMAGE_ASPECT_COLOR_BIT,
+    //    6
+    //));
 
-	// Create image views for each face
-    // The image view at the Image class corresponds with the cubemap image view
-	
-    VkImageView imgView;
-	VkImageViewCreateInfo viewInfo = vkme::core::Info::imageViewCreateInfo(VK_FORMAT_R16G16B16A16_SFLOAT, _rttImage->image(), VK_IMAGE_ASPECT_COLOR_BIT);
-	viewInfo.subresourceRange.layerCount = 1;
+	_cubeMapRenderer.initImages(vulkanData);
 
-	_rttImageViews.resize(6);
-    for (int i = 0; i < 6; ++i)
-    {
-        viewInfo.subresourceRange.baseArrayLayer = i;
-	    vkCreateImageView(vulkanData->device(), &viewInfo, nullptr, &imgView);
-	    _rttImageViews[i] = imgView;
-    }
-
-    _vulkanData->cleanupManager().push([&](VkDevice dev) {
-        // Skip the first image view because this is managed by the Image class
-        for (int i = 0; i < 6; ++i)
-        {
-            vkDestroyImageView(dev, _rttImageViews[i], nullptr);
-        }
-    });
-
-    _rttDepthImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
-        vulkanData,
-        vulkanData->swapchain().depthImageFormat(),
-        VkExtent2D(1024, 1024),
-        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        VK_IMAGE_ASPECT_DEPTH_BIT
-    ));
+    //_rttDepthImage = std::shared_ptr<vkme::core::Image>(vkme::core::Image::createAllocatedImage(
+    //    vulkanData,
+    //    vulkanData->swapchain().depthImageFormat(),
+    //    VkExtent2D(1024, 1024),
+    //    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+    //    VK_IMAGE_ASPECT_DEPTH_BIT
+    //));
     
     vulkanData->cleanupManager().push([this](VkDevice) {
         this->cleanup();
@@ -194,10 +408,16 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
         _descriptorSetAllocator->destroy();
     });
     
-    initScenes();
+    //initScenes();
+    auto viewportExtent = _vulkanData->swapchain().extent();
+    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
+    proj[1][1] *= -1.0f;
+    proj[0][0] *= -1.0f;
+    _scene.initPipeline(_vulkanData);
+    _scene.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
     
-    initMeshScene1(_scene1);
-	initMeshScene2(_scene2);
+    initMeshScene(_scene);
+	//initMeshScene2(_scene2);
 }
 
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
@@ -216,34 +436,18 @@ void RenderToCubemap::swapchainResized(VkExtent2D newExtent)
         VK_IMAGE_ASPECT_COLOR_BIT
     ));
     
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 10.0f);
+    auto proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 0.1f, 10.0f);
     proj[1][1] *= -1.0f;
     proj[0][0] *= -1.0f;
-    _scene1.sceneData.proj = proj;
+    _scene.sceneData.proj = proj;
 
-    SceneDataCubemap* sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene1.sceneDataBuffer->allocatedData());
-    *sceneDataPtr = _scene1.sceneData;
-    
-    _scene1.sceneDataDescriptorSet->updateBuffer(
-        0, // binding
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        _scene1.sceneDataBuffer.get(),
-        sizeof(SceneDataCubemap),
-        0
-    );
+    auto sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene.sceneDataBuffer->allocatedData());
+    *sceneDataPtr = _scene.sceneData;
 
-    proj = glm::perspective(glm::radians(50.0f), float(newExtent.width) / float(newExtent.height), 0.1f, 10.0f);
-    proj[1][1] *= -1.0f;
-    proj[0][0] *= -1.0f;
-    _scene2.sceneData.proj = proj;
-
-    sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene2.sceneDataBuffer->allocatedData());
-    *sceneDataPtr = _scene2.sceneData;
-
-    _scene2.sceneDataDescriptorSet->updateBuffer(
+    _scene.sceneDataDescriptorSet->updateBuffer(
         0,
         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        _scene2.sceneDataBuffer.get(),
+        _scene.sceneDataBuffer.get(),
         sizeof(SceneDataCubemap),
         0
     );
@@ -252,8 +456,6 @@ void RenderToCubemap::swapchainResized(VkExtent2D newExtent)
 void RenderToCubemap::cleanup()
 {
     _drawImage->cleanup();
-	_rttImage->cleanup();
-	_rttDepthImage->cleanup();
 }
 
 VkImageLayout RenderToCubemap::draw(
@@ -265,8 +467,8 @@ VkImageLayout RenderToCubemap::draw(
 ) {
     using namespace vkme;
 
-    // Update the scene 1 object model matrix
-    for (auto& m : _scene1.models) {
+    // Update the scene object model matrix
+    for (auto& m : _scene.models) {
         glm::mat4 modelMatrix = glm::translate(glm::mat4{ 1.0f }, glm::vec3(0.0f, 0.0f, 0.0f));
         if (_rotateAxis == 1)
         {
@@ -283,26 +485,6 @@ VkImageLayout RenderToCubemap::draw(
         m->setModelMatrix(modelMatrix);
     }
 
-    // Update the scene 2 object model matrix
-    for (auto& m : _scene2.models) {
-        glm::mat4 modelMatrix = glm::translate(glm::mat4{ 1.0f }, glm::vec3(0.0f, 0.0f, 0.0f));
-        if (_rotateAxisCube == 1)
-        {
-            modelMatrix = glm::rotate(modelMatrix, glm::radians(float(currentFrame % 360)), glm::vec3(1.0f, 0.0f, 0.0f));
-        }
-        else if (_rotateAxisCube == 2)
-        {
-            modelMatrix = glm::rotate(modelMatrix, glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 1.0f, 0.0f));
-        }
-        else if (_rotateAxisCube == 3)
-        {
-            modelMatrix = glm::rotate(modelMatrix, glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 0.0f, 1.0f));
-        }
-        m->setModelMatrix(modelMatrix);
-    }
-
-
-
 
     // Render first scene to the texture
 	core::Image::cmdTransitionImage(
@@ -312,13 +494,13 @@ VkImageLayout RenderToCubemap::draw(
 		VK_IMAGE_LAYOUT_GENERAL
 	);
 
-    core::Image::cmdTransitionImage(
-        cmd,
-        _rttDepthImage->image(),
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_GENERAL,
-        VK_IMAGE_ASPECT_DEPTH_BIT
-    );
+    //core::Image::cmdTransitionImage(
+    //    cmd,
+    //    _rttDepthImage->image(),
+    //    VK_IMAGE_LAYOUT_UNDEFINED,
+    //    VK_IMAGE_LAYOUT_GENERAL,
+    //    VK_IMAGE_ASPECT_DEPTH_BIT
+    //);
 
     // We pass 120 more frames because the background colour is calculated from there, so we have a different background colour for each render pass.
     drawBackground(cmd, currentFrame + 120, _rttImage.get());
@@ -452,21 +634,21 @@ void RenderToCubemap::drawUI()
     ImGui::End();
 }
 
-void RenderToCubemap::initScenes()
-{
-	auto viewportExtent = _vulkanData->swapchain().extent();
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 10.0f);
-    proj[1][1] *= -1.0f;
-    proj[0][0] *= -1.0f;
-    _scene1.initPipeline(_vulkanData, 6);
-    _scene1.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
-
-    proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
-    proj[1][1] *= -1.0f;
-    proj[0][0] *= -1.0f;
-    _scene2.initPipeline(_vulkanData);
-	_scene2.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
-}
+//void RenderToCubemap::initScenes()
+//{
+//	auto viewportExtent = _vulkanData->swapchain().extent();
+//    glm::mat4 proj = glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 10.0f);
+//    proj[1][1] *= -1.0f;
+//    proj[0][0] *= -1.0f;
+//    _scene1.initPipeline(_vulkanData, 6);
+//    _scene1.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
+//
+//    proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
+//    proj[1][1] *= -1.0f;
+//    proj[0][0] *= -1.0f;
+//    _scene2.initPipeline(_vulkanData);
+//	_scene2.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
+//}
 
 void RenderToCubemap::initMeshScene1(SceneCubemap& scene)
 {

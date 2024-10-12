@@ -216,6 +216,9 @@
     <ClCompile Include="..\src\RenderToCubemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vkme\factory\Sampler.cpp">
+      <Filter>Source Files\vkme\factory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="..\include\RenderToCubemap.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\factory\Sampler.hpp">
+      <Filter>Header Files\vkme\factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

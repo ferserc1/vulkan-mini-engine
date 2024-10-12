@@ -7,6 +7,43 @@
 #include <vkme/geo/mesh_data.hpp>
 #include <vkme/geo/Model.hpp>
 
+struct CubeMapRenderer {
+
+    std::shared_ptr<vkme::geo::Model> sphere;
+
+    struct SkySpherePushConstant {
+        VkDeviceAddress vertexBufferAddress;
+        int currentFace;
+    };
+
+    struct ProjectionData {
+		glm::mat4 view[6];
+		glm::mat4 proj;
+    };
+
+	VkPipelineLayout pipelineLayout;
+    VkPipeline pipeline;
+    std::unique_ptr<vkme::core::Buffer> projectionDataBuffer;
+	std::unique_ptr<vkme::core::DescriptorSet> projectionDataDescriptorSet;
+    VkDescriptorSetLayout projectionDataDescriptorSetLayout;
+    ProjectionData projectionData;
+
+	std::shared_ptr<vkme::core::Image> skyImage;
+	VkDescriptorSetLayout skyImageDescriptorSetLayout;
+	VkSampler skyImageSampler;
+
+	void initImages(vkme::VulkanData*);
+	void initPipeline(vkme::VulkanData*);
+	void initScene(vkme::VulkanData*, vkme::core::DescriptorSetAllocator* dsAllocator);
+    void draw(VkCommandBuffer cmd, uint32_t currentFrame);
+    
+    // This image contains the cube map image, with 6 layers, and the cube map image view
+	std::shared_ptr<vkme::core::Image> cubeMapImage;
+	// In this array we store the image views for each face of the cube map, needed to render
+    // to the cube map image
+    std::vector<VkImageView> cubeMapImageViews;
+};
+
 struct SceneDataCubemap
 {
     glm::mat4 view[6];
@@ -31,7 +68,7 @@ struct SceneCubemap {
     VkDescriptorSetLayout imageDescriptorLayout;
     VkSampler imageSampler;
     
-    void initPipeline(vkme::VulkanData*, uint32_t viewLayers = 0);
+    void initPipeline(vkme::VulkanData*);
     void initScene(vkme::VulkanData*, vkme::core::DescriptorSetAllocator * dsAllocator, const glm::mat4& proj);
 };
 
@@ -55,12 +92,12 @@ protected:
     vkme::VulkanData * _vulkanData;
     
     std::shared_ptr<vkme::core::Image> _drawImage;
-    std::shared_ptr<vkme::core::Image> _rttImage;
-    std::vector<VkImageView> _rttImageViews;
-	std::shared_ptr<vkme::core::Image> _rttDepthImage;
+    //std::shared_ptr<vkme::core::Image> _rttImage;
+    //std::vector<VkImageView> _rttImageViews;
+	//std::shared_ptr<vkme::core::Image> _rttDepthImage;
     
-    SceneCubemap _scene1;
-    SceneCubemap _scene2;
+	CubeMapRenderer _cubeMapRenderer;
+    SceneCubemap _scene;
         
     // Descriptor set allocator for materials
     std::unique_ptr<vkme::core::DescriptorSetAllocator> _descriptorSetAllocator;
@@ -70,8 +107,8 @@ protected:
     uint32_t _rotateAxisCube = 0;
     
     void initScenes();
-    void initMeshScene1(SceneCubemap&);
-    void initMeshScene2(SceneCubemap&);
+    void initMeshScene(SceneCubemap&);
+    //void initMeshScene2(SceneCubemap&);
 
     void drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, const vkme::core::Image* depthImage);
     void drawGeometry(
