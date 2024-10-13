@@ -4,6 +4,7 @@
 #include <vkme/factory/DescriptorSetLayout.hpp>
 #include <vkme/factory/Sampler.hpp>
 #include <vkme/geo/Sphere.hpp>
+#include <array>
 
 namespace vkme::tools {
 

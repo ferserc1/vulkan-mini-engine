@@ -86,6 +86,11 @@ void DrawLoop::acquireAndPresent()
         _vulkanData->updateSwapchainSize();
         return;
     }
+
+	if (_drawDelegate.get())
+	{
+		_drawDelegate->update(_vulkanData->currentFrame(), frameRes);
+	}
     
     auto swapchainImage = swapchainData.colorImage(swapchainImageIndex);
     auto depthImage = swapchainData.depthImage();

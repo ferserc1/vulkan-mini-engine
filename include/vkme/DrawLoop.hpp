@@ -35,6 +35,9 @@ public:
     // that image, and not the swapchain's size.
     virtual void swapchainResized(VkExtent2D newExtent) = 0;
 
+    // Called before create the frame command buffer
+    virtual void update(int32_t currentFrame, core::FrameResources&) {}
+
     // This call must return the last swapchainImage layout, or VK_IMAGE_LAYOUT_UNDEFINED if it is not used
     virtual VkImageLayout draw(VkCommandBuffer cmd, uint32_t currentFrame, const core::Image* colorImage, const core::Image* depthImage, core::FrameResources& frameResources) = 0;
 

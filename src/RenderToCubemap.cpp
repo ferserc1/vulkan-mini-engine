@@ -22,7 +22,10 @@ void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData)
     vkme::factory::DescriptorSetLayout dsFactory;
     
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    sceneDataDescriptorLayout = dsFactory.build(vulkanData->device(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+    sceneDataDescriptorLayout = dsFactory.build(
+        vulkanData->device(), 
+        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT
+    );
     
     dsFactory.clear();
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
@@ -63,10 +66,6 @@ void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData)
 
 void SceneCubemap::initScene(vkme::VulkanData* vulkanData, vkme::core::DescriptorSetAllocator * dsAllocator, const glm::mat4& proj)
 {
-    // Allocate scene data descriptor set
-    sceneDataDescriptorSet = std::unique_ptr<vkme::core::DescriptorSet>(
-        dsAllocator->allocate(sceneDataDescriptorLayout)
-    );
     
     // Update scene data buffer
     glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(0.0f, 0.0f, 3.0f));
@@ -77,27 +76,9 @@ void SceneCubemap::initScene(vkme::VulkanData* vulkanData, vkme::core::Descripto
     sceneData.sunlightColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
     sceneData.sunlightDirection = glm::vec4(4.0f, 4.0f, -2.0f, 1.0f);
     
-    sceneDataBuffer = std::unique_ptr<vkme::core::Buffer>(vkme::core::Buffer::createAllocatedBuffer(
-        vulkanData,
-        sizeof(SceneDataCubemap),
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VMA_MEMORY_USAGE_CPU_TO_GPU
-    ));
-    
-    vulkanData->cleanupManager().push([&](VkDevice) {
-        sceneDataBuffer->cleanup();
-    });
-    
-    SceneDataCubemap* sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(sceneDataBuffer->allocatedData());
-    *sceneDataPtr = sceneData;
-    
-    sceneDataDescriptorSet->updateBuffer(
-        0, // binding
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        sceneDataBuffer.get(),
-        sizeof(SceneDataCubemap),
-        0
-    );
+	// The scene data buffer is created in the frame resources and destroyed in the cleanup of every frame.
+    // Do this when the buffer needs to be updated every frame, because the update is done in CPU time, and
+    // this can cause problems when you are rendering more than one frame in flight
 }
     
 void RenderToCubemap::init(vkme::VulkanData * vulkanData)
@@ -152,6 +133,9 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
 
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
 {
+    allocator->initPool(10, {
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 }
+    });
 }
 
 void RenderToCubemap::swapchainResized(VkExtent2D newExtent)
@@ -171,21 +155,18 @@ void RenderToCubemap::swapchainResized(VkExtent2D newExtent)
     proj[0][0] *= -1.0f;
     _scene.sceneData.proj = proj;
 
-    auto sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene.sceneDataBuffer->allocatedData());
-    *sceneDataPtr = _scene.sceneData;
-
-    _scene.sceneDataDescriptorSet->updateBuffer(
-        0,
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        _scene.sceneDataBuffer.get(),
-        sizeof(SceneDataCubemap),
-        0
-    );
+    // The sceneData buffer is created in the frame resources.
 }
 
 void RenderToCubemap::cleanup()
 {
     _drawImage->cleanup();
+}
+
+void RenderToCubemap::update(int32_t currentFrame, vkme::core::FrameResources& frameResources)
+{
+    glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(_cameraX, _cameraY, _cameraZ));
+    _scene.sceneData.view = view;
 }
 
 VkImageLayout RenderToCubemap::draw(
@@ -196,6 +177,8 @@ VkImageLayout RenderToCubemap::draw(
     vkme::core::FrameResources& frameResources
 ) {
     using namespace vkme;
+
+    _cubeMapRenderer->update(cmd, currentFrame);
 
     // Update the scene object model matrix
     std::array<glm::mat4,2> positions = {
@@ -219,10 +202,6 @@ VkImageLayout RenderToCubemap::draw(
             modelMatrix = glm::rotate(modelMatrix, glm::radians(float(currentFrame % 360)), glm::vec3(0.0f, 0.0f, 1.0f));
         }
         m->setModelMatrix(modelMatrix);
-    }
-
-    if (currentFrame == 1) {
-        _cubeMapRenderer->update(cmd, currentFrame);
     }
 
     // Transition draw image to render on it
@@ -413,23 +392,36 @@ void RenderToCubemap::drawGeometry(
     SceneCubemap& scene,
     uint32_t layerCount
 ) {
+    auto sceneDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
+        _vulkanData,
+        sizeof(SceneDataCubemap),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VMA_MEMORY_USAGE_CPU_TO_GPU
+    );
+
+	SceneDataCubemap* sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(sceneDataBuffer->allocatedData());
+	*sceneDataPtr = _scene.sceneData;
+
+	frameResources.cleanupManager.push([&, sceneDataBuffer](VkDevice) {
+		sceneDataBuffer->cleanup();
+        delete sceneDataBuffer;
+	});
+
+    auto sceneDS = std::unique_ptr<vkme::core::DescriptorSet>(
+        frameResources.descriptorAllocator->allocate(_scene.sceneDataDescriptorLayout)
+    );
+	sceneDS->updateBuffer(
+		0,
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		sceneDataBuffer,
+		sizeof(SceneDataCubemap),
+		0
+	);
+
     auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
     auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
-
-    glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(_cameraX, _cameraY, _cameraZ));
-    _scene.sceneData.view = view;
-    SceneDataCubemap* sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene.sceneDataBuffer->allocatedData());
-    *sceneDataPtr = _scene.sceneData;
-    
-    _scene.sceneDataDescriptorSet->updateBuffer(
-        0, // binding
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        _scene.sceneDataBuffer.get(),
-        sizeof(SceneDataCubemap),
-        0
-    );
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
 
@@ -438,7 +430,7 @@ void RenderToCubemap::drawGeometry(
     for (auto m : scene.models)
     {
         vkme::core::DescriptorSet* ds[] = {
-            scene.sceneDataDescriptorSet.get()
+			sceneDS.get()
         };
         m->draw(cmd, scene.pipelineLayout, ds, 1);
     }
