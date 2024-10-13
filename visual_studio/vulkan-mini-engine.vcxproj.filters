@@ -61,6 +61,12 @@
     <Filter Include="Source Files\vkme\geo">
       <UniqueIdentifier>{da0e0218-307e-4344-9cd7-1fff5664a3d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\vkme\tools">
+      <UniqueIdentifier>{29fa7fe6-b8f8-434f-bccc-743bcd6b799f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vkme\tools">
+      <UniqueIdentifier>{85317898-2be0-4e4a-bb51-6062ac5fea28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\fastgltf\src\base64.cpp">
@@ -218,6 +224,9 @@
     </ClCompile>
     <ClCompile Include="..\src\vkme\factory\Sampler.cpp">
       <Filter>Source Files\vkme\factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\tools\CubemapRenderer.cpp">
+      <Filter>Source Files\vkme\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -391,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="..\include\vkme\factory\Sampler.hpp">
       <Filter>Header Files\vkme\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\tools\CubemapRenderer.hpp">
+      <Filter>Header Files\vkme\tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -110,7 +110,7 @@ void CubeMapRenderer::initScene(vkme::VulkanData* vulkanData, vkme::core::Descri
 	projectionData.view[0] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     projectionData.view[1] = glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     projectionData.view[2] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    projectionData.view[3] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    projectionData.view[3] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f));
     projectionData.view[4] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 0.0f,-1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     projectionData.view[5] = glm::lookAt(glm::vec3(0.0f), glm::vec3( 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -452,8 +452,8 @@ VkImageLayout RenderToCubemap::draw(
 
     // Update the scene object model matrix
     std::array<glm::mat4,2> positions = {
-        glm::translate(glm::mat4{1.0}, glm::vec3{-0.8, 0.0, 0.0}),
-        glm::translate(glm::mat4{1.0}, glm::vec3{ 0.8, 0.0, 0.0})
+        glm::translate(glm::mat4{1.0}, glm::vec3{-0.8, 0.5, 0.0}),
+        glm::translate(glm::mat4{1.0}, glm::vec3{ 0.8, 0.5, 0.0})
     };
     auto i = 0;
     for (auto& m : _scene.models) {

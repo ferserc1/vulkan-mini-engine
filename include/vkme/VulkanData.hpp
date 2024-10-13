@@ -3,9 +3,7 @@
 #include <SDL.h>
 #include <SDL_vulkan.h>
 
-#include <vulkan/vulkan.h>
-#include "vk_mem_alloc.h"
-#include <VkBootstrap.h>
+#include <vkme/core/common.hpp>
 
 #include <vkme/core/Swapchain.hpp>
 #include <vkme/core/Command.hpp>
