@@ -20,14 +20,16 @@ public:
 
     void build(
         const std::string& imagePath,
-        const std::string& vertexShaderPath,
-        const std::string& fragmentShaderPath,
+        const std::string& vertexShaderFile = "cubemap_renderer.vert.spv",
+        const std::string& fragmentShaderFile = "skybox.frag.spv",
         VkExtent2D cubeImageSize = { 1024, 1024 }
     );
 
+    void updateImage(const std::string& imagePath);
+    
     void update(VkCommandBuffer commandBuffer, uint32_t currentFrame);
 
-    void cleanup();
+    std::shared_ptr<vkme::core::Image> cubeMapImage() { return _cubeMapImage; }
 
 protected:
     VulkanData * _vulkanData;
@@ -60,8 +62,8 @@ protected:
     std::shared_ptr<vkme::core::Image> _cubeMapImage;
     VkImageView _cubeMapImageViews[6];
 
-    void initImages();
-    void initPipeline();
+    void initImages(VkExtent2D);
+    void initPipeline(const std::string& vshaderFile, const std::string& fshaderFile);
     void initGeometry();
 };
 

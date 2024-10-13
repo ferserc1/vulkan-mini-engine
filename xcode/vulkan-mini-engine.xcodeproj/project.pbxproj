@@ -71,6 +71,7 @@
 		EDA0DC422CA3031C00845B8E /* TexturesTestDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
+		EDA75A992CBBDE63001ADEEF /* CubemapRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */; };
 		EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E22C9E9D7800F76C78 /* extensions.cpp */; };
 		EDC359E52C9ECD7600F76C78 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E42C9ECD7600F76C78 /* Buffer.cpp */; };
 		EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */; };
@@ -244,6 +245,8 @@
 		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
 		EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorTriangleDelegate.hpp; sourceTree = "<group>"; };
 		EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColorTriangleDelegate.cpp; sourceTree = "<group>"; };
+		EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapRenderer.cpp; sourceTree = "<group>"; };
+		EDA75A9A2CBBDE88001ADEEF /* CubemapRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CubemapRenderer.hpp; sourceTree = "<group>"; };
 		EDC359E12C9E9D7200F76C78 /* extensions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = extensions.hpp; sourceTree = "<group>"; };
 		EDC359E22C9E9D7800F76C78 /* extensions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = extensions.cpp; sourceTree = "<group>"; };
 		EDC359E42C9ECD7600F76C78 /* Buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
@@ -605,6 +608,7 @@
 				ED3911C82C98550E00B07513 /* core */,
 				ED330A452C9AC60300315207 /* factory */,
 				EDC359EB2C9ED48C00F76C78 /* geo */,
+				EDA75A9B2CBBDE88001ADEEF /* tools */,
 				ED3911D62C98846700B07513 /* DrawLoop.hpp */,
 				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
 				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
@@ -620,6 +624,7 @@
 				ED3911CA2C98551400B07513 /* core */,
 				ED330A472C9AC60B00315207 /* factory */,
 				EDC359ED2C9EE20100F76C78 /* geo */,
+				EDA75A982CBBDE63001ADEEF /* tools */,
 				ED3911D72C98846F00B07513 /* DrawLoop.cpp */,
 				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
 				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
@@ -635,6 +640,22 @@
 				ED972BE52CA9491900B0EEFB /* tiny_obj_loader.h */,
 			);
 			path = tinyobj;
+			sourceTree = "<group>";
+		};
+		EDA75A982CBBDE63001ADEEF /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */,
+			);
+			path = tools;
+			sourceTree = "<group>";
+		};
+		EDA75A9B2CBBDE88001ADEEF /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				EDA75A9A2CBBDE88001ADEEF /* CubemapRenderer.hpp */,
+			);
+			path = tools;
 			sourceTree = "<group>";
 		};
 		EDC359EB2C9ED48C00F76C78 /* geo */ = {
@@ -818,6 +839,7 @@
 				EDEF1EB12CB93654001A653B /* RenderToCubemap.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
+				EDA75A992CBBDE63001ADEEF /* CubemapRenderer.cpp in Sources */,
 				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,
 				ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */,
 				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */,
