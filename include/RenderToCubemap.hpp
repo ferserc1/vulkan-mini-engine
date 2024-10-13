@@ -94,8 +94,7 @@ protected:
     vkme::VulkanData * _vulkanData;
     
     std::shared_ptr<vkme::core::Image> _drawImage;
-     
-	//CubeMapRenderer _cubeMapRenderer;
+
     std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
     SceneCubemap _scene;
         
@@ -105,6 +104,9 @@ protected:
     // 0: no rotation, 1: x, 2: y, 3: z
     uint32_t _rotateAxis = 0;
     uint32_t _rotateAxisCube = 0;
+    float _cameraX = 0.0f;
+    float _cameraY = 0.0f;
+    float _cameraZ = 3.0f;
     
     void initScenes();
     void initMeshScene(SceneCubemap&);

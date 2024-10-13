@@ -13,6 +13,7 @@ layout(location = 0) out vec3 outNormal;
 layout(location = 1) out vec3 outColor;
 layout(location = 2) out vec2 outUV;
 layout(location = 3) out vec3 outPosition;
+layout(location = 4) out vec3 outCameraPosition;
 
 struct Vertex {
     vec3 position;
@@ -41,4 +42,5 @@ void main() {
     outUV = vec2(vertex.uvX, vertex.uvY);
     outNormal = (mat4(normalMatrix) * vec4(vertex.normal, 1.0)).xyz;
     outPosition = (PushConstants.worldMatrix * vec4(vertex.position, 1.0)).xyz;
+    outCameraPosition = (inverse(sceneData.viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
 }

@@ -305,6 +305,43 @@ void RenderToCubemap::drawUI()
         }
         
         ImGui::SliderInt("Rotation axis", reinterpret_cast<int*>(&_rotateAxis), 0, 3);
+        
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (ImGui::CollapsingHeader("Camera Position"))
+        {
+            ImGui::Columns(4, "", true);
+            if (ImGui::Button("Left"))
+            {
+                _cameraX -= 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("Right"))
+            {
+                _cameraX += 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("Front"))
+            {
+                _cameraZ -= 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("Back"))
+            {
+                _cameraZ += 0.1f;
+            }
+            ImGui::Columns(4, "", true);
+            ImGui::NextColumn();
+            if (ImGui::Button("Up"))
+            {
+                _cameraY -= 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("Down"))
+            {
+                _cameraY += 0.1f;
+            }
+        }
+        
     }
     ImGui::End();
 }
@@ -381,6 +418,18 @@ void RenderToCubemap::drawGeometry(
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
 
+    glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(_cameraX, _cameraY, _cameraZ));
+    _scene.sceneData.view = view;
+    SceneDataCubemap* sceneDataPtr = reinterpret_cast<SceneDataCubemap*>(_scene.sceneDataBuffer->allocatedData());
+    *sceneDataPtr = _scene.sceneData;
+    
+    _scene.sceneDataDescriptorSet->updateBuffer(
+        0, // binding
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        _scene.sceneDataBuffer.get(),
+        sizeof(SceneDataCubemap),
+        0
+    );
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
 
