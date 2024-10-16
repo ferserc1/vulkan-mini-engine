@@ -181,9 +181,10 @@ VkImageLayout RenderToCubemap::draw(
     _cubeMapRenderer->update(cmd, currentFrame);
 
     // Update the scene object model matrix
-    std::array<glm::mat4,2> positions = {
+    std::array<glm::mat4,3> positions = {
         glm::translate(glm::mat4{1.0}, glm::vec3{-0.8, 0.5, 0.0}),
-        glm::translate(glm::mat4{1.0}, glm::vec3{ 0.8, 0.5, 0.0})
+        glm::translate(glm::mat4{1.0}, glm::vec3{ 0.8, 0.5, 0.0}),
+        glm::translate(glm::mat4{1.0}, glm::vec3{ 0.0, -0.7, 0.0})
     };
     auto i = 0;
     for (auto& m : _scene.models) {
@@ -339,10 +340,21 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
         vkDestroySampler(dev, scene.imageSampler, nullptr);
     });
 
+    std::string assetsPath = vkme::PlatformTools::assetPath() + "taza.obj";
+
+    auto basicMesh = vkme::geo::Model::loadObj(_vulkanData, assetsPath, {
+		std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::ScaleModifier(0.5f))
+    });
+
     scene.models = {
         vkme::geo::Cube::createCube(_vulkanData, 1.0f),
-        vkme::geo::Sphere::createUvSphere(_vulkanData, 0.5f)
+        vkme::geo::Sphere::createUvSphere(_vulkanData, 0.25f)
     };
+
+    for (auto m : basicMesh)
+    {
+        scene.models.push_back(m);
+    }
     
     for (auto m : scene.models)
     {
