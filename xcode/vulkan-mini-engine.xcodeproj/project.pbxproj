@@ -10,6 +10,7 @@
 		ED060AE52C973E8F0063ABDD /* VulkanData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE12C973E8F0063ABDD /* VulkanData.cpp */; };
 		ED060AE62C973E8F0063ABDD /* PlatformTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */; };
 		ED060AE82C973E8F0063ABDD /* MainLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED060AE42C973E8F0063ABDD /* MainLoop.cpp */; };
+		ED09CDE92CC5596C00B464F8 /* CubemapRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED09CDE82CC54EB400B464F8 /* CubemapRenderer.cpp */; };
 		ED32220A2C99B0EC00F27ADA /* vk_mem_alloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3222092C99B0EC00F27ADA /* vk_mem_alloc.cpp */; };
 		ED32220D2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */; };
 		ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A462C9AC60B00315207 /* DescriptorSetLayout.cpp */; };
@@ -71,7 +72,7 @@
 		EDA0DC422CA3031C00845B8E /* TexturesTestDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA0DC412CA3031C00845B8E /* TexturesTestDelegate.cpp */; };
 		EDA2144E2C9C8897009161FA /* UserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA2144D2C9C8897009161FA /* UserInterface.cpp */; };
 		EDA67F102C9DBC150053419C /* ColorTriangleDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */; };
-		EDA75A992CBBDE63001ADEEF /* CubemapRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */; };
+		EDA75A992CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA75A972CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp */; };
 		EDC359E32C9E9D7800F76C78 /* extensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E22C9E9D7800F76C78 /* extensions.cpp */; };
 		EDC359E52C9ECD7600F76C78 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E42C9ECD7600F76C78 /* Buffer.cpp */; };
 		EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC359E82C9ED06C00F76C78 /* MeshBuffersDelegate.cpp */; };
@@ -141,6 +142,8 @@
 		ED060AE92C973EA60063ABDD /* MainLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MainLoop.hpp; sourceTree = "<group>"; };
 		ED060AEB2C973EA60063ABDD /* VulkanData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VulkanData.hpp; sourceTree = "<group>"; };
 		ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlatformTools.hpp; sourceTree = "<group>"; };
+		ED09CDE72CC54EA000B464F8 /* CubemapRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CubemapRenderer.hpp; sourceTree = "<group>"; };
+		ED09CDE82CC54EB400B464F8 /* CubemapRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapRenderer.cpp; sourceTree = "<group>"; };
 		ED3222092C99B0EC00F27ADA /* vk_mem_alloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vk_mem_alloc.cpp; sourceTree = "<group>"; };
 		ED32220B2C99CEAC00F27ADA /* ClearBackgroundDrawDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ClearBackgroundDrawDelegate.hpp; sourceTree = "<group>"; };
 		ED32220C2C99CEB400F27ADA /* ClearBackgroundDrawDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClearBackgroundDrawDelegate.cpp; sourceTree = "<group>"; };
@@ -245,8 +248,8 @@
 		EDA2144D2C9C8897009161FA /* UserInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UserInterface.cpp; sourceTree = "<group>"; };
 		EDA67F0E2C9DBC060053419C /* ColorTriangleDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorTriangleDelegate.hpp; sourceTree = "<group>"; };
 		EDA67F0F2C9DBC150053419C /* ColorTriangleDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColorTriangleDelegate.cpp; sourceTree = "<group>"; };
-		EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapRenderer.cpp; sourceTree = "<group>"; };
-		EDA75A9A2CBBDE88001ADEEF /* CubemapRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CubemapRenderer.hpp; sourceTree = "<group>"; };
+		EDA75A972CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SphereToCubemapRenderer.cpp; sourceTree = "<group>"; };
+		EDA75A9A2CBBDE88001ADEEF /* SphereToCubemapRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SphereToCubemapRenderer.hpp; sourceTree = "<group>"; };
 		EDC359E12C9E9D7200F76C78 /* extensions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = extensions.hpp; sourceTree = "<group>"; };
 		EDC359E22C9E9D7800F76C78 /* extensions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = extensions.cpp; sourceTree = "<group>"; };
 		EDC359E42C9ECD7600F76C78 /* Buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
@@ -645,7 +648,8 @@
 		EDA75A982CBBDE63001ADEEF /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				EDA75A972CBBDE63001ADEEF /* CubemapRenderer.cpp */,
+				ED09CDE82CC54EB400B464F8 /* CubemapRenderer.cpp */,
+				EDA75A972CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -653,7 +657,8 @@
 		EDA75A9B2CBBDE88001ADEEF /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				EDA75A9A2CBBDE88001ADEEF /* CubemapRenderer.hpp */,
+				ED09CDE72CC54EA000B464F8 /* CubemapRenderer.hpp */,
+				EDA75A9A2CBBDE88001ADEEF /* SphereToCubemapRenderer.hpp */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -801,6 +806,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED09CDE92CC5596C00B464F8 /* CubemapRenderer.cpp in Sources */,
 				ED060AE52C973E8F0063ABDD /* VulkanData.cpp in Sources */,
 				ED3911D12C98575900B07513 /* Command.cpp in Sources */,
 				ED4F37972C970E37009B120B /* fastgltf.cpp in Sources */,
@@ -839,7 +845,7 @@
 				EDEF1EB12CB93654001A653B /* RenderToCubemap.cpp in Sources */,
 				ED4F37642C970C87009B120B /* main.cpp in Sources */,
 				ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */,
-				EDA75A992CBBDE63001ADEEF /* CubemapRenderer.cpp in Sources */,
+				EDA75A992CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp in Sources */,
 				EDE1681B2CA0631A003E4736 /* TestModelDelegate.cpp in Sources */,
 				ED330A482C9AC60B00315207 /* DescriptorSetLayout.cpp in Sources */,
 				ED330A4D2C9B12F500315207 /* ComputeShaderBackgroundDelegate.cpp in Sources */,
