@@ -114,8 +114,8 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
         _descriptorSetAllocator->destroy();
     });
     
-    _cubeMapRenderer = std::unique_ptr<vkme::tools::CubemapRenderer>(
-        new vkme::tools::CubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
+    _cubeMapRenderer = std::unique_ptr<vkme::tools::SphereToCubemapRenderer>(
+        new vkme::tools::SphereToCubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
     auto imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
@@ -375,7 +375,7 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
         for (auto m : scene.models) {
             m->cleanup();
         }
-        });
+    });
 }
 
 void RenderToCubemap::drawBackground(VkCommandBuffer cmd, uint32_t currentFrame, const vkme::core::Image* image)

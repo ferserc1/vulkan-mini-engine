@@ -1,4 +1,4 @@
-#include <vkme/tools/CubemapRenderer.hpp>
+#include <vkme/tools/SphereToCubemapRenderer.hpp>
 #include <vkme/core/Info.hpp>
 #include <vkme/factory/GraphicsPipeline.hpp>
 #include <vkme/factory/DescriptorSetLayout.hpp>
@@ -8,12 +8,12 @@
 
 namespace vkme::tools {
 
-CubemapRenderer::CubemapRenderer(VulkanData * vulkanData, vkme::core::DescriptorSetAllocator * descriptorSetAllocator)
+SphereToCubemapRenderer::SphereToCubemapRenderer(VulkanData * vulkanData, vkme::core::DescriptorSetAllocator * descriptorSetAllocator)
 : _vulkanData(vulkanData), _descriptorSetAllocator(descriptorSetAllocator) {
     
 }
 
-void CubemapRenderer::build(
+void SphereToCubemapRenderer::build(
     const std::string& imagePath,
     const std::string& vertexShaderFile,
     const std::string& fragmentShaderFile,
@@ -25,7 +25,7 @@ void CubemapRenderer::build(
     initGeometry();
 }
 
-void CubemapRenderer::updateImage(const std::string& imagePath)
+void SphereToCubemapRenderer::updateImage(const std::string& imagePath)
 {
     if (_skyImage.get())
     {
@@ -64,7 +64,7 @@ void CubemapRenderer::updateImage(const std::string& imagePath)
     );
 }
 
-void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t)
+void SphereToCubemapRenderer::update(VkCommandBuffer cmd, uint32_t)
 {
     vkme::core::Image::cmdTransitionImage(
         cmd,
@@ -153,7 +153,7 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t)
 	);
 }
 
-void CubemapRenderer::initImages(VkExtent2D extent)
+void SphereToCubemapRenderer::initImages(VkExtent2D extent)
 {
     // Cube map image
     // This are the image views used to render the cubemap
@@ -192,7 +192,7 @@ void CubemapRenderer::initImages(VkExtent2D extent)
     });
 }
 
-void CubemapRenderer::initPipeline(const std::string& vshaderFile, const std::string& fshaderFile)
+void SphereToCubemapRenderer::initPipeline(const std::string& vshaderFile, const std::string& fshaderFile)
 {
     vkme::factory::GraphicsPipeline plFactory(_vulkanData);
 
@@ -237,7 +237,7 @@ void CubemapRenderer::initPipeline(const std::string& vshaderFile, const std::st
 	});
 }
 
-void CubemapRenderer::initGeometry()
+void SphereToCubemapRenderer::initGeometry()
 {
     _projectionDataDescriptorSet = std::unique_ptr<vkme::core::DescriptorSet>(
         _descriptorSetAllocator->allocate(_projectionDataDescriptorSetLayout)

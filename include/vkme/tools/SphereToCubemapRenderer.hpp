@@ -14,9 +14,9 @@
 namespace vkme {
 namespace tools {
 
-class CubemapRenderer {
+class SphereToCubemapRenderer {
 public:
-    CubemapRenderer(VulkanData *, vkme::core::DescriptorSetAllocator *);
+    SphereToCubemapRenderer(VulkanData *, vkme::core::DescriptorSetAllocator *);
 
     void build(
         const std::string& imagePath,

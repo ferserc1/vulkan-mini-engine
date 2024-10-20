@@ -6,7 +6,7 @@
 #include <vkme/UserInterface.hpp>
 #include <vkme/geo/mesh_data.hpp>
 #include <vkme/geo/Model.hpp>
-#include <vkme/tools/CubemapRenderer.hpp>
+#include <vkme/tools/SphereToCubemapRenderer.hpp>
 
 struct SceneDataCubemap
 {
@@ -57,7 +57,7 @@ protected:
     
     std::shared_ptr<vkme::core::Image> _drawImage;
 
-    std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
+    std::unique_ptr<vkme::tools::SphereToCubemapRenderer> _cubeMapRenderer;
     SceneCubemap _scene;
         
     // Descriptor set allocator for materials

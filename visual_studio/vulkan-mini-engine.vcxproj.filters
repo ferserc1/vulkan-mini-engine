@@ -225,7 +225,7 @@
     <ClCompile Include="..\src\vkme\factory\Sampler.cpp">
       <Filter>Source Files\vkme\factory</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\vkme\tools\CubemapRenderer.cpp">
+    <ClCompile Include="..\src\vkme\tools\SphereToCubemapRenderer.cpp">
       <Filter>Source Files\vkme\tools</Filter>
     </ClCompile>
   </ItemGroup>
@@ -401,7 +401,7 @@
     <ClInclude Include="..\include\vkme\factory\Sampler.hpp">
       <Filter>Header Files\vkme\factory</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\vkme\tools\CubemapRenderer.hpp">
+    <ClInclude Include="..\include\vkme\tools\SphereToCubemapRenderer.hpp">
       <Filter>Header Files\vkme\tools</Filter>
     </ClInclude>
   </ItemGroup>
