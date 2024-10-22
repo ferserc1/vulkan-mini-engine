@@ -7,6 +7,7 @@
 #include <vkme/geo/mesh_data.hpp>
 #include <vkme/geo/Model.hpp>
 #include <vkme/tools/SphereToCubemapRenderer.hpp>
+#include <vkme/tools/CubemapRenderer.hpp>
 
 struct SceneDataCubemap
 {
@@ -57,7 +58,12 @@ protected:
     
     std::shared_ptr<vkme::core::Image> _drawImage;
 
-    std::unique_ptr<vkme::tools::SphereToCubemapRenderer> _cubeMapRenderer;
+    // Convert the equirectangular texture into cube map
+    std::unique_ptr<vkme::tools::SphereToCubemapRenderer> _sphereToCubeRenderer;
+    
+    // Convert reflection cube map into specular reflection map
+    // std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
+    
     SceneCubemap _scene;
         
     // Descriptor set allocator for materials
@@ -69,6 +75,22 @@ protected:
     float _cameraX = 0.0f;
     float _cameraY = 0.0f;
     float _cameraZ = 3.0f;
+    float _cameraRotX = 0.0f;
+    float _cameraRotY = 0.0f;
+    
+    // Resources to draw the sky cubemap
+    std::shared_ptr<vkme::geo::Model> _skyCube;
+    VkPipelineLayout _skyRenderPipelineLayout;
+    VkPipeline _skyRenderPipeline;
+    VkDescriptorSetLayout _skyRenderDSLayout;
+    VkDescriptorSetLayout _skyRenderInputCubeDSLayoutL;
+    VkSampler _skyCubeSampler;
+    struct SkyData {
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+    
+    void initSkyResources();
     
     void initMeshScene(SceneCubemap&);
    

@@ -114,12 +114,12 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
         _descriptorSetAllocator->destroy();
     });
     
-    _cubeMapRenderer = std::unique_ptr<vkme::tools::SphereToCubemapRenderer>(
+    _sphereToCubeRenderer = std::unique_ptr<vkme::tools::SphereToCubemapRenderer>(
         new vkme::tools::SphereToCubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
     auto imagePath = vkme::PlatformTools::assetPath() + "country_field_sun.jpg";
-    _cubeMapRenderer->build(imagePath);
+    _sphereToCubeRenderer->build(imagePath);
     
     auto viewportExtent = _vulkanData->swapchain().extent();
     glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
@@ -129,6 +129,8 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
     _scene.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
     
     initMeshScene(_scene);
+    
+    initSkyResources();
 }
 
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
@@ -166,6 +168,8 @@ void RenderToCubemap::cleanup()
 void RenderToCubemap::update(int32_t currentFrame, vkme::core::FrameResources& frameResources)
 {
     glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(_cameraX, _cameraY, _cameraZ));
+    view = glm::rotate(view, _cameraRotX, glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::rotate(view, _cameraRotY, glm::vec3(0.0f, 1.0f, 0.0f));
     _scene.sceneData.view = view;
 }
 
@@ -178,7 +182,7 @@ VkImageLayout RenderToCubemap::draw(
 ) {
     using namespace vkme;
 
-    _cubeMapRenderer->update(cmd, currentFrame);
+    _sphereToCubeRenderer->update(cmd, currentFrame);
 
     // Update the scene object model matrix
     std::array<glm::mat4,3> positions = {
@@ -320,15 +324,120 @@ void RenderToCubemap::drawUI()
             {
                 _cameraY += 0.1f;
             }
+            ImGui::NextColumn();
+            ImGui::NextColumn();
+            ImGui::NextColumn();
+            ImGui::Columns(4, "", true);
+            if (ImGui::Button("<"))
+            {
+                _cameraRotY -= 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button(">"))
+            {
+                _cameraRotY += 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("+"))
+            {
+                _cameraRotX += 0.1f;
+            }
+            ImGui::NextColumn();
+            if (ImGui::Button("-"))
+            {
+                _cameraRotX -= 0.1f;
+            }
         }
         
     }
     ImGui::End();
 }
 
+void RenderToCubemap::initSkyResources()
+{
+    // Pipeline and Pipeline layout
+    vkme::factory::DescriptorSetLayout dsFactory;
+    
+    dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+    _skyRenderDSLayout = dsFactory.build(
+        _vulkanData->device(),
+        VK_SHADER_STAGE_VERTEX_BIT
+    );
+    
+    dsFactory.clear();
+    dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+    _skyRenderInputCubeDSLayoutL = dsFactory.build(
+       _vulkanData->device(),
+       VK_SHADER_STAGE_FRAGMENT_BIT
+    );
+    
+    VkPushConstantRange bufferRange = {};
+    bufferRange.offset = 0;
+    bufferRange.size = sizeof(vkme::geo::MeshPushConstants);
+    bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    
+    auto layoutInfo = vkme::core::Info::pipelineLayoutInfo();
+    layoutInfo.pPushConstantRanges = &bufferRange;
+    layoutInfo.pushConstantRangeCount = 1;
+    VkDescriptorSetLayout layouts[] = {
+        _skyRenderDSLayout,
+        _skyRenderInputCubeDSLayoutL
+    };
+    layoutInfo.pSetLayouts = layouts;
+    layoutInfo.setLayoutCount = 2;
+    
+    VK_ASSERT(vkCreatePipelineLayout(_vulkanData->device(), &layoutInfo, nullptr, &_skyRenderPipelineLayout));
+    
+    vkme::factory::GraphicsPipeline plFactory(_vulkanData);
+    
+    plFactory.addShader("sky_cube.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+    plFactory.addShader("sky_cube.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+    
+    plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
+    plFactory.setDepthFormat(_vulkanData->swapchain().depthImageFormat());
+    plFactory.disableDepthtest();
+    plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    // TODO: Optimize this
+    plFactory.setCullMode(false, VK_FRONT_FACE_CLOCKWISE);
+    //plFactory.setCullMode(true, VK_FRONT_FACE_CLOCKWISE);
+    
+    _skyRenderPipeline = plFactory.build(_skyRenderPipelineLayout);
+    
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyPipeline(dev, _skyRenderPipeline, nullptr);
+        vkDestroyPipelineLayout(dev, _skyRenderPipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _skyRenderDSLayout, nullptr);
+        vkDestroyDescriptorSetLayout(dev, _skyRenderInputCubeDSLayoutL, nullptr);
+    });
+    
+    // Sky cube
+    _skyCube = std::shared_ptr<vkme::geo::Model>(vkme::geo::Cube::createCube(_vulkanData, 1.0f, "Sky Cube", {
+        std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipFacesModifier()),
+        
+        // This one is actually not needed, because the sky shader does not do lighting calculations.
+        std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipNormalsModifier())
+    }));
+    
+    _skyCube->allocateMaterialDescriptorSets(_descriptorSetAllocator.get(), _skyRenderInputCubeDSLayoutL);
+    
+    _skyCube->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
+        ds->updateImage(
+            0,
+            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            _sphereToCubeRenderer->cubeMapImage()->imageView(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            _skyCubeSampler
+        );
+    });
+    
+    _vulkanData->cleanupManager().push([&](VkDevice) {
+        _skyCube->cleanup();
+    });
+}
+
 void RenderToCubemap::initMeshScene(SceneCubemap& scene)
 {
-    scene.textureImage = std::shared_ptr<vkme::core::Image>(_cubeMapRenderer->cubeMapImage());
+    scene.textureImage = std::shared_ptr<vkme::core::Image>(_sphereToCubeRenderer->cubeMapImage());
 
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -404,6 +513,49 @@ void RenderToCubemap::drawGeometry(
     SceneCubemap& scene,
     uint32_t layerCount
 ) {
+
+    auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
+    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
+    auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
+    vkme::core::cmdBeginRendering(cmd, &renderInfo);
+    
+    // Draw sky
+    auto skyDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
+        _vulkanData,
+        sizeof(SkyData),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VMA_MEMORY_USAGE_CPU_TO_GPU
+    );
+    
+    SkyData* skyDataPtr = reinterpret_cast<SkyData*>(skyDataBuffer->allocatedData());
+    skyDataPtr->view = _scene.sceneData.view;
+    skyDataPtr->proj = _scene.sceneData.proj;
+    
+    frameResources.cleanupManager.push([&, skyDataBuffer](VkDevice dev) {
+        skyDataBuffer->cleanup();
+        delete skyDataBuffer;
+    });
+    
+    auto skyDS = std::unique_ptr<vkme::core::DescriptorSet>(
+        frameResources.descriptorAllocator->allocate(_skyRenderDSLayout)
+    );
+    skyDS->updateBuffer(
+        0,
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        skyDataBuffer,
+        sizeof(SkyData),
+        0
+    );
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _skyRenderPipeline);
+    cmdSetDefaultViewportAndScissor(cmd, imageExtent);
+    
+    vkme::core::DescriptorSet* ds[] = {
+        skyDS.get()
+    };
+    _skyCube->draw(cmd, _skyRenderPipelineLayout, ds, 1);
+
+    // Draw objects
     auto sceneDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
         _vulkanData,
         sizeof(SceneDataCubemap),
@@ -430,10 +582,7 @@ void RenderToCubemap::drawGeometry(
 		0
 	);
 
-    auto colorAttachment = vkme::core::Info::attachmentInfo(currentImage, nullptr);
-    auto depthAttachment = vkme::core::Info::depthAttachmentInfo(depthImage->imageView(), 1.0);
-    auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
-    vkme::core::cmdBeginRendering(cmd, &renderInfo);
+    
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
 
