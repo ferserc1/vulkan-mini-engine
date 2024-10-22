@@ -24,6 +24,7 @@ void SkyboxRenderer::init(std::shared_ptr<core::Image>&& skyImage)
     _skyImage = skyImage;
     
     vkme::factory::Sampler sampler(_vulkanData);
+	sampler.createInfo.anisotropyEnable = VK_FALSE;
     _imageSampler = sampler.build();
     
     // Pipeline and Pipeline layout
@@ -101,8 +102,9 @@ void SkyboxRenderer::init(std::shared_ptr<core::Image>&& skyImage)
         );
     });
     
-    _vulkanData->cleanupManager().push([&](VkDevice) {
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
         _skyCube->cleanup();
+		vkDestroySampler(dev, _imageSampler, nullptr);
     });
 }
 

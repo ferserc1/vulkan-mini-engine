@@ -90,12 +90,16 @@ void VulkanData::createDevicesAndQueues()
     features11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
 	features11.multiview = true;
 
+    VkPhysicalDeviceFeatures features = {};
+	features.samplerAnisotropy = true;
+
     vkb::PhysicalDeviceSelector selector { _vkbInstance };
     vkb::PhysicalDevice physicalDevice = selector
         .set_minimum_version(1, 2)
         .set_required_features_13(features13)
         .set_required_features_12(features12)
         .set_required_features_11(features11)
+        .set_required_features(features)
         .set_surface(_surface)
         .select()
         .value();

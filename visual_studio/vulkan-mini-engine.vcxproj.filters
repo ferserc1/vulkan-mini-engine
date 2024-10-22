@@ -228,6 +228,12 @@
     <ClCompile Include="..\src\vkme\tools\SphereToCubemapRenderer.cpp">
       <Filter>Source Files\vkme\tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vkme\tools\CubemapRenderer.cpp">
+      <Filter>Source Files\vkme\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vkme\tools\SkyboxRenderer.cpp">
+      <Filter>Source Files\vkme\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -402,6 +408,12 @@
       <Filter>Header Files\vkme\factory</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vkme\tools\SphereToCubemapRenderer.hpp">
+      <Filter>Header Files\vkme\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\tools\CubemapRenderer.hpp">
+      <Filter>Header Files\vkme\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\tools\SkyboxRenderer.hpp">
       <Filter>Header Files\vkme\tools</Filter>
     </ClInclude>
   </ItemGroup>
