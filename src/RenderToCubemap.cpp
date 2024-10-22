@@ -139,6 +139,9 @@ void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * al
         { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 }
     };
     
+    // The skybox renderer uses frame resources to allocate an uniform buffer. We must
+    // to call this function to get the descriptor set size requirements in order to
+    // initialize the frame resources descriptor set allocator
     vkme::tools::SkyboxRenderer::getFrameResourcesRequirements(ratios);
     
     allocator->initPool(10, ratios);
@@ -175,6 +178,8 @@ void RenderToCubemap::update(int32_t currentFrame, vkme::core::FrameResources& f
     view = glm::rotate(view, _cameraRotX, glm::vec3(1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, _cameraRotY, glm::vec3(0.0f, 1.0f, 0.0f));
     _scene.sceneData.view = view;
+    
+    _skyboxRenderer->update(view, _scene.sceneData.proj);
 }
 
 VkImageLayout RenderToCubemap::draw(
@@ -453,7 +458,6 @@ void RenderToCubemap::drawGeometry(
     cmdSetDefaultViewportAndScissor(cmd, imageExtent);
     
     // Draw sky
-    _skyboxRenderer->update(_scene.sceneData.view, _scene.sceneData.proj);
     _skyboxRenderer->draw(cmd, currentFrame, frameResources);
 
     // Draw objects
