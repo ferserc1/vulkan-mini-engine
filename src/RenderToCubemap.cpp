@@ -135,9 +135,13 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
 
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
 {
-    allocator->initPool(10, {
+    std::vector<vkme::core::DescriptorSetAllocator::PoolSizeRatio> ratios = {
         { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 }
-    });
+    };
+    
+    vkme::tools::SkyboxRenderer::getFrameResourcesRequirements(ratios);
+    
+    allocator->initPool(10, ratios);
 }
 
 void RenderToCubemap::swapchainResized(VkExtent2D newExtent)
@@ -355,84 +359,11 @@ void RenderToCubemap::drawUI()
 
 void RenderToCubemap::initSkyResources()
 {
-    // Pipeline and Pipeline layout
-    vkme::factory::DescriptorSetLayout dsFactory;
-    
-    dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    _skyRenderDSLayout = dsFactory.build(
-        _vulkanData->device(),
-        VK_SHADER_STAGE_VERTEX_BIT
+    _skyboxRenderer = std::shared_ptr<vkme::tools::SkyboxRenderer>(
+        new vkme::tools::SkyboxRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
-    dsFactory.clear();
-    dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-    _skyRenderInputCubeDSLayoutL = dsFactory.build(
-       _vulkanData->device(),
-       VK_SHADER_STAGE_FRAGMENT_BIT
-    );
-    
-    VkPushConstantRange bufferRange = {};
-    bufferRange.offset = 0;
-    bufferRange.size = sizeof(vkme::geo::MeshPushConstants);
-    bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    
-    auto layoutInfo = vkme::core::Info::pipelineLayoutInfo();
-    layoutInfo.pPushConstantRanges = &bufferRange;
-    layoutInfo.pushConstantRangeCount = 1;
-    VkDescriptorSetLayout layouts[] = {
-        _skyRenderDSLayout,
-        _skyRenderInputCubeDSLayoutL
-    };
-    layoutInfo.pSetLayouts = layouts;
-    layoutInfo.setLayoutCount = 2;
-    
-    VK_ASSERT(vkCreatePipelineLayout(_vulkanData->device(), &layoutInfo, nullptr, &_skyRenderPipelineLayout));
-    
-    vkme::factory::GraphicsPipeline plFactory(_vulkanData);
-    
-    plFactory.addShader("sky_cube.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-    plFactory.addShader("sky_cube.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-    
-    plFactory.setColorAttachmentFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
-    plFactory.setDepthFormat(_vulkanData->swapchain().depthImageFormat());
-    plFactory.disableDepthtest();
-    plFactory.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    // TODO: Optimize this
-    plFactory.setCullMode(false, VK_FRONT_FACE_CLOCKWISE);
-    //plFactory.setCullMode(true, VK_FRONT_FACE_CLOCKWISE);
-    
-    _skyRenderPipeline = plFactory.build(_skyRenderPipelineLayout);
-    
-    _vulkanData->cleanupManager().push([&](VkDevice dev) {
-        vkDestroyPipeline(dev, _skyRenderPipeline, nullptr);
-        vkDestroyPipelineLayout(dev, _skyRenderPipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(dev, _skyRenderDSLayout, nullptr);
-        vkDestroyDescriptorSetLayout(dev, _skyRenderInputCubeDSLayoutL, nullptr);
-    });
-    
-    // Sky cube
-    _skyCube = std::shared_ptr<vkme::geo::Model>(vkme::geo::Cube::createCube(_vulkanData, 1.0f, "Sky Cube", {
-        std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipFacesModifier()),
-        
-        // This one is actually not needed, because the sky shader does not do lighting calculations.
-        std::shared_ptr<vkme::geo::Modifier>(new vkme::geo::FlipNormalsModifier())
-    }));
-    
-    _skyCube->allocateMaterialDescriptorSets(_descriptorSetAllocator.get(), _skyRenderInputCubeDSLayoutL);
-    
-    _skyCube->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
-        ds->updateImage(
-            0,
-            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            _sphereToCubeRenderer->cubeMapImage()->imageView(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-            _skyCubeSampler
-        );
-    });
-    
-    _vulkanData->cleanupManager().push([&](VkDevice) {
-        _skyCube->cleanup();
-    });
+    _skyboxRenderer->init(_sphereToCubeRenderer->cubeMapImage());
 }
 
 void RenderToCubemap::initMeshScene(SceneCubemap& scene)
@@ -519,41 +450,11 @@ void RenderToCubemap::drawGeometry(
     auto renderInfo = vkme::core::Info::renderingInfo(imageExtent, &colorAttachment, &depthAttachment);
     vkme::core::cmdBeginRendering(cmd, &renderInfo);
     
-    // Draw sky
-    auto skyDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
-        _vulkanData,
-        sizeof(SkyData),
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VMA_MEMORY_USAGE_CPU_TO_GPU
-    );
-    
-    SkyData* skyDataPtr = reinterpret_cast<SkyData*>(skyDataBuffer->allocatedData());
-    skyDataPtr->view = _scene.sceneData.view;
-    skyDataPtr->proj = _scene.sceneData.proj;
-    
-    frameResources.cleanupManager.push([&, skyDataBuffer](VkDevice dev) {
-        skyDataBuffer->cleanup();
-        delete skyDataBuffer;
-    });
-    
-    auto skyDS = std::unique_ptr<vkme::core::DescriptorSet>(
-        frameResources.descriptorAllocator->allocate(_skyRenderDSLayout)
-    );
-    skyDS->updateBuffer(
-        0,
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        skyDataBuffer,
-        sizeof(SkyData),
-        0
-    );
-
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _skyRenderPipeline);
     cmdSetDefaultViewportAndScissor(cmd, imageExtent);
     
-    vkme::core::DescriptorSet* ds[] = {
-        skyDS.get()
-    };
-    _skyCube->draw(cmd, _skyRenderPipelineLayout, ds, 1);
+    // Draw sky
+    _skyboxRenderer->update(_scene.sceneData.view, _scene.sceneData.proj);
+    _skyboxRenderer->draw(cmd, currentFrame, frameResources);
 
     // Draw objects
     auto sceneDataBuffer = vkme::core::Buffer::createAllocatedBuffer(
@@ -586,7 +487,7 @@ void RenderToCubemap::drawGeometry(
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene.pipeline);
 
-    cmdSetDefaultViewportAndScissor(cmd, imageExtent);
+
 
     for (auto m : scene.models)
     {

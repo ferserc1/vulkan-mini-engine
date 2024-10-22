@@ -8,6 +8,7 @@
 #include <vkme/geo/Model.hpp>
 #include <vkme/tools/SphereToCubemapRenderer.hpp>
 #include <vkme/tools/CubemapRenderer.hpp>
+#include <vkme/tools/SkyboxRenderer.hpp>
 
 struct SceneDataCubemap
 {
@@ -62,6 +63,8 @@ protected:
     std::unique_ptr<vkme::tools::SphereToCubemapRenderer> _sphereToCubeRenderer;
     
     // Convert reflection cube map into specular reflection map
+    // TODO: use the _skyCube to render the resulting cubemap texture from _cubeMapRenderer
+    // using a different shader (irradiance map or specular reflection map)
     // std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
     
     SceneCubemap _scene;
@@ -79,16 +82,8 @@ protected:
     float _cameraRotY = 0.0f;
     
     // Resources to draw the sky cubemap
-    std::shared_ptr<vkme::geo::Model> _skyCube;
-    VkPipelineLayout _skyRenderPipelineLayout;
-    VkPipeline _skyRenderPipeline;
-    VkDescriptorSetLayout _skyRenderDSLayout;
-    VkDescriptorSetLayout _skyRenderInputCubeDSLayoutL;
-    VkSampler _skyCubeSampler;
-    struct SkyData {
-        glm::mat4 view;
-        glm::mat4 proj;
-    };
+    // TODO: Extract this to an utility class that renders an sky box from a cube map texture
+    std::shared_ptr<vkme::tools::SkyboxRenderer> _skyboxRenderer;
     
     void initSkyResources();
     

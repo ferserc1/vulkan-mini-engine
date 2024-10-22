@@ -19,6 +19,7 @@
 		ED330A502C9B220C00315207 /* ShaderModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A4F2C9B220C00315207 /* ShaderModule.cpp */; };
 		ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */; };
 		ED330A5E2C9B2DD900315207 /* ComputePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */; };
+		ED362E682CC8009B005F06A5 /* SkyboxRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED362E672CC8009B005F06A5 /* SkyboxRenderer.cpp */; };
 		ED38FC742CA5D1A800275782 /* basicmesh.glb in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC6E2CA5D16E00275782 /* basicmesh.glb */; };
 		ED38FC752CA5D1A800275782 /* lamp_baseColor.jpeg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */; };
 		ED38FC762CA5D1A800275782 /* lamp_normal.jpeg in Copy Assets */ = {isa = PBXBuildFile; fileRef = ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */; };
@@ -159,6 +160,8 @@
 		ED330A5B2C9B283B00315207 /* DescriptorSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSet.cpp; sourceTree = "<group>"; };
 		ED330A5D2C9B2DD900315207 /* ComputePipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComputePipeline.cpp; sourceTree = "<group>"; };
 		ED330A5F2C9B2DDF00315207 /* ComputePipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComputePipeline.hpp; sourceTree = "<group>"; };
+		ED362E672CC8009B005F06A5 /* SkyboxRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderer.cpp; sourceTree = "<group>"; };
+		ED362E692CC800A2005F06A5 /* SkyboxRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SkyboxRenderer.hpp; sourceTree = "<group>"; };
 		ED38FC6E2CA5D16E00275782 /* basicmesh.glb */ = {isa = PBXFileReference; lastKnownFileType = file; path = basicmesh.glb; sourceTree = "<group>"; };
 		ED38FC6F2CA5D16E00275782 /* lamp_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamp_baseColor.jpeg; sourceTree = "<group>"; };
 		ED38FC702CA5D16E00275782 /* lamp_normal.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamp_normal.jpeg; sourceTree = "<group>"; };
@@ -649,6 +652,7 @@
 			isa = PBXGroup;
 			children = (
 				ED09CDE82CC54EB400B464F8 /* CubemapRenderer.cpp */,
+				ED362E672CC8009B005F06A5 /* SkyboxRenderer.cpp */,
 				EDA75A972CBBDE63001ADEEF /* SphereToCubemapRenderer.cpp */,
 			);
 			path = tools;
@@ -658,6 +662,7 @@
 			isa = PBXGroup;
 			children = (
 				ED09CDE72CC54EA000B464F8 /* CubemapRenderer.hpp */,
+				ED362E692CC800A2005F06A5 /* SkyboxRenderer.hpp */,
 				EDA75A9A2CBBDE88001ADEEF /* SphereToCubemapRenderer.hpp */,
 			);
 			path = tools;
@@ -854,6 +859,7 @@
 				EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */,
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
 				ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */,
+				ED362E682CC8009B005F06A5 /* SkyboxRenderer.cpp in Sources */,
 				ED3911DB2C989D7E00B07513 /* Image.cpp in Sources */,
 				ED330A5C2C9B283B00315207 /* DescriptorSet.cpp in Sources */,
 				EDFB9FD22CBAEDB100E8F7D2 /* Sampler.cpp in Sources */,
