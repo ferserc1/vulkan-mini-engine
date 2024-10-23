@@ -65,11 +65,11 @@ protected:
     // Convert reflection cube map into another cube map, in this case, a tinted color cubemap
     std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
     // Descriptor set to pass the tint color to the cubemap renderer shader
-    std::unique_ptr<vkme::core::DescriptorSet> _tintColorDS;
+    VkDescriptorSetLayout _tintColorDSLayout;
     struct TintColorData {
-        glm::vec4 tintColor;
+        glm::vec4 tintColor = {1.0, 1.0, 0.0, 1.0};
     };
-    std::unique_ptr<vkme::core::Buffer> _tintColorBuffer;
+	TintColorData _tintColorData;
     
     SceneCubemap _scene;
         

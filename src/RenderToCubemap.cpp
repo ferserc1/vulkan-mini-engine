@@ -136,7 +136,7 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
 {
     std::vector<vkme::core::DescriptorSetAllocator::PoolSizeRatio> ratios = {
-        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 }
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2 }
     };
     
     // The skybox renderer uses frame resources to allocate an uniform buffer. We must
@@ -191,16 +191,35 @@ VkImageLayout RenderToCubemap::draw(
 ) {
     using namespace vkme;
 
+	// Update the sphere to cube renderer. This is only needed if the equirectangular texture changes,
+	// but here we are updating it every frame as an example
     _sphereToCubeRenderer->update(cmd, currentFrame);
     
     // This code generate a lot of validation errors, because we are updating a descriptor set that is being used in other frame
     // To solve this, we can use the frame resources descriptor set allocator and create the buffer each frame. If we don't want to
     // create and destroy the buffer every frame, we can create one buffer and one descriptor set for each in flight frame.
-    auto tintPtr = reinterpret_cast<TintColorData*>(_tintColorBuffer->allocatedData());
-    tintPtr->tintColor = glm::vec4(sin(currentFrame / 120.0f), cos(currentFrame / 120.0f), sin(currentFrame / 90.0f), 1.0f);
-    _tintColorDS->updateBuffer(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, _tintColorBuffer.get(), sizeof(TintColorData), 0);
+    // auto tintPtr = reinterpret_cast<TintColorData*>(_tintColorBuffer->allocatedData());
+    // tintPtr->tintColor = glm::vec4(sin(currentFrame / 120.0f), cos(currentFrame / 120.0f), sin(currentFrame / 90.0f), 1.0f);
+    // _tintColorDS->updateBuffer(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, _tintColorBuffer.get(), sizeof(TintColorData), 0);
 
-    _cubeMapRenderer->update(cmd, currentFrame, _tintColorDS.get());
+    auto tintBuffer = vkme::core::Buffer::createAllocatedBuffer(
+        _vulkanData,
+        sizeof(TintColorData),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VMA_MEMORY_USAGE_CPU_TO_GPU
+    );
+	auto tintPtr = reinterpret_cast<TintColorData*>(tintBuffer->allocatedData());
+    *tintPtr = _tintColorData;
+    auto tintDS = std::unique_ptr<vkme::core::DescriptorSet>(frameResources.descriptorAllocator->allocate(_tintColorDSLayout));
+
+	tintDS->updateBuffer(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, tintBuffer, sizeof(TintColorData), 0);
+
+    frameResources.cleanupManager.push([&, tintBuffer](VkDevice) {
+        tintBuffer->cleanup();
+        delete tintBuffer;
+        });
+
+    _cubeMapRenderer->update(cmd, currentFrame, tintDS.get());
 
     // Update the scene object model matrix
     std::array<glm::mat4,3> positions = {
@@ -366,6 +385,13 @@ void RenderToCubemap::drawUI()
                 _cameraRotX -= 0.1f;
             }
         }
+
+        ImGui::Columns(1, "", true);
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (ImGui::CollapsingHeader("Tint Color"))
+		{
+			ImGui::ColorEdit3("Tint color", &_tintColorData.tintColor[0]);
+		}
         
     }
     ImGui::End();
@@ -378,32 +404,8 @@ void RenderToCubemap::initSkyResources()
     
     vkme::factory::DescriptorSetLayout dsFactory;
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    auto tintDSLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
+    _tintColorDSLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
     
-    // This is the descriptor set to pass the tint color to the cube map renderer shader
-    _tintColorDS = std::unique_ptr<vkme::core::DescriptorSet>(
-        _descriptorSetAllocator->allocate(tintDSLayout)
-    );
-    
-    // This is the buffer that contains the uniform buffer data with the tint color
-    _tintColorBuffer = std::unique_ptr<vkme::core::Buffer>(
-        vkme::core::Buffer::createAllocatedBuffer(
-            _vulkanData,
-            sizeof(TintColorData),
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VMA_MEMORY_USAGE_CPU_TO_GPU
-        )
-    );
-    auto tintColorDataPtr = reinterpret_cast<TintColorData*>(_tintColorBuffer->allocatedData());
-    tintColorDataPtr->tintColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
-    
-    _tintColorDS->updateBuffer(
-        0,
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        _tintColorBuffer.get(),
-        sizeof(TintColorData),
-        0
-    );
     
     _cubeMapRenderer = std::unique_ptr<vkme::tools::CubemapRenderer>(
         new vkme::tools::CubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
@@ -413,13 +415,12 @@ void RenderToCubemap::initSkyResources()
         "cubemap_renderer.vert.spv",
         "cubemap_tint_color.frag.spv",
         { 1024, 1024 },
-        tintDSLayout
+        _tintColorDSLayout
     );
     
     
-    _vulkanData->cleanupManager().push([&, tintDSLayout](VkDevice dev) {
-        vkDestroyDescriptorSetLayout(dev, tintDSLayout, nullptr);
-        _tintColorBuffer->cleanup();
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+        vkDestroyDescriptorSetLayout(dev, _tintColorDSLayout, nullptr);
     });
     
     // The skybox renderer is used to draw the cube map in the sky.
