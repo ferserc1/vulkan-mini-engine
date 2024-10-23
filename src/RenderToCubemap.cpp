@@ -193,6 +193,13 @@ VkImageLayout RenderToCubemap::draw(
 
     _sphereToCubeRenderer->update(cmd, currentFrame);
     
+    // This code generate a lot of validation errors, because we are updating a descriptor set that is being used in other frame
+    // To solve this, we can use the frame resources descriptor set allocator and create the buffer each frame. If we don't want to
+    // create and destroy the buffer every frame, we can create one buffer and one descriptor set for each in flight frame.
+    auto tintPtr = reinterpret_cast<TintColorData*>(_tintColorBuffer->allocatedData());
+    tintPtr->tintColor = glm::vec4(sin(currentFrame / 120.0f), cos(currentFrame / 120.0f), sin(currentFrame / 90.0f), 1.0f);
+    _tintColorDS->updateBuffer(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, _tintColorBuffer.get(), sizeof(TintColorData), 0);
+
     _cubeMapRenderer->update(cmd, currentFrame, _tintColorDS.get());
 
     // Update the scene object model matrix
