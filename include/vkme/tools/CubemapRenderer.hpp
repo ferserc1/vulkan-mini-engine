@@ -22,10 +22,11 @@ public:
         std::shared_ptr<vkme::core::Image> inputSkyBox,
         const std::string& vertexShaderFile = "cubemap_renderer.vert.spv",
         const std::string& fragmentShaderFile = "skybox.frag.spv",
-        VkExtent2D cubeImageSize = { 1024, 1024 }
+        VkExtent2D cubeImageSize = { 1024, 1024 },
+        VkDescriptorSetLayout customLayout = VK_NULL_HANDLE
     );
 
-    void update(VkCommandBuffer commandBuffer, uint32_t currentFrame);
+    void update(VkCommandBuffer commandBuffer, uint32_t currentFrame, vkme::core::DescriptorSet* customSet = nullptr);
 
     std::shared_ptr<vkme::core::Image> cubeMapImage() { return _cubeMapImage; }
 
@@ -61,7 +62,11 @@ protected:
     VkImageView _cubeMapImageViews[6];
 
     void initImages(VkExtent2D);
-    void initPipeline(const std::string& vshaderFile, const std::string& fshaderFile);
+    void initPipeline(
+        const std::string& vshaderFile,
+        const std::string& fshaderFile,
+        VkDescriptorSetLayout customLayout
+    );
     void initGeometry();
 };
 

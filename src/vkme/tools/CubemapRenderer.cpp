@@ -20,9 +20,12 @@ void CubemapRenderer::build(
     std::shared_ptr<vkme::core::Image> inputSkybox,
     const std::string& vertexShaderFile,
     const std::string& fragmentShaderFile,
-    VkExtent2D cubeImageSize
+    VkExtent2D cubeImageSize,
+    VkDescriptorSetLayout customLayout
 ) {
     _inputSkybox = inputSkybox;
+    
+    initImages(cubeImageSize);
     
     vkme::factory::Sampler samplerFactory(_vulkanData);
     _skyImageSampler = samplerFactory.build(
@@ -37,6 +40,10 @@ void CubemapRenderer::build(
         VK_SHADER_STAGE_FRAGMENT_BIT
     );
     
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+		vkDestroyDescriptorSetLayout(dev, _skyImageDescriptorSetLayout, nullptr);
+	});
+    
     _skyImageDescriptorSet = std::unique_ptr<vkme::core::DescriptorSet>(
         _descriptorSetAllocator->allocate(_skyImageDescriptorSetLayout)
     );
@@ -47,9 +54,12 @@ void CubemapRenderer::build(
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         _skyImageSampler
     );
+    
+    initPipeline(vertexShaderFile, fragmentShaderFile, customLayout);
+    initGeometry();
 }
 
-void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame)
+void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame, vkme::core::DescriptorSet* customSet)
 {
     vkme::core::Image::cmdTransitionImage(
         cmd,
@@ -111,10 +121,13 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame)
         // The sphere has only one surface
         auto surface = _cube->surfaces()[0];
        
-        std::array<VkDescriptorSet, 2> sets = {
+        std::vector<VkDescriptorSet> sets = {
             _projectionDataDescriptorSet->descriptorSet(),
             _skyImageDescriptorSet->descriptorSet()
         };
+        if (customSet != nullptr) {
+            sets.push_back(customSet->descriptorSet());
+        }
 
         vkCmdBindDescriptorSets(
             cmd,
@@ -177,7 +190,10 @@ void CubemapRenderer::initImages(VkExtent2D extent)
     });
 }
 
-void CubemapRenderer::initPipeline(const std::string& vshaderFile, const std::string& fshaderFile)
+void CubemapRenderer::initPipeline(
+    const std::string& vshaderFile,
+    const std::string& fshaderFile,
+    VkDescriptorSetLayout customLayout)
 {
     vkme::factory::GraphicsPipeline plFactory(_vulkanData);
 
@@ -198,12 +214,16 @@ void CubemapRenderer::initPipeline(const std::string& vshaderFile, const std::st
 	layoutInfo.pPushConstantRanges = &bufferRange;
 	layoutInfo.pushConstantRangeCount = 1;
 
-    VkDescriptorSetLayout layouts[] = {
+    std::vector<VkDescriptorSetLayout> layouts = {
         _projectionDataDescriptorSetLayout,
         _skyImageDescriptorSetLayout // Created in updateImage
     };
-	layoutInfo.pSetLayouts = layouts;
-	layoutInfo.setLayoutCount = 2;
+    if (customLayout != VK_NULL_HANDLE)
+    {
+        layouts.push_back(customLayout);
+    }
+	layoutInfo.pSetLayouts = layouts.data();
+    layoutInfo.setLayoutCount = uint32_t(layouts.size());
 
 	VK_ASSERT(vkCreatePipelineLayout(_vulkanData->device(), &layoutInfo, nullptr, &_pipelineLayout));
 
@@ -218,7 +238,6 @@ void CubemapRenderer::initPipeline(const std::string& vshaderFile, const std::st
 		vkDestroyPipeline(dev, _pipeline, nullptr);
 		vkDestroyPipelineLayout(dev, _pipelineLayout, nullptr);
 		vkDestroyDescriptorSetLayout(dev, _projectionDataDescriptorSetLayout, nullptr);
-		vkDestroyDescriptorSetLayout(dev, _skyImageDescriptorSetLayout, nullptr);
 	});
 }
 

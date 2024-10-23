@@ -20,7 +20,7 @@ public:
 
     void build(
         const std::string& imagePath,
-        const std::string& vertexShaderFile = "cubemap_renderer.vert.spv",
+        const std::string& vertexShaderFile = "sphere_to_cubemap_renderer.vert.spv",
         const std::string& fragmentShaderFile = "skybox.frag.spv",
         VkExtent2D cubeImageSize = { 1024, 1024 }
     );

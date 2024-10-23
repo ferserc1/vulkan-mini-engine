@@ -192,6 +192,8 @@ VkImageLayout RenderToCubemap::draw(
     using namespace vkme;
 
     _sphereToCubeRenderer->update(cmd, currentFrame);
+    
+    _cubeMapRenderer->update(cmd, currentFrame, _tintColorDS.get());
 
     // Update the scene object model matrix
     std::array<glm::mat4,3> positions = {
@@ -364,11 +366,64 @@ void RenderToCubemap::drawUI()
 
 void RenderToCubemap::initSkyResources()
 {
+    // The CubemapRenderer takes an input cubemap image and apply a shader to obtain
+    // another cubemap. In this example we are using a tint color shader
+    
+    vkme::factory::DescriptorSetLayout dsFactory;
+    dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+    auto tintDSLayout = dsFactory.build(_vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
+    
+    // This is the descriptor set to pass the tint color to the cube map renderer shader
+    _tintColorDS = std::unique_ptr<vkme::core::DescriptorSet>(
+        _descriptorSetAllocator->allocate(tintDSLayout)
+    );
+    
+    // This is the buffer that contains the uniform buffer data with the tint color
+    _tintColorBuffer = std::unique_ptr<vkme::core::Buffer>(
+        vkme::core::Buffer::createAllocatedBuffer(
+            _vulkanData,
+            sizeof(TintColorData),
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VMA_MEMORY_USAGE_CPU_TO_GPU
+        )
+    );
+    auto tintColorDataPtr = reinterpret_cast<TintColorData*>(_tintColorBuffer->allocatedData());
+    tintColorDataPtr->tintColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
+    
+    _tintColorDS->updateBuffer(
+        0,
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        _tintColorBuffer.get(),
+        sizeof(TintColorData),
+        0
+    );
+    
+    _cubeMapRenderer = std::unique_ptr<vkme::tools::CubemapRenderer>(
+        new vkme::tools::CubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
+    );
+    _cubeMapRenderer->build(
+        _sphereToCubeRenderer->cubeMapImage(),
+        "cubemap_renderer.vert.spv",
+        "cubemap_tint_color.frag.spv",
+        { 1024, 1024 },
+        tintDSLayout
+    );
+    
+    
+    _vulkanData->cleanupManager().push([&, tintDSLayout](VkDevice dev) {
+        vkDestroyDescriptorSetLayout(dev, tintDSLayout, nullptr);
+        _tintColorBuffer->cleanup();
+    });
+    
+    // The skybox renderer is used to draw the cube map in the sky.
+    // See the initFrameResources function to know how to initialize
+    // the frame resources with the SkyboxRenderer requirements
     _skyboxRenderer = std::shared_ptr<vkme::tools::SkyboxRenderer>(
         new vkme::tools::SkyboxRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
-    _skyboxRenderer->init(_sphereToCubeRenderer->cubeMapImage());
+    //_skyboxRenderer->init(_sphereToCubeRenderer->cubeMapImage());
+    _skyboxRenderer->init(_cubeMapRenderer->cubeMapImage());
 }
 
 void RenderToCubemap::initMeshScene(SceneCubemap& scene)

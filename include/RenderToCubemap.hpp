@@ -62,10 +62,14 @@ protected:
     // Convert the equirectangular texture into cube map
     std::unique_ptr<vkme::tools::SphereToCubemapRenderer> _sphereToCubeRenderer;
     
-    // Convert reflection cube map into specular reflection map
-    // TODO: use the _skyCube to render the resulting cubemap texture from _cubeMapRenderer
-    // using a different shader (irradiance map or specular reflection map)
-    // std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
+    // Convert reflection cube map into another cube map, in this case, a tinted color cubemap
+    std::unique_ptr<vkme::tools::CubemapRenderer> _cubeMapRenderer;
+    // Descriptor set to pass the tint color to the cubemap renderer shader
+    std::unique_ptr<vkme::core::DescriptorSet> _tintColorDS;
+    struct TintColorData {
+        glm::vec4 tintColor;
+    };
+    std::unique_ptr<vkme::core::Buffer> _tintColorBuffer;
     
     SceneCubemap _scene;
         
@@ -82,7 +86,6 @@ protected:
     float _cameraRotY = 0.0f;
     
     // Resources to draw the sky cubemap
-    // TODO: Extract this to an utility class that renders an sky box from a cube map texture
     std::shared_ptr<vkme::tools::SkyboxRenderer> _skyboxRenderer;
     
     void initSkyResources();
