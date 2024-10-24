@@ -9,6 +9,7 @@
 #include <vkme/tools/SphereToCubemapRenderer.hpp>
 #include <vkme/tools/CubemapRenderer.hpp>
 #include <vkme/tools/SkyboxRenderer.hpp>
+#include <vkme/tools/SpecularReflectionCubemapRenderer.hpp>
 
 struct SceneDataCubemap
 {
@@ -70,6 +71,9 @@ protected:
         glm::vec4 tintColor = {1.0, 1.0, 0.0, 1.0};
     };
 	TintColorData _tintColorData;
+
+	// This cubemap renderer is used to render the specular reflection cubemap
+	std::unique_ptr<vkme::tools::SpecularReflectionCubemapRenderer> _specularReflectionRenderer;
     
     SceneCubemap _scene;
         

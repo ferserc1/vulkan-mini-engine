@@ -202,6 +202,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClCompile Include="..\src\vkme\PlatformTools.cpp" />
     <ClCompile Include="..\src\vkme\tools\CubemapRenderer.cpp" />
     <ClCompile Include="..\src\vkme\tools\SkyboxRenderer.cpp" />
+    <ClCompile Include="..\src\vkme\tools\SpecularReflectionCubemapRenderer.cpp" />
     <ClCompile Include="..\src\vkme\tools\SphereToCubemapRenderer.cpp" />
     <ClCompile Include="..\src\vkme\UserInterface.cpp" />
     <ClCompile Include="..\src\vkme\VulkanData.cpp" />
@@ -257,6 +258,7 @@ $(SolutionDir)..\shaders\build_shaders_windows.bat $(SolutionDir)..\shaders $(So
     <ClInclude Include="..\include\vkme\PlatformTools.hpp" />
     <ClInclude Include="..\include\vkme\tools\CubemapRenderer.hpp" />
     <ClInclude Include="..\include\vkme\tools\SkyboxRenderer.hpp" />
+    <ClInclude Include="..\include\vkme\tools\SpecularReflectionCubemapRenderer.hpp" />
     <ClInclude Include="..\include\vkme\tools\SphereToCubemapRenderer.hpp" />
     <ClInclude Include="..\include\vkme\UserInterface.hpp" />
     <ClInclude Include="..\include\vkme\VulkanData.hpp" />

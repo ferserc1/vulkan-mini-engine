@@ -128,9 +128,9 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
     _scene.initPipeline(_vulkanData);
     _scene.initScene(_vulkanData, _descriptorSetAllocator.get(), proj);
     
-    initMeshScene(_scene);
-    
     initSkyResources();
+
+    initMeshScene(_scene);
 }
 
 void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * allocator)
@@ -143,6 +143,8 @@ void RenderToCubemap::initFrameResources(vkme::core::DescriptorSetAllocator * al
     // to call this function to get the descriptor set size requirements in order to
     // initialize the frame resources descriptor set allocator
     vkme::tools::SkyboxRenderer::getFrameResourcesRequirements(ratios);
+
+	vkme::tools::SpecularReflectionCubemapRenderer::getFrameResourcesRequirements(ratios);
     
     allocator->initPool(10, ratios);
 }
@@ -191,10 +193,13 @@ VkImageLayout RenderToCubemap::draw(
 ) {
     using namespace vkme;
 
+
 	// Update the sphere to cube renderer. This is only needed if the equirectangular texture changes,
 	// but here we are updating it every frame as an example
     _sphereToCubeRenderer->update(cmd, currentFrame);
-    
+
+
+
     // This code generate a lot of validation errors, because we are updating a descriptor set that is being used in other frame
     // To solve this, we can use the frame resources descriptor set allocator and create the buffer each frame. If we don't want to
     // create and destroy the buffer every frame, we can create one buffer and one descriptor set for each in flight frame.
@@ -220,6 +225,11 @@ VkImageLayout RenderToCubemap::draw(
         });
 
     _cubeMapRenderer->update(cmd, currentFrame, tintDS.get());
+
+
+
+    // Update the specular teflection cubemap renderer
+    _specularReflectionRenderer->update(cmd, currentFrame, frameResources);
 
     // Update the scene object model matrix
     std::array<glm::mat4,3> positions = {
@@ -392,6 +402,16 @@ void RenderToCubemap::drawUI()
 		{
 			ImGui::ColorEdit3("Tint color", &_tintColorData.tintColor[0]);
 		}
+
+		if (ImGui::CollapsingHeader("Specular Reflection"))
+		{
+			float roughness = _specularReflectionRenderer->roughness();
+			int sampleCount = _specularReflectionRenderer->sampleCount();
+			ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+			ImGui::SliderInt("Sample count", &sampleCount, 1, 1024);
+			_specularReflectionRenderer->setRoughness(roughness);
+			_specularReflectionRenderer->setSampleCount(sampleCount);
+		}
         
     }
     ImGui::End();
@@ -422,6 +442,18 @@ void RenderToCubemap::initSkyResources()
     _vulkanData->cleanupManager().push([&](VkDevice dev) {
         vkDestroyDescriptorSetLayout(dev, _tintColorDSLayout, nullptr);
     });
+
+
+	// Specular reflection cubemap renderer
+    _specularReflectionRenderer = std::unique_ptr<vkme::tools::SpecularReflectionCubemapRenderer>(
+        new vkme::tools::SpecularReflectionCubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
+    );
+    _specularReflectionRenderer->setRoughness(0.5f);
+    _specularReflectionRenderer->build(
+        //_sphereToCubeRenderer->cubeMapImage(),
+		_cubeMapRenderer->cubeMapImage(),
+        { 256, 256 }
+    );
     
     // The skybox renderer is used to draw the cube map in the sky.
     // See the initFrameResources function to know how to initialize
@@ -430,13 +462,22 @@ void RenderToCubemap::initSkyResources()
         new vkme::tools::SkyboxRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
+
+
     //_skyboxRenderer->init(_sphereToCubeRenderer->cubeMapImage());
     _skyboxRenderer->init(_cubeMapRenderer->cubeMapImage());
+
+
+
+
+
+	//_skyboxRenderer->init(_specularReflectionRenderer->cubeMapImage());
 }
 
 void RenderToCubemap::initMeshScene(SceneCubemap& scene)
 {
-    scene.textureImage = std::shared_ptr<vkme::core::Image>(_sphereToCubeRenderer->cubeMapImage());
+    //scene.textureImage = std::shared_ptr<vkme::core::Image>(_sphereToCubeRenderer->cubeMapImage());
+    scene.textureImage = std::shared_ptr<vkme::core::Image>(_specularReflectionRenderer->cubeMapImage());
 
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

@@ -234,6 +234,9 @@
     <ClCompile Include="..\src\vkme\tools\SkyboxRenderer.cpp">
       <Filter>Source Files\vkme\tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vkme\tools\SpecularReflectionCubemapRenderer.cpp">
+      <Filter>Source Files\vkme\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -414,6 +417,9 @@
       <Filter>Header Files\vkme\tools</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vkme\tools\SkyboxRenderer.hpp">
+      <Filter>Header Files\vkme\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\tools\SpecularReflectionCubemapRenderer.hpp">
       <Filter>Header Files\vkme\tools</Filter>
     </ClInclude>
   </ItemGroup>
