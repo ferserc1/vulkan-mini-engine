@@ -254,13 +254,13 @@ void TexturesTestDelegate::initMesh()
     // Load material data
     const std::string imagePath = vkme::PlatformTools::assetPath() + "taza_albedo.png";
     _textureImage = std::unique_ptr<vkme::core::Image>(
-        vkme::core::Image::loadImage(_vulkanData, imagePath)
+        vkme::core::Image::loadImage(_vulkanData, imagePath, VK_IMAGE_USAGE_SAMPLED_BIT, VK_IMAGE_ASPECT_COLOR_BIT, true)
     );
     
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_NEAREST;
-    samplerInfo.minFilter = VK_FILTER_NEAREST;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
     vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &_imageSampler);
     
     _vulkanData->cleanupManager().push([&](VkDevice dev) {

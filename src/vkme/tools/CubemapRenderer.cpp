@@ -176,6 +176,7 @@ void CubemapRenderer::initImages(VkExtent2D extent)
     for (int i = 0; i < 6; ++i)
     {
         viewInfo.subresourceRange.baseArrayLayer = i;
+		viewInfo.subresourceRange.baseMipLevel = 0;
         vkCreateImageView(_vulkanData->device(), &viewInfo, nullptr, &imgView);
         _cubeMapImageViews[i] = imgView;
     }

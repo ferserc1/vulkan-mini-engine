@@ -20,7 +20,9 @@ void Image::cmdTransitionImage(
     VkPipelineStageFlags2 srcStageMask,
     VkAccessFlags2        srcAccessMask,
     VkPipelineStageFlags2 dstStageMask,
-    VkAccessFlags2        dstAccessMask
+    VkAccessFlags2        dstAccessMask,
+	uint32_t              mipLevel,
+    uint32_t              mipLevelsCount
 ) {
     VkImageMemoryBarrier2 imageBarrier = {};
     imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
@@ -37,6 +39,8 @@ void Image::cmdTransitionImage(
             VK_IMAGE_ASPECT_COLOR_BIT;
     }
     imageBarrier.subresourceRange = Image::subresourceRange(aspectMask);
+	imageBarrier.subresourceRange.baseMipLevel = mipLevel;
+    imageBarrier.subresourceRange.levelCount = mipLevelsCount;
     imageBarrier.image = image;
 
     VkDependencyInfo dependencies = {};
@@ -99,13 +103,19 @@ void Image::cmdCopy(
     cmdBlitImage2(cmd, &blitInfo);
 }
 
+uint32_t Image::getMipLevels(VkExtent2D extent)
+{
+    return uint32_t(floor(log2(std::max(extent.width, extent.height))) + 1);
+}
+
 Image* Image::createAllocatedImage(
     VulkanData * vulkanData,
     VkFormat format,
     VkExtent2D extent,
     VkImageUsageFlags usage,
     VkImageAspectFlags aspectFlags,
-    uint32_t arrayLayers
+    uint32_t arrayLayers,
+	bool useMipmaps
 )
 {
     auto result = new Image();
@@ -119,6 +129,12 @@ Image* Image::createAllocatedImage(
         result->_extent,
         arrayLayers
     );
+
+    if (useMipmaps)
+    {
+		imgInfo.mipLevels = Image::getMipLevels(extent);
+		result->_mipLevels = imgInfo.mipLevels;
+    }
 
     if (arrayLayers == 6)
     {
@@ -145,6 +161,10 @@ Image* Image::createAllocatedImage(
         imgViewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
         imgViewInfo.subresourceRange.layerCount = 6;
     }
+    if (useMipmaps)
+    {
+        imgViewInfo.subresourceRange.levelCount = result->_mipLevels;
+    }
     VK_ASSERT(vkCreateImageView(vulkanData->device(), &imgViewInfo, nullptr, &result->_imageView));
     
     return result;
@@ -157,7 +177,8 @@ Image* Image::createAllocatedImage(
     uint32_t dataBytesPerPixel,  // WARNING: for now, it only works with 4 bpp
     VkFormat imageFormat,
     VkImageUsageFlags usage,
-    VkImageAspectFlags aspectFlags
+    VkImageAspectFlags aspectFlags,
+    bool useMipmaps
 ) {
     size_t dataSize = extent.width * extent.height * dataBytesPerPixel;
     auto uploadBuffer = std::unique_ptr<Buffer>(
@@ -172,12 +193,19 @@ Image* Image::createAllocatedImage(
     auto uploadData = uploadBuffer->allocatedData();
     memcpy(uploadData, data, dataSize);
     
+    if (useMipmaps)
+	{
+		usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	}
+
     auto image = createAllocatedImage(
         vulkanData,
         imageFormat,
         extent,
         usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-        aspectFlags
+        aspectFlags,
+        1,
+        useMipmaps
     );
     
     vulkanData->command().immediateSubmit([&](VkCommandBuffer cmd) {
@@ -203,13 +231,95 @@ Image* Image::createAllocatedImage(
             1,
             &copyRgn
         );
-        
-        Image::cmdTransitionImage(
-            cmd,
-            image->image(),
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        );
+
+        if (useMipmaps)
+        {
+            Image::cmdTransitionImage(
+                cmd,
+                image->image(),
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+            );
+
+            for (uint32_t i = 1; i < image->mipLevels(); ++i)
+            {
+                VkImageBlit imageBlit{};
+                imageBlit.srcSubresource.aspectMask = aspectFlags;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcSubresource.mipLevel = i - 1;
+                imageBlit.srcOffsets[1].x = int32_t(image->extent2D().width >> (i - 1));
+                imageBlit.srcOffsets[1].y = int32_t(image->extent2D().height >> (i - 1));
+				imageBlit.srcOffsets[1].z = 1;
+
+                imageBlit.dstSubresource.aspectMask = aspectFlags;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstSubresource.mipLevel = i;
+				imageBlit.dstOffsets[1].x = int32_t(image->extent2D().width >> i);
+				imageBlit.dstOffsets[1].y = int32_t(image->extent2D().height >> i);
+                imageBlit.dstOffsets[1].z = 1;
+
+                Image::cmdTransitionImage(
+                    cmd,
+                    image->image(),
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    aspectFlags,
+                    VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                    VK_ACCESS_2_MEMORY_WRITE_BIT,
+                    VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
+                    i
+                );
+
+				vkCmdBlitImage(
+					cmd,
+					image->image(),
+					VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+					image->image(),
+					VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					1,
+					&imageBlit,
+					VK_FILTER_LINEAR
+				); 
+
+                Image::cmdTransitionImage(
+                    cmd,
+                    image->image(),
+                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    aspectFlags,
+                    VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                    VK_ACCESS_2_MEMORY_WRITE_BIT,
+                    VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
+                    i
+                );
+            }
+
+            Image::cmdTransitionImage(
+                cmd,
+                image->image(),
+                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                aspectFlags,
+                VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                VK_ACCESS_2_MEMORY_WRITE_BIT,
+                VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+                VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
+                0,
+                image->mipLevels()
+            );
+        }
+        else
+        {
+            Image::cmdTransitionImage(
+                cmd,
+                image->image(),
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                aspectFlags
+            );
+        }
     });
     
     uploadBuffer->cleanup();
@@ -239,7 +349,8 @@ Image* Image::loadImage(
     VulkanData * vulkanData,
     const std::string& filePath,
     VkImageUsageFlags usage,
-    VkImageAspectFlags aspectFlags
+    VkImageAspectFlags aspectFlags,
+    bool useMipmaps
 ) {
     int width, height, channels;
     unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channels, 4);
@@ -248,7 +359,7 @@ Image* Image::loadImage(
     }
     
     VkExtent2D extent { uint32_t(width), uint32_t(height) };
-    auto result = Image::createAllocatedImage(vulkanData, data, extent, 4, VK_FORMAT_R8G8B8A8_UNORM, usage, aspectFlags);
+    auto result = Image::createAllocatedImage(vulkanData, data, extent, 4, VK_FORMAT_R8G8B8A8_UNORM, usage, aspectFlags, useMipmaps);
     return result;
 }
 

@@ -31,13 +31,17 @@ public:
         VkPipelineStageFlags2 srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
         VkAccessFlags2        srcAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT,
         VkPipelineStageFlags2 dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-        VkAccessFlags2        dstAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT
+        VkAccessFlags2        dstAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
+		uint32_t              mipLevel = 0,
+        uint32_t              mipLevelsCount = 1
     );
 
     /*
      *  Returns a default initialised VkImageSubresourceRange structure for all mipmaps and layers.
      */
     static VkImageSubresourceRange subresourceRange(VkImageAspectFlags aspectMask);
+
+	static uint32_t getMipLevels(VkExtent2D extent);
     
     /*
      *   Setup an image to image copy command
@@ -56,7 +60,8 @@ public:
         VkExtent2D extent,
         VkImageUsageFlags usage,
         VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
-        uint32_t arrayLayers = 1
+        uint32_t arrayLayers = 1,
+        bool useMipmaps = false
     );
     
     static Image* createAllocatedImage(
@@ -66,7 +71,8 @@ public:
         uint32_t dataBytesPerPixel,  // WARNING: for now, it only works with 4 bpp
         VkFormat imageFormat,
         VkImageUsageFlags usage,
-        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+        bool useMipmaps = false
     );
 
     static Image* wrapSwapchainImage(
@@ -78,7 +84,8 @@ public:
         VulkanData * vulkanData,
         const std::string& filePath,
         VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT,
-        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+		bool useMipmaps = false
     );
     
     void cleanup();
@@ -89,6 +96,8 @@ public:
     inline const VkExtent3D& extent() const { return _extent; }
     inline const VkExtent2D extent2D() const { return VkExtent2D{ _extent.width, _extent.height }; }
     inline VkFormat format() const { return _format; }
+	inline uint32_t mipLevels() const { return _mipLevels; }
+
 
 protected:
     // Only allow create images using factory functions
@@ -99,6 +108,7 @@ protected:
     VmaAllocation _allocation = VK_NULL_HANDLE;
     VkExtent3D _extent = { 0, 0 };
     VkFormat _format;
+    uint32_t _mipLevels = 1;
     
     VulkanData * _vulkanData;
 };
