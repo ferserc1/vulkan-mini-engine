@@ -261,6 +261,8 @@ void TexturesTestDelegate::initMesh()
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     samplerInfo.magFilter = VK_FILTER_LINEAR;
     samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.maxLod = float(_textureImage->mipLevels());
+    //samplerInfo.minLod = float(_textureImage->mipLevels() / 4);
     vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &_imageSampler);
     
     _vulkanData->cleanupManager().push([&](VkDevice dev) {
