@@ -36,8 +36,13 @@ int main(int argc, char** argv) {
     //auto delegate = std::shared_ptr<SkySphereDelegate>(new SkySphereDelegate());
     //auto delegate = std::shared_ptr<RenderToTexture>(new RenderToTexture());
     auto delegate = std::shared_ptr<RenderToCubemap>(new RenderToCubemap());
+    auto inputDelegate = dynamic_cast<vkme::InputDelegate*>(delegate.get());
     app.setDrawLoopDelegate(delegate);
     app.setUIDelegate(delegate);
+    if (inputDelegate)
+    {
+        app.setInputDelegate(delegate);
+    }
     
     return app.run();
 }

@@ -9,6 +9,7 @@
 #include <vkme/VulkanData.hpp>
 #include <vkme/DrawLoop.hpp>
 #include <vkme/UserInterface.hpp>
+#include <vkme/InputManager.hpp>
 
 namespace vkme {
     
@@ -19,6 +20,7 @@ public:
     inline void initWindowTitle(const std::string& title) { _windowTitle = title; }
     inline void setDrawLoopDelegate(std::shared_ptr<DrawLoopDelegate> d) { _drawLoop.setDelegate(d); }
     inline void setUIDelegate(std::shared_ptr<UserInterfaceDelegate> d) { _userInterface.setDelegate(d); }
+    inline void setInputDelegate(std::shared_ptr<InputDelegate> d) { _inputManager.setDelegate(d); }
     int32_t run();
 
 protected:
@@ -29,6 +31,7 @@ protected:
     VulkanData _vulkanData;
     DrawLoop _drawLoop;
     UserInterface _userInterface;
+    InputManager _inputManager;
 };
 
 }

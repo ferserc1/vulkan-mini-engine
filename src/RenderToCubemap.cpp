@@ -174,6 +174,30 @@ void RenderToCubemap::cleanup()
     _drawImage->cleanup();
 }
 
+void RenderToCubemap::mouseButtonDown(int button, int x, int y)
+{
+    std::cout << "Mouse button down: "  << button << ", x=" << x
+        << ", y=" << y << std::endl;
+}
+
+void RenderToCubemap::mouseMove(int x, int y)
+{
+    std::cout << "Mouse move: " << " x=" << x
+        << ", y=" << y << std::endl;
+}
+
+void RenderToCubemap::mouseButtonUp(int button, int x, int y)
+{
+    std::cout << "Mouse button up: "  << button << ", x=" << x
+        << ", y=" << y << std::endl;
+}
+
+void RenderToCubemap::mouseWheel(int deltaX, int deltaY)
+{
+    std::cout << "Mouse wheel: x=" << deltaX <<
+        ", y=" << deltaY << std::endl;
+}
+
 void RenderToCubemap::update(int32_t currentFrame, vkme::core::FrameResources& frameResources)
 {
     glm::mat4 view = glm::translate(glm::mat4{ 1.0f }, glm::vec3(_cameraX, _cameraY, _cameraZ));

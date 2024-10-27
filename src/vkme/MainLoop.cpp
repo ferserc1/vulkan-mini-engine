@@ -53,6 +53,35 @@ int32_t vkme::MainLoop::run()
                 _vulkanData.updateSwapchainSize();
             }
             
+            if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                
+                if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+                {
+                    auto button = event.button.button == SDL_BUTTON_LEFT ?
+                        0 : event.button.button == SDL_BUTTON_MIDDLE ?
+                        1 : 2;
+                    if (event.button.state == SDL_PRESSED)
+                    {
+                        _inputManager.mouseButtonDown(button, x, y);
+                    }
+                    else
+                    {
+                        _inputManager.mouseButtonUp(button, x, y);
+                    }
+                }
+                else
+                {
+                    _inputManager.mouseMove(x, y);
+                }
+            }
+            if (event.type == SDL_MOUSEWHEEL)
+            {
+                _inputManager.mouseWheel(event.wheel.x, event.wheel.y);
+            }
+            
             _userInterface.processEvent(&event);
         }
         

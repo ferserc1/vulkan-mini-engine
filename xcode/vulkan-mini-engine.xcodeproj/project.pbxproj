@@ -57,6 +57,7 @@
 		ED4F37B32C970F72009B120B /* MoltenVK_icd.json in Copy ICD */ = {isa = PBXBuildFile; fileRef = ED4F37AF2C970F4D009B120B /* MoltenVK_icd.json */; };
 		ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED85B4192CB85F230020C26F /* Cube.cpp */; };
 		ED8DC3A42C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */; };
+		ED8F3F9B2CCEA6E800C7BA9B /* InputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8F3F9A2CCEA6E800C7BA9B /* InputManager.cpp */; };
 		ED972BE12CA930D400B0EEFB /* GeometryDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */; };
 		ED972BE32CA9338A00B0EEFB /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE22CA9338A00B0EEFB /* Sphere.cpp */; };
 		ED972BE82CA9496900B0EEFB /* tiny_obj_implementation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED972BE72CA9496900B0EEFB /* tiny_obj_implementation.cpp */; };
@@ -227,6 +228,8 @@
 		ED85B4192CB85F230020C26F /* Cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Cube.cpp; sourceTree = "<group>"; };
 		ED8DC3A32C9D78750011812D /* PushConstantsComputeShaderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PushConstantsComputeShaderDelegate.cpp; sourceTree = "<group>"; };
 		ED8DC3A52C9D787A0011812D /* PushConstantsComputeShaderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PushConstantsComputeShaderDelegate.hpp; sourceTree = "<group>"; };
+		ED8F3F992CCEA6D500C7BA9B /* InputManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InputManager.hpp; sourceTree = "<group>"; };
+		ED8F3F9A2CCEA6E800C7BA9B /* InputManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InputManager.cpp; sourceTree = "<group>"; };
 		ED972BDF2CA930C900B0EEFB /* GeometryDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeometryDelegate.hpp; sourceTree = "<group>"; };
 		ED972BE02CA930D400B0EEFB /* GeometryDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryDelegate.cpp; sourceTree = "<group>"; };
 		ED972BE22CA9338A00B0EEFB /* Sphere.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sphere.cpp; sourceTree = "<group>"; };
@@ -619,6 +622,7 @@
 				EDC359EB2C9ED48C00F76C78 /* geo */,
 				EDA75A9B2CBBDE88001ADEEF /* tools */,
 				ED3911D62C98846700B07513 /* DrawLoop.hpp */,
+				ED8F3F992CCEA6D500C7BA9B /* InputManager.hpp */,
 				ED060AE92C973EA60063ABDD /* MainLoop.hpp */,
 				ED060AEC2C973EA60063ABDD /* PlatformTools.hpp */,
 				EDA2144C2C9C888E009161FA /* UserInterface.hpp */,
@@ -635,6 +639,7 @@
 				EDC359ED2C9EE20100F76C78 /* geo */,
 				EDA75A982CBBDE63001ADEEF /* tools */,
 				ED3911D72C98846F00B07513 /* DrawLoop.cpp */,
+				ED8F3F9A2CCEA6E800C7BA9B /* InputManager.cpp */,
 				ED060AE42C973E8F0063ABDD /* MainLoop.cpp */,
 				ED060AE22C973E8F0063ABDD /* PlatformTools.cpp */,
 				EDA2144D2C9C8897009161FA /* UserInterface.cpp */,
@@ -863,6 +868,7 @@
 				ED3911CB2C98551400B07513 /* Swapchain.cpp in Sources */,
 				ED4F37992C970E37009B120B /* imgui_draw.cpp in Sources */,
 				EDC359E92C9ED06C00F76C78 /* MeshBuffersDelegate.cpp in Sources */,
+				ED8F3F9B2CCEA6E800C7BA9B /* InputManager.cpp in Sources */,
 				ED3911D82C98846F00B07513 /* DrawLoop.cpp in Sources */,
 				ED85B41A2CB85F230020C26F /* Cube.cpp in Sources */,
 				ED362E682CC8009B005F06A5 /* SkyboxRenderer.cpp in Sources */,

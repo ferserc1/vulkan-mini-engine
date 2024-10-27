@@ -10,6 +10,7 @@
 #include <vkme/tools/CubemapRenderer.hpp>
 #include <vkme/tools/SkyboxRenderer.hpp>
 #include <vkme/tools/SpecularReflectionCubemapRenderer.hpp>
+#include <vkme/InputManager.hpp>
 
 struct SceneDataCubemap
 {
@@ -37,7 +38,7 @@ struct SceneCubemap {
     void initScene(vkme::VulkanData*, vkme::core::DescriptorSetAllocator * dsAllocator, const glm::mat4& proj);
 };
 
-class RenderToCubemap : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate {
+class RenderToCubemap : public vkme::DrawLoopDelegate, public vkme::UserInterfaceDelegate, public vkme::InputDelegate {
 public:
     void init(vkme::VulkanData * vulkanData);
     void initFrameResources(vkme::core::DescriptorSetAllocator * allocator);
@@ -54,6 +55,11 @@ public:
     void drawUI();
     
     void cleanup();
+    
+    virtual void mouseButtonDown(int button, int x, int y);
+    virtual void mouseMove(int x, int y);
+    virtual void mouseButtonUp(int button, int x, int y);
+    virtual void mouseWheel(int deltaX, int deltaY);
 
 protected:
     vkme::VulkanData * _vulkanData;
