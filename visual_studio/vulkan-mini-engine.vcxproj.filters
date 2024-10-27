@@ -237,6 +237,9 @@
     <ClCompile Include="..\src\vkme\tools\SpecularReflectionCubemapRenderer.cpp">
       <Filter>Source Files\vkme\tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vkme\InputManager.cpp">
+      <Filter>Source Files\vkme</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\fastgltf\include\fastgltf\base64.hpp">
@@ -421,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="..\include\vkme\tools\SpecularReflectionCubemapRenderer.hpp">
       <Filter>Header Files\vkme\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vkme\InputManager.hpp">
+      <Filter>Header Files\vkme</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
