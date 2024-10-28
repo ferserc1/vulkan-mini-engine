@@ -23,8 +23,6 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer {
 layout(push_constant) uniform constants {
     VertexBuffer vertexBuffer;
     int currentFace;
-    int currentMipLevel;
-    int totalMipLevels;
 } PushConstants;
 
 void main() {
