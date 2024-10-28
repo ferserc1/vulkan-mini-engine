@@ -23,7 +23,8 @@ public:
         const std::string& vertexShaderFile = "cubemap_renderer.vert.spv",
         const std::string& fragmentShaderFile = "skybox.frag.spv",
         VkExtent2D cubeImageSize = { 1024, 1024 },
-        VkDescriptorSetLayout customLayout = VK_NULL_HANDLE
+        VkDescriptorSetLayout customLayout = VK_NULL_HANDLE,
+		bool useMipmaps = false
     );
 
     void update(VkCommandBuffer commandBuffer, uint32_t currentFrame, vkme::core::DescriptorSet* customSet = nullptr);
@@ -39,6 +40,8 @@ protected:
     struct SkySpherePushConstant {
         VkDeviceAddress vertexBufferAddress;
         int currentFace;
+        int currentMipLevel;
+        int totalMipLevels;
     };
 
     struct ProjectionData {
@@ -59,9 +62,14 @@ protected:
     VkSampler _skyImageSampler;
 
     std::shared_ptr<vkme::core::Image> _cubeMapImage;
-    VkImageView _cubeMapImageViews[6];
 
-    void initImages(VkExtent2D);
+	// Each _cubeMapImageViews[i] contains the 6 image views for the i-th mip level
+	struct MipLevelImageViews {
+		VkImageView imageViews[6];
+	};
+    std::vector<MipLevelImageViews> _cubeMapImageViews;
+
+    void initImages(VkExtent2D, bool useMipmaps);
     void initPipeline(
         const std::string& vshaderFile,
         const std::string& fshaderFile,

@@ -24,9 +24,13 @@ void main()
     vec3 V = normalize(camPos - fragPos);
     vec3 R = reflect(-V, inNormal);
 
+    float roughness = 0.5f;
+
     float lightValue = max(dot(inNormal, sceneData.sunlightDirection.xyz), 0.1f);
 
-    vec3 color = inColor * texture(colorTex, R).xyz;
+    // Use the roughness to sample to a specific mip level. The base mip level is roughess = 0.0f
+    // The highest mip level is roughness = 1.0f
+    vec3 color = inColor * textureLod(colorTex, R, 2.0).xyz;
     vec3 ambient = color * sceneData.ambientColor.xyz;
     
     outFragColor = vec4(color * lightValue * sceneData.sunlightColor.w + ambient, 1.0f);

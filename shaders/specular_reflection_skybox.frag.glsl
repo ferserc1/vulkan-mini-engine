@@ -1,6 +1,9 @@
 #version 450
 
 layout (location = 0) in vec3 inNormal;
+layout (location = 1) in flat int inCurrentMipLevel;
+layout (location = 2) in flat int inTotalMipLevels;
+
 layout (location = 0) out vec4 outFragColor;
 
 layout (set = 1, binding = 0) uniform samplerCube skyTexture;
@@ -65,10 +68,11 @@ void main()
 
     float totalWeight = 0.0;
     vec3 prefilteredColor = vec3(0.0);
+    float roughness = mix(0.0, 1.0, float(inCurrentMipLevel) / float(inTotalMipLevels - 1));
     for (int i = 0; i < sampleCount; ++i)
     {
         vec2 Xi = hammersleyNoBitOps(i, sampleCount);
-        vec3 H = importanceSampleGGX(Xi, N, specularReflection.roughness);
+        vec3 H = importanceSampleGGX(Xi, N, roughness);
         vec3 L = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(dot(N,L), 0.0);

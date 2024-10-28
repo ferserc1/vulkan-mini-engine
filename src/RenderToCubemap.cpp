@@ -476,7 +476,7 @@ void RenderToCubemap::initSkyResources()
     _specularReflectionRenderer->build(
         //_sphereToCubeRenderer->cubeMapImage(),
 		_cubeMapRenderer->cubeMapImage(),
-        { 256, 256 }
+        { 1024, 1024 }
     );
     
     // The skybox renderer is used to draw the cube map in the sky.

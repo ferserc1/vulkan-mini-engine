@@ -4,7 +4,7 @@
 namespace vkme::tools {
 
 SpecularReflectionCubemapRenderer::SpecularReflectionCubemapRenderer(VulkanData * vulkanData, vkme::core::DescriptorSetAllocator * allocator)
-    :CubemapRenderer(vulkanData, allocator), _roughness(0.0f), _sampleCount(256)
+    :CubemapRenderer(vulkanData, allocator), _roughness(0.0f), _sampleCount(64)
 {
     
 }
@@ -22,7 +22,8 @@ void SpecularReflectionCubemapRenderer::build(
         "cubemap_renderer.vert.spv",
         "specular_reflection_skybox.frag.spv",
         cubeImageSize,
-        _specularReflectionDSLayout
+        _specularReflectionDSLayout,
+		true    // We want to use mipmaps to generate different levels of roughness for each mip level
     );
 
     _vulkanData->cleanupManager().push([&](VkDevice dev) {

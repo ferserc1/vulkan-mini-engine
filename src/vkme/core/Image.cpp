@@ -17,12 +17,12 @@ void Image::cmdTransitionImage(
     VkImageLayout         oldLayout,
     VkImageLayout         newLayout,
     VkImageAspectFlags    aspectMask,
+    uint32_t              mipLevel,
+    uint32_t              mipLevelsCount,
     VkPipelineStageFlags2 srcStageMask,
     VkAccessFlags2        srcAccessMask,
     VkPipelineStageFlags2 dstStageMask,
-    VkAccessFlags2        dstAccessMask,
-	uint32_t              mipLevel,
-    uint32_t              mipLevelsCount
+    VkAccessFlags2        dstAccessMask
 ) {
     VkImageMemoryBarrier2 imageBarrier = {};
     imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
@@ -247,15 +247,15 @@ Image* Image::createAllocatedImage(
                 imageBlit.srcSubresource.aspectMask = aspectFlags;
 				imageBlit.srcSubresource.layerCount = 1;
 				imageBlit.srcSubresource.mipLevel = i - 1;
-                imageBlit.srcOffsets[1].x = int32_t(image->extent2D().width >> (i - 1));
-                imageBlit.srcOffsets[1].y = int32_t(image->extent2D().height >> (i - 1));
+                imageBlit.srcOffsets[1].x = Image::getMipLevelSize(image->extent2D().width, i - 1);
+                imageBlit.srcOffsets[1].y = Image::getMipLevelSize(image->extent2D().height, i - 1);
 				imageBlit.srcOffsets[1].z = 1;
 
                 imageBlit.dstSubresource.aspectMask = aspectFlags;
 				imageBlit.dstSubresource.layerCount = 1;
 				imageBlit.dstSubresource.mipLevel = i;
-				imageBlit.dstOffsets[1].x = int32_t(image->extent2D().width >> i);
-				imageBlit.dstOffsets[1].y = int32_t(image->extent2D().height >> i);
+				imageBlit.dstOffsets[1].x = Image::getMipLevelSize(image->extent2D().width, i);
+				imageBlit.dstOffsets[1].y = Image::getMipLevelSize(image->extent2D().height, i);
                 imageBlit.dstOffsets[1].z = 1;
 
                 Image::cmdTransitionImage(
@@ -264,11 +264,12 @@ Image* Image::createAllocatedImage(
                     VK_IMAGE_LAYOUT_UNDEFINED,
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     aspectFlags,
+                    i,
+                    1,
                     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
                     VK_ACCESS_2_MEMORY_WRITE_BIT,
                     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
-                    i
+                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT
                 );
 
 				vkCmdBlitImage(
@@ -288,11 +289,12 @@ Image* Image::createAllocatedImage(
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                     aspectFlags,
+                    i,
+                    1,
                     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
                     VK_ACCESS_2_MEMORY_WRITE_BIT,
                     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
-                    i
+                    VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT
                 );
             }
 
@@ -302,12 +304,12 @@ Image* Image::createAllocatedImage(
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 aspectFlags,
+                0,
+                image->mipLevels(),
                 VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
                 VK_ACCESS_2_MEMORY_WRITE_BIT,
                 VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-                VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
-                0,
-                image->mipLevels()
+                VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT
             );
         }
         else

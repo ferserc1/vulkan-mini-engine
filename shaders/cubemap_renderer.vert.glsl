@@ -7,6 +7,8 @@ layout(set = 0, binding = 0) uniform ProjectionData {
 } projectionData;
 
 layout (location = 0) out vec3 outNormal;
+layout (location = 1) out flat int outCurrentMipLevel;
+layout (location = 2) out flat int outTotalMipLevels;
 
 struct Vertex {
     vec3 position;
@@ -23,6 +25,8 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer {
 layout(push_constant) uniform constants {
     VertexBuffer vertexBuffer;
     int currentFace;
+    int currentMipLevel;
+    int totalMipLevels;
 } PushConstants;
 
 void main()
@@ -33,4 +37,6 @@ void main()
 
     gl_Position = projectionData.proj * view * vec4(vertex.position, 1.0);
     outNormal = normalize(vertex.position);
+    outCurrentMipLevel = PushConstants.currentMipLevel;
+    outTotalMipLevels = PushConstants.totalMipLevels;
 }

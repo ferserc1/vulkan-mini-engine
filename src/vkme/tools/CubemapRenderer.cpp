@@ -21,11 +21,12 @@ void CubemapRenderer::build(
     const std::string& vertexShaderFile,
     const std::string& fragmentShaderFile,
     VkExtent2D cubeImageSize,
-    VkDescriptorSetLayout customLayout
+    VkDescriptorSetLayout customLayout,
+    bool useMipmaps
 ) {
     _inputSkybox = inputSkybox;
     
-    initImages(cubeImageSize);
+    initImages(cubeImageSize, useMipmaps);
     
     vkme::factory::Sampler samplerFactory(_vulkanData);
     _skyImageSampler = samplerFactory.build(
@@ -65,7 +66,10 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame, vkme::c
         cmd,
         _cubeMapImage->image(),
         VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_GENERAL
+        VK_IMAGE_LAYOUT_GENERAL,
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		_cubeMapImage->mipLevels()
     );
 
     VkClearColorValue clearValue;
@@ -82,76 +86,91 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame, vkme::c
         cmd,
         _cubeMapImage->image(),
         VK_IMAGE_LAYOUT_GENERAL,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_ASPECT_COLOR_BIT,
+        0,
+        _cubeMapImage->mipLevels()
     );
 
-    // Draw geometry
-    for (auto i = 0; i < 6; ++i) {
-		// Draw each face of the cube map in a separate render pass
-		auto view = _cubeMapImageViews[i];
-		auto colorAttachment = vkme::core::Info::attachmentInfo(view, nullptr);
-		auto renderInfo = vkme::core::Info::renderingInfo(_cubeMapImage->extent2D(), &colorAttachment, nullptr);
-		vkme::core::cmdBeginRendering(cmd, &renderInfo);
+    auto mipLevels = cubeMapImage()->mipLevels();
+    for (uint32_t mipLevel = 0; mipLevel < mipLevels; ++mipLevel) {
+        // Draw geometry
+        for (auto i = 0; i < 6; ++i) {
+            // Draw each face of the cube map in a separate render pass
+            auto view = _cubeMapImageViews[mipLevel].imageViews[i];
+            auto colorAttachment = vkme::core::Info::attachmentInfo(view, nullptr);
+            VkExtent2D extent{
+                uint32_t(vkme::core::Image::getMipLevelSize(_cubeMapImage->extent2D().width, mipLevel)),
+                uint32_t(vkme::core::Image::getMipLevelSize(_cubeMapImage->extent2D().height, mipLevel))
+            };
+            auto renderInfo = vkme::core::Info::renderingInfo(extent, &colorAttachment, nullptr);
+            vkme::core::cmdBeginRendering(cmd, &renderInfo);
 
-		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+            vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
-        auto viewportExtent = _cubeMapImage->extent2D();
-        VkViewport viewport = {};
-        viewport.x = 0; viewport.y = 0;
-        viewport.width = float(viewportExtent.width);
-        viewport.height = float(viewportExtent.height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(cmd, 0, 1, &viewport);
+            auto viewportExtent = extent;
+            VkViewport viewport = {};
+            viewport.x = 0; viewport.y = 0;
+            viewport.width = float(viewportExtent.width);
+            viewport.height = float(viewportExtent.height);
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport(cmd, 0, 1, &viewport);
 
-        VkRect2D scissor = {};
-        scissor.offset = { 0, 0 };
-        scissor.extent = viewportExtent;
-        vkCmdSetScissor(cmd, 0, 1, &scissor);
-       
-        // Draw the sky sphere
-        auto meshBuffers = _cube->meshBuffers();
-        SkySpherePushConstant pushConstants;
-        pushConstants.currentFace = i;
-        pushConstants.vertexBufferAddress = meshBuffers->vertexBufferAddress;
+            VkRect2D scissor = {};
+            scissor.offset = { 0, 0 };
+            scissor.extent = viewportExtent;
+            vkCmdSetScissor(cmd, 0, 1, &scissor);
 
-        vkCmdPushConstants(cmd, _pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SkySpherePushConstant), &pushConstants);
-        vkCmdBindIndexBuffer(cmd, meshBuffers->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
+            // Draw the sky sphere
+            auto meshBuffers = _cube->meshBuffers();
+            SkySpherePushConstant pushConstants;
+            pushConstants.currentFace = i;
+            pushConstants.currentMipLevel = mipLevel;
+            pushConstants.totalMipLevels = mipLevels;
+            pushConstants.vertexBufferAddress = meshBuffers->vertexBufferAddress;
 
-        // The sphere has only one surface
-        auto surface = _cube->surfaces()[0];
-       
-        std::vector<VkDescriptorSet> sets = {
-            _projectionDataDescriptorSet->descriptorSet(),
-            _skyImageDescriptorSet->descriptorSet()
-        };
-        if (customSet != nullptr) {
-            sets.push_back(customSet->descriptorSet());
+            vkCmdPushConstants(cmd, _pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SkySpherePushConstant), &pushConstants);
+            vkCmdBindIndexBuffer(cmd, meshBuffers->indexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT32);
+
+            // The sphere has only one surface
+            auto surface = _cube->surfaces()[0];
+
+            std::vector<VkDescriptorSet> sets = {
+                _projectionDataDescriptorSet->descriptorSet(),
+                _skyImageDescriptorSet->descriptorSet()
+            };
+            if (customSet != nullptr) {
+                sets.push_back(customSet->descriptorSet());
+            }
+
+            vkCmdBindDescriptorSets(
+                cmd,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                _pipelineLayout, 0,
+                uint32_t(sets.size()),
+                sets.data(),
+                0, nullptr
+            );
+
+            vkCmdDrawIndexed(cmd, surface.indexCount, 1, surface.startIndex, 0, 0);
+
+            vkme::core::cmdEndRendering(cmd);
         }
-
-        vkCmdBindDescriptorSets(
-            cmd,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            _pipelineLayout, 0,
-            uint32_t(sets.size()),
-            sets.data(),
-            0, nullptr
-        );
-
-        vkCmdDrawIndexed(cmd, surface.indexCount, 1, surface.startIndex, 0, 0);
-        
-		vkme::core::cmdEndRendering(cmd);
     }
 
 	vkme::core::Image::cmdTransitionImage(
 		cmd,
 		_cubeMapImage->image(),
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		_cubeMapImage->mipLevels()
 	);
 }
 
-void CubemapRenderer::initImages(VkExtent2D extent)
+void CubemapRenderer::initImages(VkExtent2D extent, bool useMipmaps)
 {
     // Cube map image
     // This are the image views used to render the cubemap
@@ -163,8 +182,22 @@ void CubemapRenderer::initImages(VkExtent2D extent)
         VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
         VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_IMAGE_ASPECT_COLOR_BIT,
-        6   // 6 layers. When specify this parameter, the image is created as a cube map compatible image with 6 layers, and the image view is created as a cube map image view
+        6,   // 6 layers. When specify this parameter, the image is created as a cube map compatible image with 6 layers, and the image view is created as a cube map image view
+		useMipmaps
     ));
+
+    // Initialize the image layout for all the mimpam levels
+	_vulkanData->command().immediateSubmit([&](VkCommandBuffer cmd) {
+		vkme::core::Image::cmdTransitionImage(
+			cmd,
+			_cubeMapImage->image(),
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_GENERAL,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            0,
+			_cubeMapImage->mipLevels()
+		);
+	});
 
     // Create image views for each face. We'll use these image views to render to the cube map image
     auto viewInfo = vkme::core::Info::imageViewCreateInfo(
@@ -173,18 +206,26 @@ void CubemapRenderer::initImages(VkExtent2D extent)
         VK_IMAGE_ASPECT_COLOR_BIT
     );
     VkImageView imgView;
-    for (int i = 0; i < 6; ++i)
-    {
-        viewInfo.subresourceRange.baseArrayLayer = i;
-		viewInfo.subresourceRange.baseMipLevel = 0;
-        vkCreateImageView(_vulkanData->device(), &viewInfo, nullptr, &imgView);
-        _cubeMapImageViews[i] = imgView;
-    }
-
-    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+	auto mipLevels = _cubeMapImage->mipLevels();
+	for (uint32_t mipLevel = 0; mipLevel < mipLevels; ++mipLevel) {
+        _cubeMapImageViews.push_back({ { VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE} });
+		viewInfo.subresourceRange.baseMipLevel = mipLevel;
         for (int i = 0; i < 6; ++i)
         {
-            vkDestroyImageView(dev, _cubeMapImageViews[i], nullptr);
+            viewInfo.subresourceRange.baseArrayLayer = i;
+            vkCreateImageView(_vulkanData->device(), &viewInfo, nullptr, &imgView);
+            _cubeMapImageViews[mipLevel].imageViews[i] = imgView;
+        }
+	}
+    
+
+    _vulkanData->cleanupManager().push([&](VkDevice dev) {
+		auto mipLevels = _cubeMapImage->mipLevels();
+        for (size_t mipLevel = 0; mipLevel < mipLevels; ++mipLevel) {
+            for (int i = 0; i < 6; ++i)
+            {
+                vkDestroyImageView(dev, _cubeMapImageViews[mipLevel].imageViews[i], nullptr);
+            }
         }
 
 		_cubeMapImage->cleanup();
