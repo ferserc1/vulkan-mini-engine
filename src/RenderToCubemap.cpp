@@ -75,6 +75,10 @@ void SceneCubemap::initScene(vkme::VulkanData* vulkanData, vkme::core::Descripto
     sceneData.ambientColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
     sceneData.sunlightColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
     sceneData.sunlightDirection = glm::vec4(4.0f, 4.0f, -2.0f, 1.0f);
+    sceneData.roughness = 0.7f;
+    
+    // When creating the skybox image, the mipmap level number must be passed to the skybox so that the shader knows how to obtain the image.
+    sceneData.roughnessMipLevels = 2.0; // Provisional: this value has to be set when the number of mipmap levels of the specluar diffuse map is known.
     
 	// The scene data buffer is created in the frame resources and destroyed in the cleanup of every frame.
     // Do this when the buffer needs to be updated every frame, because the update is done in CPU time, and
@@ -435,11 +439,11 @@ void RenderToCubemap::drawUI()
 
 		if (ImGui::CollapsingHeader("Specular Reflection"))
 		{
-			float roughness = _specularReflectionRenderer->roughness();
+            float roughness = _scene.sceneData.roughness;
 			int sampleCount = _specularReflectionRenderer->sampleCount();
-			ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+            ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0);
 			skyChanged = skyChanged || ImGui::SliderInt("Sample count", &sampleCount, 128, 512);
-			_specularReflectionRenderer->setRoughness(roughness);
+			_scene.sceneData.roughness = roughness;
 			_specularReflectionRenderer->setSampleCount(sampleCount);
 		}
         
@@ -488,8 +492,11 @@ void RenderToCubemap::initSkyResources()
         //_sphereToCubeRenderer->cubeMapImage(),
 		_cubeMapRenderer->cubeMapImage(),
         { 1024, 1024 },
-        5
+        10
     );
+    
+    // The shader consuming the skybox must know the final number of mipmaps in order to deduce which mipmap level it has to sample.
+    _scene.sceneData.roughnessMipLevels = float(_specularReflectionRenderer->cubeMapImage()->mipLevels());
     
     // The skybox renderer is used to draw the cube map in the sky.
     // See the initFrameResources function to know how to initialize
@@ -520,7 +527,7 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
     samplerInfo.magFilter = VK_FILTER_LINEAR;
     samplerInfo.minFilter = VK_FILTER_LINEAR;
     samplerInfo.minLod = 0.0f;
-    samplerInfo.maxLod = 1.0f;
+    samplerInfo.maxLod = 10.0f;
     vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &scene.imageSampler);
 
     _vulkanData->cleanupManager().push([&](VkDevice dev) {

@@ -68,21 +68,27 @@ void main()
 
     float totalWeight = 0.0;
     vec3 prefilteredColor = vec3(0.0);
-    float roughness = mix(0.0, 1.0, float(inCurrentMipLevel) / float(inTotalMipLevels - 1));
-    for (int i = 0; i < sampleCount; ++i)
+    float roughness = float(inCurrentMipLevel) / float(inTotalMipLevels - 1);
+    if (roughness < 0.01)
     {
-        vec2 Xi = hammersleyNoBitOps(i, sampleCount);
-        vec3 H = importanceSampleGGX(Xi, N, roughness);
-        vec3 L = normalize(2.0 * dot(V, H) * H - V);
-
-        float NdotL = max(dot(N,L), 0.0);
-        if (NdotL > 0.0)
-        {
-            prefilteredColor += texture(skyTexture, L).rgb * NdotL;
-            totalWeight += NdotL;
-        }
+        prefilteredColor = texture(skyTexture, inNormal).rgb;
     }
-    prefilteredColor = prefilteredColor / totalWeight;
+    else {
+        for (int i = 0; i < sampleCount; ++i)
+        {
+            vec2 Xi = hammersleyNoBitOps(i, sampleCount);
+            vec3 H = importanceSampleGGX(Xi, N, roughness);
+            vec3 L = normalize(2.0 * dot(V, H) * H - V);
+
+            float NdotL = max(dot(N,L), 0.0);
+            if (NdotL > 0.0)
+            {
+                prefilteredColor += texture(skyTexture, L).rgb * NdotL;
+                totalWeight += NdotL;
+            }
+        }
+        prefilteredColor = prefilteredColor / totalWeight;
+    }
 
     outFragColor = vec4(prefilteredColor, 1.0);
 }

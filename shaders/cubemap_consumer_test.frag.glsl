@@ -14,6 +14,8 @@ layout(set = 0, binding = 0) uniform SceneData {
     vec4 ambientColor;
     vec4 sunlightDirection;
     vec4 sunlightColor;
+    float roughness;
+    float roughnessMipLevels;
 } sceneData;
 
 layout(set = 1, binding = 0) uniform samplerCube colorTex;
@@ -24,13 +26,16 @@ void main()
     vec3 V = normalize(camPos - fragPos);
     vec3 R = reflect(-V, inNormal);
 
-    float roughness = 0.5f;
-
     float lightValue = max(dot(inNormal, sceneData.sunlightDirection.xyz), 0.1f);
 
     // Use the roughness to sample to a specific mip level. The base mip level is roughess = 0.0f
     // The highest mip level is roughness = 1.0f
-    vec3 color = inColor * textureLod(colorTex, R, roughess).xyz;
+    float lod = floor(sceneData.roughness * sceneData.roughnessMipLevels);
+    float lod2 = ceil(sceneData.roughness * sceneData.roughnessMipLevels);
+    vec3 specular1 = textureLod(colorTex, R, lod).xyz;
+    vec3 specular2 = textureLod(colorTex, R, lod2).xyz;
+    vec3 color = inColor * mix(specular1, specular2, fract(sceneData.roughness * sceneData.roughnessMipLevels));
+    
     vec3 ambient = color * sceneData.ambientColor.xyz;
     
     outFragColor = vec4(color * lightValue * sceneData.sunlightColor.w + ambient, 1.0f);
