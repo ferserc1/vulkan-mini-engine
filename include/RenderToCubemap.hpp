@@ -12,6 +12,39 @@
 #include <vkme/tools/SpecularReflectionCubemapRenderer.hpp>
 #include <vkme/InputManager.hpp>
 
+class DeferredUpdate {
+public:
+    DeferredUpdate(int deferredFrameCount, bool updateOnStart = true)
+        :_deferredFrameCount(deferredFrameCount)
+        , _framesElapsed(updateOnStart ? deferredFrameCount : -1) {}
+
+    inline void update() {
+        _framesElapsed = _deferredFrameCount;
+    }
+    
+    inline void operator=(bool u) {
+        if (u) {
+            _framesElapsed = _deferredFrameCount;
+        }
+        else {
+            _framesElapsed = 0;
+        }
+    }
+    
+    bool checkUpdate() {
+        if (_framesElapsed < 0) {
+            return false;
+        }
+        --_framesElapsed;
+        return _framesElapsed == 0;
+    }
+    
+protected:
+    int _deferredFrameCount;
+    
+    int _framesElapsed = 0;
+};
+
 struct SceneDataCubemap
 {
     glm::mat4 view;
@@ -80,6 +113,10 @@ protected:
 
 	// This cubemap renderer is used to render the specular reflection cubemap
 	std::unique_ptr<vkme::tools::SpecularReflectionCubemapRenderer> _specularReflectionRenderer;
+ 
+    
+    //bool _updateSkyTextures = true;
+    DeferredUpdate _updateSkyTextures { 20 };
     
     SceneCubemap _scene;
         

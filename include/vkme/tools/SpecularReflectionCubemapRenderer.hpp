@@ -15,7 +15,8 @@ public:
 
     void build(
         std::shared_ptr<vkme::core::Image> inputSkyBox,
-        VkExtent2D cubeImageSize = { 1024, 1024 }
+        VkExtent2D cubeImageSize = { 1024, 1024 },
+        uint32_t maxMipmapLevels = 20
     );
 
     inline void setRoughness(float roughness) { _roughness = roughness; }

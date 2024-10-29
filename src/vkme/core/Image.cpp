@@ -8,6 +8,8 @@
 
 #include <stb_image.h>
 
+#include <algorithm>
+
 namespace vkme {
 namespace core {
 
@@ -115,7 +117,8 @@ Image* Image::createAllocatedImage(
     VkImageUsageFlags usage,
     VkImageAspectFlags aspectFlags,
     uint32_t arrayLayers,
-	bool useMipmaps
+	bool useMipmaps,
+    uint32_t maxMipmapLevels
 )
 {
     auto result = new Image();
@@ -132,7 +135,7 @@ Image* Image::createAllocatedImage(
 
     if (useMipmaps)
     {
-		imgInfo.mipLevels = Image::getMipLevels(extent);
+        imgInfo.mipLevels = std::min(Image::getMipLevels(extent), maxMipmapLevels);
 		result->_mipLevels = imgInfo.mipLevels;
     }
 
@@ -178,7 +181,8 @@ Image* Image::createAllocatedImage(
     VkFormat imageFormat,
     VkImageUsageFlags usage,
     VkImageAspectFlags aspectFlags,
-    bool useMipmaps
+    bool useMipmaps,
+    uint32_t maxMipmapLevels
 ) {
     size_t dataSize = extent.width * extent.height * dataBytesPerPixel;
     auto uploadBuffer = std::unique_ptr<Buffer>(
@@ -205,7 +209,8 @@ Image* Image::createAllocatedImage(
         usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
         aspectFlags,
         1,
-        useMipmaps
+        useMipmaps,
+        maxMipmapLevels
     );
     
     vulkanData->command().immediateSubmit([&](VkCommandBuffer cmd) {

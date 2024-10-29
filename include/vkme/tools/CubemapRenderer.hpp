@@ -24,7 +24,8 @@ public:
         const std::string& fragmentShaderFile = "skybox.frag.spv",
         VkExtent2D cubeImageSize = { 1024, 1024 },
         VkDescriptorSetLayout customLayout = VK_NULL_HANDLE,
-		bool useMipmaps = false
+		bool useMipmaps = false,
+        uint32_t maxMipmapLevels = 20
     );
 
     void update(VkCommandBuffer commandBuffer, uint32_t currentFrame, vkme::core::DescriptorSet* customSet = nullptr);
@@ -69,7 +70,7 @@ protected:
 	};
     std::vector<MipLevelImageViews> _cubeMapImageViews;
 
-    void initImages(VkExtent2D, bool useMipmaps);
+    void initImages(VkExtent2D, bool useMipmaps, uint32_t maxMipmapLevels);
     void initPipeline(
         const std::string& vshaderFile,
         const std::string& fshaderFile,

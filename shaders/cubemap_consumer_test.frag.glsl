@@ -30,7 +30,7 @@ void main()
 
     // Use the roughness to sample to a specific mip level. The base mip level is roughess = 0.0f
     // The highest mip level is roughness = 1.0f
-    vec3 color = inColor * textureLod(colorTex, R, 2.0).xyz;
+    vec3 color = inColor * textureLod(colorTex, R, roughess).xyz;
     vec3 ambient = color * sceneData.ambientColor.xyz;
     
     outFragColor = vec4(color * lightValue * sceneData.sunlightColor.w + ambient, 1.0f);

@@ -4,14 +4,15 @@
 namespace vkme::tools {
 
 SpecularReflectionCubemapRenderer::SpecularReflectionCubemapRenderer(VulkanData * vulkanData, vkme::core::DescriptorSetAllocator * allocator)
-    :CubemapRenderer(vulkanData, allocator), _roughness(0.0f), _sampleCount(64)
+    :CubemapRenderer(vulkanData, allocator), _roughness(0.0f), _sampleCount(256)
 {
     
 }
 
 void SpecularReflectionCubemapRenderer::build(
     std::shared_ptr<vkme::core::Image> inputSkyBox,
-    VkExtent2D cubeImageSize
+    VkExtent2D cubeImageSize,
+    uint32_t maxMipmapLevels
 ) {
     vkme::factory::DescriptorSetLayout dsFactory;
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
@@ -23,7 +24,8 @@ void SpecularReflectionCubemapRenderer::build(
         "specular_reflection_skybox.frag.spv",
         cubeImageSize,
         _specularReflectionDSLayout,
-		true    // We want to use mipmaps to generate different levels of roughness for each mip level
+		true,    // We want to use mipmaps to generate different levels of roughness for each mip level
+        maxMipmapLevels
     );
 
     _vulkanData->cleanupManager().push([&](VkDevice dev) {

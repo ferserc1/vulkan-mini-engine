@@ -22,11 +22,12 @@ void CubemapRenderer::build(
     const std::string& fragmentShaderFile,
     VkExtent2D cubeImageSize,
     VkDescriptorSetLayout customLayout,
-    bool useMipmaps
+    bool useMipmaps,
+    uint32_t maxMipmapLevels
 ) {
     _inputSkybox = inputSkybox;
     
-    initImages(cubeImageSize, useMipmaps);
+    initImages(cubeImageSize, useMipmaps, maxMipmapLevels);
     
     vkme::factory::Sampler samplerFactory(_vulkanData);
     _skyImageSampler = samplerFactory.build(
@@ -170,7 +171,7 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame, vkme::c
 	);
 }
 
-void CubemapRenderer::initImages(VkExtent2D extent, bool useMipmaps)
+void CubemapRenderer::initImages(VkExtent2D extent, bool useMipmaps, uint32_t maxMipmapLevels)
 {
     // Cube map image
     // This are the image views used to render the cubemap
@@ -183,7 +184,8 @@ void CubemapRenderer::initImages(VkExtent2D extent, bool useMipmaps)
         VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_IMAGE_ASPECT_COLOR_BIT,
         6,   // 6 layers. When specify this parameter, the image is created as a cube map compatible image with 6 layers, and the image view is created as a cube map image view
-		useMipmaps
+		useMipmaps,
+        maxMipmapLevels
     ));
 
     // Initialize the image layout for all the mimpam levels

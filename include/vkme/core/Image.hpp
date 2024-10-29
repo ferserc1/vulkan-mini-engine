@@ -65,7 +65,8 @@ public:
         VkImageUsageFlags usage,
         VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
         uint32_t arrayLayers = 1,
-        bool useMipmaps = false
+        bool useMipmaps = false,
+        uint32_t maxMipmapLevels = 20
     );
     
     static Image* createAllocatedImage(
@@ -76,7 +77,8 @@ public:
         VkFormat imageFormat,
         VkImageUsageFlags usage,
         VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
-        bool useMipmaps = false
+        bool useMipmaps = false,
+        uint32_t maxMipmapLevels = 20
     );
 
     static Image* wrapSwapchainImage(
