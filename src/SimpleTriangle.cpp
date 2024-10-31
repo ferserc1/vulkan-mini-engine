@@ -20,7 +20,12 @@ VkImageLayout SimpleTriangleDelegate::draw(
     vkme::core::FrameResources& frameResources
 ) {
 
-    vkme::core::Image::cmdTransitionImage(cmd, colorImage->image(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+    vkme::core::Image::cmdTransitionImage(
+        cmd,
+        colorImage->image(),
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_GENERAL
+    );
     
     // Draw background
     VkClearColorValue clearValue = {};
@@ -37,7 +42,12 @@ VkImageLayout SimpleTriangleDelegate::draw(
     );
     
     
-    vkme::core::Image::cmdTransitionImage(cmd, colorImage->image(), VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    vkme::core::Image::cmdTransitionImage(
+        cmd,
+        colorImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    );
     
     auto colorAttachment = vkme::core::Info::attachmentInfo(colorImage->imageView(), nullptr);
     auto renderInfo = vkme::core::Info::renderingInfo(colorImage->extent2D(), &colorAttachment, nullptr);

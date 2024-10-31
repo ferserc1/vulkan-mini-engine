@@ -165,9 +165,7 @@ void CubemapRenderer::update(VkCommandBuffer cmd, uint32_t currentFrame, vkme::c
 		_cubeMapImage->image(),
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		0,
-		_cubeMapImage->mipLevels()
+		VK_IMAGE_ASPECT_COLOR_BIT
 	);
 }
 
@@ -232,6 +230,14 @@ void CubemapRenderer::initImages(VkExtent2D extent, bool useMipmaps, uint32_t ma
 
 		_cubeMapImage->cleanup();
     });
+
+    vkme::core::Image::transitionImage(
+        _vulkanData,
+        _cubeMapImage->image(),
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        VK_IMAGE_ASPECT_COLOR_BIT
+    );
 }
 
 void CubemapRenderer::initPipeline(

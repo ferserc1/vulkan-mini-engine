@@ -29,7 +29,31 @@ public:
         VkImageLayout         newLayout,
         VkImageAspectFlags    aspectMask = 0,
         uint32_t              mipLevel = 0,
-        uint32_t              mipLevelsCount = 1,
+        uint32_t              mipLevelsCount = VK_REMAINING_MIP_LEVELS,
+        uint32_t			  baseArrayLayer = 0,
+        uint32_t			  layerCount = VK_REMAINING_ARRAY_LAYERS,
+        VkPipelineStageFlags2 srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+        VkAccessFlags2        srcAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT,
+        VkPipelineStageFlags2 dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+        VkAccessFlags2        dstAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT
+    );
+
+    /*
+	 * Execute a transition on an image blocking the thread. It works in the same way as the
+	 * cmdTransitionImage function, but it blocks the thread until the transition is complete.
+	 * Receives the vulkanData pointer to be able to create and execute the command buffer, instead
+	 * of receiving the command buffer directly.
+     */
+    static void transitionImage(
+        VulkanData* vulkanData,
+        VkImage              image,
+        VkImageLayout         oldLayout,
+        VkImageLayout         newLayout,
+        VkImageAspectFlags    aspectMask = 0,
+        uint32_t              mipLevel = 0,
+        uint32_t              mipLevelsCount = VK_REMAINING_MIP_LEVELS,
+        uint32_t			  baseArrayLayer = 0,
+        uint32_t			  layerCount = VK_REMAINING_ARRAY_LAYERS,
         VkPipelineStageFlags2 srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
         VkAccessFlags2        srcAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT,
         VkPipelineStageFlags2 dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
