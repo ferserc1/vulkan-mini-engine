@@ -19,6 +19,7 @@ layout(set = 0, binding = 0) uniform SceneData {
 } sceneData;
 
 layout(set = 1, binding = 0) uniform samplerCube colorTex;
+layout(set = 1, binding = 1) uniform samplerCube irradianceMap;
 
 void main()
 {
@@ -36,7 +37,8 @@ void main()
     vec3 specular2 = textureLod(colorTex, R, lod2).xyz;
     vec3 color = inColor * mix(specular1, specular2, fract(sceneData.roughness * sceneData.roughnessMipLevels));
     
-    vec3 ambient = color * sceneData.ambientColor.xyz;
-    
+    //vec3 ambient = color * sceneData.ambientColor.xyz;
+    vec3 ambient = texture(irradianceMap, inNormal).rgb * sceneData.ambientColor.xyz * inColor;
+
     outFragColor = vec4(color * lightValue * sceneData.sunlightColor.w + ambient, 1.0f);
 }

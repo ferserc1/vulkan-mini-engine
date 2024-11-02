@@ -29,7 +29,9 @@ void SceneCubemap::initPipeline(vkme::VulkanData* vulkanData)
     
     dsFactory.clear();
     dsFactory.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+    dsFactory.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
     imageDescriptorLayout = dsFactory.build(vulkanData->device(), VK_SHADER_STAGE_FRAGMENT_BIT);
+    
     
     VkPushConstantRange bufferRange = {};
     bufferRange.offset = 0;
@@ -72,7 +74,7 @@ void SceneCubemap::initScene(vkme::VulkanData* vulkanData, vkme::core::Descripto
     
     sceneData.view = view;
     sceneData.proj = proj;
-    sceneData.ambientColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+    sceneData.ambientColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     sceneData.sunlightColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
     sceneData.sunlightDirection = glm::vec4(4.0f, 4.0f, -2.0f, 1.0f);
     sceneData.roughness = 0.7f;
@@ -241,8 +243,6 @@ VkImageLayout RenderToCubemap::draw(
         // but here we are updating it every frame as an example
         _sphereToCubeRenderer->update(cmd, currentFrame);
 
-
-
         // This code generate a lot of validation errors, because we are updating a descriptor set that is being used in other frame
         // To solve this, we can use the frame resources descriptor set allocator and create the buffer each frame. If we don't want to
         // create and destroy the buffer every frame, we can create one buffer and one descriptor set for each in flight frame.
@@ -269,10 +269,11 @@ VkImageLayout RenderToCubemap::draw(
 
         _cubeMapRenderer->update(cmd, currentFrame, tintDS.get());
 
-
-
-        // Update the specular teflection cubemap renderer
+        // Update the specular reflection cubemap renderer
         _specularReflectionRenderer->update(cmd, currentFrame, frameResources);
+        
+        // Update the irradiance map cubemap renderer
+        _irradianceMapRenderer->update(cmd, currentFrame, frameResources);
         
         _updateSkyTextures = false;
     }
@@ -504,12 +505,20 @@ void RenderToCubemap::initSkyResources()
     _specularReflectionRenderer->build(
         //_sphereToCubeRenderer->cubeMapImage(),
 		_cubeMapRenderer->cubeMapImage(),
-        { 1024, 1024 },
-        10
+        { 1024, 1024 }
     );
     
     // The shader consuming the skybox must know the final number of mipmaps in order to deduce which mipmap level it has to sample.
     _scene.sceneData.roughnessMipLevels = float(_specularReflectionRenderer->cubeMapImage()->mipLevels());
+    
+    // Irradinace map renderer
+    _irradianceMapRenderer = std::unique_ptr<vkme::tools::IrradianceCubemapRenderer>(
+        new vkme::tools::IrradianceCubemapRenderer(_vulkanData, _descriptorSetAllocator.get())
+    );
+    _irradianceMapRenderer->build(
+        _cubeMapRenderer->cubeMapImage(),
+        { 256, 256 }
+    );
     
     // The skybox renderer is used to draw the cube map in the sky.
     // See the initFrameResources function to know how to initialize
@@ -525,6 +534,7 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
 {
     //scene.textureImage = std::shared_ptr<vkme::core::Image>(_sphereToCubeRenderer->cubeMapImage());
     scene.textureImage = std::shared_ptr<vkme::core::Image>(_specularReflectionRenderer->cubeMapImage());
+    scene.irradianceMap = std::shared_ptr<vkme::core::Image>(_irradianceMapRenderer->cubeMapImage());
 
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -533,9 +543,11 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
     samplerInfo.minLod = 0.0f;
     samplerInfo.maxLod = 10.0f;
     vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &scene.imageSampler);
+    vkCreateSampler(_vulkanData->device(), &samplerInfo, nullptr, &scene.irradianceSampler);
 
     _vulkanData->cleanupManager().push([&](VkDevice dev) {
         vkDestroySampler(dev, scene.imageSampler, nullptr);
+        vkDestroySampler(dev, scene.irradianceSampler, nullptr);
     });
 
     std::string assetsPath = vkme::PlatformTools::assetPath() + "taza.obj";
@@ -559,13 +571,22 @@ void RenderToCubemap::initMeshScene(SceneCubemap& scene)
         m->allocateMaterialDescriptorSets(_descriptorSetAllocator.get(), scene.imageDescriptorLayout);
 
         m->updateDescriptorSets([&](vkme::core::DescriptorSet* ds) {
-            ds->updateImage(
+            ds->beginUpdate();
+            ds->addImage(
                 0,
                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                 scene.textureImage->imageView(),
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 scene.imageSampler
             );
+            ds->addImage(
+                1,
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                 scene.irradianceMap->imageView(),
+                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                 scene.imageSampler
+            );
+            ds->endUpdate();
         });
     }
 

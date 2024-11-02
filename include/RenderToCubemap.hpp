@@ -10,6 +10,7 @@
 #include <vkme/tools/CubemapRenderer.hpp>
 #include <vkme/tools/SkyboxRenderer.hpp>
 #include <vkme/tools/SpecularReflectionCubemapRenderer.hpp>
+#include <vkme/tools/IrradianceCubemapRenderer.hpp>
 #include <vkme/InputManager.hpp>
 
 class DeferredUpdate {
@@ -65,9 +66,15 @@ struct SceneCubemap {
     SceneDataCubemap sceneData;
     VkDescriptorSetLayout sceneDataDescriptorLayout;
     
+    // Specular reflection
     std::shared_ptr<vkme::core::Image> textureImage;
     VkDescriptorSetLayout imageDescriptorLayout;
     VkSampler imageSampler;
+    
+    // Irradiance map
+    std::shared_ptr<vkme::core::Image> irradianceMap;
+    VkDescriptorSetLayout irradianceDescriptorLayout;
+    VkSampler irradianceSampler;
     
     void initPipeline(vkme::VulkanData*);
     void initScene(vkme::VulkanData*, vkme::core::DescriptorSetAllocator * dsAllocator, const glm::mat4& proj);
@@ -116,6 +123,8 @@ protected:
 	// This cubemap renderer is used to render the specular reflection cubemap
 	std::unique_ptr<vkme::tools::SpecularReflectionCubemapRenderer> _specularReflectionRenderer;
  
+    // Used to render the irradiance map
+    std::unique_ptr<vkme::tools::IrradianceCubemapRenderer> _irradianceMapRenderer;
     
     //bool _updateSkyTextures = true;
     DeferredUpdate _updateSkyTextures { 20 };
