@@ -133,6 +133,9 @@ protected:
     float _cameraZ = 3.0f;
     float _cameraRotX = 0.0f;
     float _cameraRotY = 0.0f;
+	int _mouseButton = -1;
+    int _mouseX = 0;
+    int _mouseY = 0;
     
     // Resources to draw the sky cubemap
     std::shared_ptr<vkme::tools::SkyboxRenderer> _skyboxRenderer;

@@ -126,7 +126,7 @@ void RenderToCubemap::init(vkme::VulkanData * vulkanData)
     _sphereToCubeRenderer->build(imagePath);
     
     auto viewportExtent = _vulkanData->swapchain().extent();
-    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 10.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(50.0f), float(viewportExtent.width) / float(viewportExtent.height), 0.1f, 100.0f);
     proj[1][1] *= -1.0f;
     proj[0][0] *= -1.0f;
     _scene.initPipeline(_vulkanData);
@@ -180,26 +180,39 @@ void RenderToCubemap::cleanup()
 
 void RenderToCubemap::mouseButtonDown(int button, int x, int y)
 {
-    std::cout << "Mouse button down: "  << button << ", x=" << x
-        << ", y=" << y << std::endl;
+	_mouseButton = button;
+    _mouseX = x;
+    _mouseY = y;
 }
 
 void RenderToCubemap::mouseMove(int x, int y)
 {
-    std::cout << "Mouse move: " << " x=" << x
-        << ", y=" << y << std::endl;
+    if (_mouseButton >= 0)
+    {
+		if (_mouseButton == 0)
+		{
+			_cameraRotY += (x - _mouseX) * 0.01f;
+			_cameraRotX -= (y - _mouseY) * 0.01f;
+		}
+		else if (_mouseButton == 2)
+		{
+			_cameraX -= (x - _mouseX) * 0.01f;
+			_cameraY -= (y - _mouseY) * 0.01f;
+		}
+    }
+    _mouseX = x;
+    _mouseY = y;
 }
 
 void RenderToCubemap::mouseButtonUp(int button, int x, int y)
 {
-    std::cout << "Mouse button up: "  << button << ", x=" << x
-        << ", y=" << y << std::endl;
+    _mouseButton = -1;
 }
 
 void RenderToCubemap::mouseWheel(int deltaX, int deltaY)
 {
-    std::cout << "Mouse wheel: x=" << deltaX <<
-        ", y=" << deltaY << std::endl;
+	_cameraZ -= deltaY * 0.1f;
+	_cameraZ -= deltaY * 0.1f;
 }
 
 void RenderToCubemap::update(int32_t currentFrame, vkme::core::FrameResources& frameResources)
@@ -505,16 +518,7 @@ void RenderToCubemap::initSkyResources()
         new vkme::tools::SkyboxRenderer(_vulkanData, _descriptorSetAllocator.get())
     );
     
-
-
-    //_skyboxRenderer->init(_sphereToCubeRenderer->cubeMapImage());
     _skyboxRenderer->init(_cubeMapRenderer->cubeMapImage());
-
-
-
-
-
-	//_skyboxRenderer->init(_specularReflectionRenderer->cubeMapImage());
 }
 
 void RenderToCubemap::initMeshScene(SceneCubemap& scene)
